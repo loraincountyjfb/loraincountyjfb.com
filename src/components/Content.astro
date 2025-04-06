@@ -1,0 +1,251 @@
+---
+import { PortableText } from "astro-portabletext";
+import Button from "./Button.astro";
+
+interface Props {
+  content: {
+    title: string;
+    description: any[];
+    features?: {
+      text: string;
+      icon?: {
+        url?: string;
+      };
+    }[];
+    actions?: {
+      text: string;
+      link: string;
+      variant: 'primary' | 'secondary' | 'text';
+    }[];
+    media?: {
+      type: 'image' | 'video';
+      position: 'left' | 'right';
+      width?: number;
+      image?: {
+        url?: string;
+        alt?: string;
+      };
+      video?: string;
+      animation?: boolean;
+    };
+    spacing?: 'none' | 'small' | 'medium' | 'large';
+    background?: 'white' | 'primary-light' | 'light-gray';
+    verticalAlignment?: 'top' | 'center' | 'bottom';
+  };
+}
+
+const { content } = Astro.props;
+
+const spacingClasses = {
+  none: 'py-0',
+  small: 'py-4',
+  medium: 'py-8',
+  large: 'py-16'
+};
+
+const verticalAlignmentClasses = {
+  top: 'items-start',
+  center: 'items-center',
+  bottom: 'items-end'
+} as const;
+
+// Get width classes based on media width
+const getWidthClasses = (mediaWidth: number) => {
+  if (mediaWidth >= 70) {
+    return {
+      media: 'lg:w-3/4', // 75%
+      content: 'lg:w-1/4' // 25%
+    };
+  } else if (mediaWidth >= 60) {
+    return {
+      media: 'lg:w-2/3', // 66.66%
+      content: 'lg:w-1/3' // 33.33%
+    };
+  } else if (mediaWidth >= 40) {
+    return {
+      media: 'lg:w-1/2', // 50%
+      content: 'lg:w-1/2' // 50%
+    };
+  } else {
+    return {
+      media: 'lg:w-1/3', // 33.33%
+      content: 'lg:w-2/3' // 66.66%
+    };
+  }
+};
+
+const widthClasses = getWidthClasses(content.media?.width || 50);
+
+const backgroundClasses = {
+  'white': 'bg-white',
+  'primary-light': 'bg-primary-light',
+  'light-gray': 'bg-gray-100'
+} as const;
+
+// Determine column order based on media position
+const mediaOrder = content.media?.position === 'left' ? 'order-1 lg:order-1' : 'order-1 lg:order-2';
+const contentOrder = content.media?.position === 'left' ? 'order-1 lg:order-2' : 'order-1 lg:order-1';
+const backgroundClass = backgroundClasses[content.background || 'white'] || backgroundClasses.white;
+console.log(content.verticalAlignment);
+---
+
+<section class={`${backgroundClass} ${spacingClasses[content.spacing || 'medium']}` + " content"} transition:animate="slide">
+  <div class="container mx-auto px-4">
+    <div class={`flex flex-col lg:flex-row lg:gap-24 ${verticalAlignmentClasses[content.verticalAlignment || 'center']}`}>
+      {/* Content Column */}
+      <div class={`w-full ${contentOrder} ${widthClasses.content} animate-on-scroll fade-up`}>
+        <h2 class="text-[50px] leading-[60px] tracking-[-0.03em] font-poppins font-bold mb-6 animate-on-scroll fade-up">
+          {content.title}
+         </h2>
+        <div class="font-poppins font-normal text-[22px] leading-[39px] tracking-[0%] mt-6 text-primary animate-on-scroll fade-up">
+          <PortableText value={content.description} />
+        </div>
+        
+        {content.features && content.features.length > 0 && (
+          <div class="space-y-4 mb-8 animate-on-scroll fade-up">
+            {content.features.map((feature, index) => (
+              <div class="flex items-center gap-4 animate-on-scroll fade-up" style={`animation-delay: ${index * 100}ms`}>
+                {feature.icon?.url && (
+                  <img 
+                    src={feature.icon.url} 
+                    alt="" 
+                    class="w-6 h-6 object-contain"
+                  />
+                )}
+                <span class="text-lg font-poppins">{feature.text}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {content.actions && content.actions.length > 0 && (
+          <div class="flex flex-wrap gap-4 mt-12 animate-on-scroll fade-up">
+            {content.actions.map(action => (
+              <Button href={action.link}>
+                {action.text}
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Media Column */}
+      {content.media && (
+        <div class={`w-full ${mediaOrder} ${widthClasses.media} mt-8 lg:mt-0 media-container ${content.media.animation ? 'animation-enabled' : ''} animate-on-scroll fade-in`}>
+          {content.media.type === 'image' && content.media.image?.url && (
+            <img 
+              src={content.media.image.url} 
+              alt={content.media.image.alt || ''} 
+              class="w-full h-auto object-cover rounded-lg"
+            />
+          )}
+          {content.media.type === 'video' && content.media.video && (
+            <video 
+              src={content.media.video} 
+              controls 
+              class="w-full h-auto rounded-lg"
+            />
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .content ul {
+    list-style-type: disc;
+    margin-left: 20px;
+  }
+  .media-container {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .media-container::before,
+  .media-container::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .media-container.animation-enabled::before {
+    width: 338.916px;
+    height: 338.916px;
+    border-radius: 338.916px;
+    background: rgba(255, 188, 169, 0.35);
+    filter: blur(17.4px);
+    transform: rotate(63.414deg);
+    bottom: -50px;
+    left: 100px;
+    animation-delay: 0s;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .media-container.animation-enabled::after {
+    width: 133.045px;
+    height: 133.045px;
+    border-radius: 133.045px;
+    background: rgba(254, 232, 151, 0.41);
+    filter: blur(17.4px);
+    transform: rotate(63.414deg);
+    bottom: -30px;
+    left: 400px;
+    animation-delay: -3s;
+    animation: float-reverse 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: rotate(63.414deg) translate(0, 0);
+    }
+    50% {
+      transform: rotate(63.414deg) translate(50px, 50px);
+    }
+  }
+
+  @keyframes float-reverse {
+    0%, 100% {
+      transform: rotate(63.414deg) translate(0, 0);
+    }
+    50% {
+      transform: rotate(63.414deg) translate(-50px, -50px);
+    }
+  }
+  /* Ensure the pseudo-elements don't interfere with content */
+  .media-container img,
+  .media-container video {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Animation classes for viewport-based animations */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .animate-on-scroll.animate {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .fade-up {
+    transform: translateY(30px);
+  }
+
+  .fade-in {
+    opacity: 0;
+  }
+
+  .fade-up.animate {
+    transform: translateY(0);
+  }
+
+  .fade-in.animate {
+    opacity: 1;
+  }
+</style>
+

@@ -1,0 +1,233 @@
+<div class="max-w-4xl mx-auto bg-primary py-12 px-4 sm:px-6 lg:px-8 rounded-2xl" transition:animate="slide">
+  <div class="mx-auto">
+    <div class="text-white mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <h2 class="text-6xl font-bold mb-4 text-white font-poppins animate-on-scroll slide-up">Request a<br/>discovery.</h2>
+                
+            </div>
+            <div>
+                <p class="text-white/80 text-lg max-w-2xl animate-on-scroll slide-up delay-100">
+                    Let our expert team help you navigate your competitive landscape with confidence. Get the insights you need to outperform your competition and capture market share.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <form 
+      name="discovery-request" 
+      method="POST" 
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      class="space-y-6 animate-on-scroll fade-in delay-200"
+      action="/thank-you"
+    >
+      <input type="hidden" name="form-name" value="discovery-request" />
+      <input type="hidden" name="page-url" id="page-url" />
+      <input type="hidden" name="referrer" id="referrer" />
+      
+      {/* Honeypot field */}
+      <p class="hidden">
+        <label>
+          Don't fill this out if you're human: <input name="bot-field" />
+        </label>
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-on-scroll slide-up delay-300">
+        <div>
+          <input 
+            type="text" 
+            name="name" 
+            id="name" 
+            placeholder="NAME" 
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+        </div>
+        <div>
+          <input 
+            type="text" 
+            name="company" 
+            id="company" 
+            placeholder="COMPANY" 
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 animate-on-scroll slide-up delay-400">
+        <div>
+          <input 
+            type="email" 
+            name="email" 
+            id="email" 
+            placeholder="EMAIL" 
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+        </div>
+        <div>
+          <input 
+            type="tel" 
+            name="phone" 
+            id="phone" 
+            required
+            placeholder="PHONE NUMBER"
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-500">
+        <input 
+          type="url" 
+          name="website" 
+          id="website" 
+          required
+          placeholder="WEBSITE URL"
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+        />
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-500">
+        <p class="text-white mb-2">What would you like us to audit? (Select all that apply)(Required)</p>
+        <div class="space-y-2">
+          <div class="flex items-center">
+            <input 
+              type="checkbox" 
+              name="audit[]" 
+              id="audit-marketing" 
+              value="Marketing Program(s)" 
+              class="h-4 w-4 text-primary focus:ring-primary border-white/50 bg-white/20"
+              required
+            />
+            <label for="audit-marketing" class="ml-2 text-white">Marketing Program(s)</label>
+          </div>
+          <div class="flex items-center">
+            <input 
+              type="checkbox" 
+              name="audit[]" 
+              id="audit-website" 
+              value="Website" 
+              class="h-4 w-4 text-primary focus:ring-primary border-white/50 bg-white/20"
+            />
+            <label for="audit-website" class="ml-2 text-white">Website</label>
+          </div>
+          <div class="flex items-center">
+            <input 
+              type="checkbox" 
+              name="audit[]" 
+              id="audit-analytics" 
+              value="Analytics Solution" 
+              class="h-4 w-4 text-primary focus:ring-primary border-white/50 bg-white/20"
+            />
+            <label for="audit-analytics" class="ml-2 text-white">Analytics Solution</label>
+          </div>
+          <div class="flex items-center">
+            <input 
+              type="checkbox" 
+              name="audit[]" 
+              id="audit-other" 
+              value="Other" 
+              class="h-4 w-4 text-primary focus:ring-primary border-white/50 bg-white/20"
+            />
+            <label for="audit-other" class="ml-2 text-white">Other</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-500">
+        <textarea 
+          name="message" 
+          id="message" 
+          rows="5" 
+          placeholder="MESSAGE"
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+          required
+        ></textarea>
+      </div>
+
+      <div class="animate-on-scroll fade-in delay-500">
+        <button 
+          type="submit" 
+          class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-[#1e3a49] hover:bg-[#152a36] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+        >
+          SUBMIT
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function getTrafficSource() {
+    const referrer = document.referrer;
+    const url = new URL(window.location.href);
+    let source = 'Direct';
+    let searchKeywords = 'Not Available';
+    
+    // Check if came from Google
+    if (referrer && referrer.includes('google')) {
+      source = 'Google';
+      // Try to get search terms from URL parameters (if available)
+      const searchParams = url.searchParams;
+      const qParam = searchParams.get('q');
+      const utmTerm = searchParams.get('utm_term');
+      
+      if (qParam) {
+        searchKeywords = qParam;
+      } else if (utmTerm) {
+        searchKeywords = utmTerm;
+      }
+    } 
+    // Check for UTM parameters
+    else if (url.searchParams.has('utm_source')) {
+      const utmSource = url.searchParams.get('utm_source');
+      const utmTerm = url.searchParams.get('utm_term');
+      
+      source = utmSource || 'Direct';
+      if (utmTerm) {
+        searchKeywords = utmTerm;
+      }
+    }
+    // If referrer exists but not Google
+    else if (referrer) {
+      source = new URL(referrer).hostname;
+    }
+
+    return { source, searchKeywords };
+  }
+
+  // Add hidden fields for traffic source tracking
+  const form = document.querySelector('form[name="discovery-request"]');
+  if (form) {
+    const { source, searchKeywords } = getTrafficSource();
+    
+    // Create and append traffic source field
+    const sourceInput = document.createElement('input');
+    sourceInput.type = 'hidden';
+    sourceInput.name = 'traffic_source';
+    sourceInput.value = source;
+    form.appendChild(sourceInput);
+
+    // Create and append search keywords field
+    const keywordsInput = document.createElement('input');
+    keywordsInput.type = 'hidden';
+    keywordsInput.name = 'search_keywords';
+    keywordsInput.value = searchKeywords;
+    form.appendChild(keywordsInput);
+
+    // Set the page URL
+    const pageUrlInput = document.getElementById('page-url') as HTMLInputElement;
+    if (pageUrlInput) {
+      pageUrlInput.value = window.location.href;
+    }
+    
+    // Set the full referrer
+    const referrerInput = document.getElementById('referrer') as HTMLInputElement;
+    if (referrerInput) {
+      referrerInput.value = document.referrer || 'Direct';
+    }
+  }
+</script> 

@@ -1,0 +1,881 @@
+---
+import '../styles/header.scss';
+import { sanityClient } from "sanity:client";
+import { loadQuery } from '../../lib/load-query';
+import type { SanityDocument } from "@sanity/client";
+import imageUrlBuilder from '@sanity/image-url';
+import marketingExpertise from '../../assets/images/marketing-expertise.webp';
+import phoneIcon from '../../assets/images/icon-phone.webp';
+
+import partnerLogo1 from '../../assets/images/menu/logos/arthritis.png';
+import partnerLogo2 from '../../assets/images/menu/logos/o-neill.png';
+import partnerLogo3 from '../../assets/images/menu/logos/soltera.png';
+import partnerLogo4 from '../../assets/images/menu/logos/apex.png';
+
+const builder = imageUrlBuilder(sanityClient);
+
+function urlFor(source: any) {
+  if (source) {
+    if (builder.image(source)) {
+      return builder.image(source);
+    } else {
+      return source;
+    }
+  }
+  return null;
+}
+
+// Define TypeScript interfaces for the Sanity data structure
+// These interfaces match the schema defined in headerMenuType.ts
+interface CalloutType {
+  subTitle?: string;
+  title?: string;
+  link?: string;
+  backgroundImage?: string;
+}
+
+interface DropdownSubMenuItem {
+  label: string;
+  link: string;
+}
+
+interface DropdownMenuItem {
+  label: string;
+  link: string;
+  image?: string;
+  dropdownSubMenu?: DropdownSubMenuItem[];
+}
+
+interface Column {
+  dropdownMenu: DropdownMenuItem[];
+}
+
+interface TileItem {
+  subTitle?: string;
+  title?: string;
+  image?: any;
+  link?: string;
+}
+
+interface MenuItem {
+  label: string;
+  link: string;
+  type?: 'email-signup-left' | 'email-signup-right' | 'tiles' | 'phone-left' | 'phone-right' | 'callout';
+  callout?: CalloutType;
+  columns?: Column[];
+  tiles?: TileItem[];
+}
+
+interface MenuItemWrapper {
+  menu: MenuItem[];
+}
+
+interface HeaderMenuType extends SanityDocument {
+  title: string;
+  menuItems: MenuItemWrapper[];
+}
+
+// Query to fetch the header menu data from Sanity
+// This GROQ query matches the structure defined in the schema and interfaces above
+const HEADER_MENU_QUERY = `*[_type == "headerMenu" && defined(slug.current)][0]{
+  title,
+  menuItems[] {
+    menu[] {
+      label,
+      link,
+      type,
+      callout {
+        subTitle,
+        title,
+        link,
+        backgroundImage
+      },
+      tiles[] {
+        subTitle,
+        title,
+        image,
+        link
+      },
+      columns[] {
+        dropdownMenu[] {
+          label,
+          link,
+          image,
+          dropdownSubMenu[] {
+            label, 
+            link
+          }
+        }
+      }
+    }
+  }
+}`;
+
+// Fetch the header menu data
+const { data } = await loadQuery({
+  query: HEADER_MENU_QUERY,
+  params: {},
+  enabled: true,
+});
+
+// Use type assertion to inform TypeScript about the structure
+// This ensures type safety when accessing nested properties
+const headerMenu = data as HeaderMenuType;
+---
+<div class="mm-main-header-wrapper">
+<div class="mm-main-header container mx-auto">
+    <div class="mm-main-header__logo">
+    <a href="/">
+      <img class="mm-main-header__logo-image" src="/images/mosaic-logo-min.png" alt="mosaic-logo-min">
+    </a>
+  </div>
+  <div class="mm-main-header__menu">
+
+  {headerMenu?.menuItems?.map((menuItem, index) => 
+    menuItem.menu.map((item) => (
+      <div class="mm-main-header__menu-wrap mm-main-header__menu-triger mm-main-header__menu-div" data-target={item.label.toLowerCase().replace(/\s+/g, '-')}>
+        <a href={item.link || "#"} class="mm-main-header__menu-title mm-main-header__menu-title-dp">{item.label}</a>
+        {(item.type || item.columns) && (
+          <div id={`dp-${item.label.toLowerCase().replace(/\s+/g, '-')}`} class="mm-main-header__menu-dropdown" style="display: none;">
+            <div class="mm-main-header__menu-dropdown-wrap">
+              <div class="mm-main-header__grid">
+                {item.type === 'callout' && (
+                  <div class="mm-main-header__grid-colmm-2">
+                    <div class="mm-main-header__menu-card">
+                      <a href={item.callout?.link || "/about-us"} class="mm-main-header__menu-card-link" style={`background-image: url(${urlFor(item.callout?.backgroundImage)})`}>
+                        <span class="mm-main-header__menu-card-info"> 
+                          <span class="mm-main-header__menu-card-subtitle" style="color: #fff;">{item.callout?.subTitle || "Why Choose Us"}</span>
+                          <span class="mm-main-header__menu-card-title" style="color: #fff;">{item.callout?.title || "Why Choose Us"}</span>
+                        </span>
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {item.type === 'email-signup-left' && (
+                  <div class="mm-main-header__grid-colmm-4">
+                    <div class="bg-[#d34927] rounded-lg p-8 flex flex-col relative overflow-hidden bg-cover bg-center" style={`background-image: url(${marketingExpertise.src})`}>
+                      <div class="text-4xl font-bold text-white mb-2">
+                        Experience Real Results<span class="text-white">.</span>
+                      </div>
+                      <div class="text-white text-lg mb-6">
+                        Partner with Mosaic eMarketing <br>and scale your business.
+                      </div>
+
+                      <a href="/digital-marketing-proposal/" 
+                              class="flex items-center justify-between w-full px-6 py-3 text-black font-medium bg-[#fff] hover:bg-[#eee] rounded-md transition-colors cursor-pointer block mb-6"
+                              id="gform_submit_button"
+                            >
+                              <span>Get My Free Proposal</span>
+                              <svg class="w-4 h-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                              </svg>
+                            </a>
+
+                      <div class="mt-auto">
+                        <div class="flex items-center">
+                          <div class="text-white/90 text-sm font-medium mr-4">
+                            Trusted by:
+                          </div>
+                          <div class="flex space-x-4">
+                            <img src={partnerLogo1.src} alt="Featured Logo" class="h-8 w-auto">
+                            <img src={partnerLogo2.src} alt="Featured Logo" class="h-8 w-auto">
+                            <img src={partnerLogo3.src} alt="Featured Logo" class="h-8 w-auto">
+                            <img src={partnerLogo4.src} alt="Featured Logo" class="h-8 w-auto">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                
+
+                {item.type === 'phone-left' && (
+                  <div class="mm-main-header__grid-colmm-2">
+                    <div class="mm-main-header__menu-contact">
+                      <div class="mm-main-header__menu-contact-icon">
+                        <img src="/images/icon-phone-large.png" alt="Phone">
+                      </div>
+                      <div class="mm-main-header__menu-contact-info">
+                        <h3>Call Us</h3>
+                        <p>Speak with a marketing expert</p>
+                        <a href="tel:(888)9249349" class="mm-main-header__menu-contact-link">(888) 924-9349</a>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {item.columns?.map((column: Column) => (
+                  <div class="mm-main-header__grid-colmm-2">
+                    <ul class="mm-main-header__menu-ul">
+                      {column.dropdownMenu?.map((menuItem: DropdownMenuItem) => (
+                        <>
+                          <li>
+                            <img src={`${urlFor(menuItem.image)}`} alt={menuItem.label}>
+                            <a href={menuItem.link || "#"} class="mm-main-header__menu-item">{menuItem.label}</a>
+                          </li>
+                          {menuItem.dropdownSubMenu && menuItem.dropdownSubMenu.length > 0 && (
+                            <ul class="mm-main-header__menu-ul-submenu">
+                              {menuItem.dropdownSubMenu.map((subItem: DropdownSubMenuItem) => (
+                                <li>
+                                  <a href={subItem.link || "#"}>{subItem.label}</a>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+
+                {item.type === 'email-signup-right' && (
+                  <div class="mm-main-header__grid-colmm-4">
+                    <div class="bg-[#d34927] rounded-lg p-8 flex flex-col relative overflow-hidden bg-cover bg-center" style={`background-image: url(${marketingExpertise.src})`}>
+                      <div class="text-4xl font-bold text-white mb-2">
+                        Get Expert Marketing Help<span class="text-white">.</span>
+                      </div>
+                      <div class="text-white text-lg mb-6">
+                        Request a custom proposal <br>for your business needs.
+                      </div>
+
+                        
+                      <a href="/digital-marketing-proposal/" 
+                              class="flex items-center justify-between w-full px-6 py-3 text-black font-medium bg-[#fff] hover:bg-[#eee] rounded-md transition-colors cursor-pointer block mb-6"
+                              id="gform_submit_button"
+                            >
+                              <span>Get My Free Proposal</span>
+                              <svg class="w-4 h-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                              </svg>
+                      </a>
+
+                      <div class="mt-auto">
+                        <div class="flex items-center">
+                          <div class="text-white/90 text-sm font-medium mr-4">
+                            Trusted by:
+                          </div>
+                          <div class="flex space-x-4">
+                            <img src={partnerLogo1.src} alt="Featured Logo" class="h-8 w-auto">
+                            <img src={partnerLogo2.src} alt="Featured Logo" class="h-8 w-auto">
+                            <img src={partnerLogo3.src} alt="Featured Logo" class="h-8 w-auto">
+                            <img src={partnerLogo4.src} alt="Featured Logo" class="h-8 w-auto">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {item.type === 'phone-right' && (
+                  <div class="mm-main-header__grid-colmm-4">
+                    <a class="mm-main-header__menu-banner" style={`background-image: url(${marketingExpertise})`} href="tel:(888)9249349">
+                      <span class="mm-main-header__menu-banner-subtitle">Call Us Today</span>
+                      <span class="mm-main-header__menu-banner-title">866-908-4748</span>
+                    </a>
+                  </div>
+                )}
+
+                
+              </div>
+
+              {item.type === 'tiles' && (
+                <div class="mm-main-header__grid">
+                  
+                    {item.tiles?.map((tile) => (
+                      <div class="mm-main-header__grid-colmm-3">
+                      <div class="mm-main-header__menu-card hvr-grow-shadow">
+                        <a href={tile.link || "#"} class="mm-main-header__menu-card-link" style={`background-image: url(${urlFor(tile.image)})`}>
+                          <span class="mm-main-header__menu-card-info">
+                            <span class="mm-main-header__menu-card-subtitle">{tile.subTitle}</span>
+                            <span class="mm-main-header__menu-card-title">{tile.title}</span>
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    ))
+  )}
+
+  <!-- Phone Icon -->
+  <div class="mm-main-header__menu-wrap mm-main-header__menu-icon">
+    <a href="tel:(888)9249349" target="_blank" class="mm-main-header__menu-title-phone hvr-grow-shadow">
+      <img src={phoneIcon.src} alt="Phone Number">
+    </a>
+  </div>
+  
+  <!-- Free Proposal Button -->
+  <div class="mm-main-header__menu-wrap mm-main-header__menu-cta">
+    <a href="/digital-marketing-proposal/" class="mm-main-header__menu-title-cta hvr-grow-shadow">
+      <svg width="22" height="19" viewBox="0 0 22 19" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <rect x="0.5" y="0.5" width="21" height="18" fill="url(#pattern0_2_40)"></rect>
+        <defs>
+          <pattern id="pattern0_2_40" patternContentUnits="objectBoundingBox" width="1" height="1">
+            <use xlink:href="#image0_2_40" transform="matrix(0.027027 0 0 0.0315315 0 -0.0202703)"></use>
+          </pattern>
+          <image id="image0_2_40" width="37" height="33" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACUAAAAhCAYAAABeD2IVAAACv0lEQVRYCbXXS4gVRxQG4PH9GiQqBhFfoGCCIoLkQTCCRgVBkBAiuBAJ6M7ZqEtBNIsgEuIiuFCjGwkiorhJCIordRHdiMTgQlHEBxpUEMHEx2cV9g3FnZ6e6nt7zqarq875z9/V1ec/3dOTafgAKzEuM2Ro3fAtHnpvt/DV0GasQMd0nC7IpJe3+CXuXkV4s0sYhi14ljIpGT/A181mL0HDPJwvIVA1dRLTSuC6m8JI7MCLquwVa0/xXdzl7pgU0ViEyxUJ6yydxZyuiGEG/q2TNcM37trYjolhCu5nJKrjch2jOiYVAzEJRxA/9W7sNfZhfIsQxmAjlrfmal2Lih2LYyd2FUvShPgM1xKw4/gw9ckahyedgJ8QnzrHXgbfnenrQm8Fxj9x57LItDvh07anLCN4AfPTWKxCzm7/Ho7MrDQ2a4zRgckuxN1I7Tm2YngLCJNxtOa5jDh9KU4Lb9ArFuBSweq3oHsz06Cwo98gSk6ndhEfpZhZ40IPp6bOUVpC4T3VKZO2uH5nM82VPca5NuAmbvuyCZQ5YjveNMGkwHgSy0hZrtK50DksC13nXixOHfAF/m6AWH6nUbTBB5Ov6lWo0j+k2lZU7e/xXwfk6vVkWBeavXsDJLqBL9t2rU63ESXtcHb3WnxVJwYgk05H4AOY2CKHEcVZq+rLbmJFK2bQKzaFwhiloI7dxdoUHHNLOtgoXT+mgp3G9BuHajwbf9RhUuL7K/6vZUVt24xI+k980i/xQBOFZMSS34Q9xvqBcmXN4+MmmLRhxNrVm0WgzKkQ3TNtoN3eHirLVXsOG/CoSza3g3Cvrp28KiAe0vDfd6wDYvF17e/qlVURi2tYE/7h7mSS+wufD4bZyHosiPi5QnCjpOyOEtNIwjogoT1ZWiK4seYsrIPTuG8U39Cy7glV+wq2RSlpPEkC+A5Zkjx7zgFD3gAAAABJRU5ErkJggg=="></image>
+        </defs>
+      </svg>
+      <span>Free Proposal</span>
+    </a>
+  </div>
+
+  <!-- Mobile Menu Burger -->
+  <a href="#" class="mm-main-header__menu-burger" data-target=".mm-main-header-mobile">
+    <svg class="mm-main-header__menu-burger-svg" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <rect height="2" width="16"></rect>
+      <rect height="2" width="16" y="7"></rect>
+      <rect height="2" width="16" y="14"></rect>
+    </svg>
+  </a>
+  </div>
+</div>
+
+<!-- Mobile Menu -->
+<div class="mm-main-header-mobile" style="display: none;">
+  <div class="mm-main-header-mobile__inner">
+    <div class="mm-main-header-mobile__close">
+      <a href="#" class="mm-main-header-mobile__close-button">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path>
+        </svg>
+      </a>
+    </div>
+    
+    <div class="mm-main-header-mobile__menu">
+      {headerMenu?.menuItems?.map((menuItem) => 
+        menuItem.menu.map((item) => (
+          <div class="mm-main-header-mobile__item">
+            <div class="mm-main-header-mobile__item-header">
+              <a href={item.link || "#"} class="mm-main-header-mobile__link">{item.label}</a>
+              {(item.columns && item.columns.length > 0) && (
+                <button class="mm-main-header-mobile__toggle">
+                  <svg class="mm-main-header-mobile__toggle-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M19 13H5v-2h14v2z"></path>
+                    <path d="M13 19V5h-2v14h2z"></path>
+                  </svg>
+                </button>
+              )}
+            </div>
+            
+            {item.columns && item.columns.length > 0 && (
+              <div class="mm-main-header-mobile__submenu" style="display: none;">
+                {item.columns.map((column) => (
+                  <div class="mm-main-header-mobile__column">
+                    {column.dropdownMenu?.map((menuItem: DropdownMenuItem) => (
+                      <div class="mm-main-header-mobile__subitem">
+                        <div class="mm-main-header-mobile__subitem-header">
+                          <a href={menuItem.link || "#"} class="mm-main-header-mobile__sublink">
+                            {menuItem.label}
+                          </a>
+                          {(menuItem.dropdownSubMenu && menuItem.dropdownSubMenu.length > 0) && (
+                            <button class="mm-main-header-mobile__subtoggle">
+                              <svg class="mm-main-header-mobile__toggle-icon" viewBox="0 0 24 24" width="18" height="18">
+                                <path d="M19 13H5v-2h14v2z"></path>
+                                <path d="M13 19V5h-2v14h2z"></path>
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                        
+                        {menuItem.dropdownSubMenu && menuItem.dropdownSubMenu.length > 0 && (
+                          <div class="mm-main-header-mobile__tertiary" style="display: none;">
+                            <ul class="mm-main-header-mobile__tertiary-list">
+                              {menuItem.dropdownSubMenu.map((subItem: DropdownSubMenuItem) => (
+                                <li class="mm-main-header-mobile__tertiary-item">
+                                  <a href={subItem.link || "#"} class="mm-main-header-mobile__tertiary-link">{subItem.label}</a>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))
+      )}
+      
+      <div class="mm-main-header-mobile__cta">
+        <a href="/digital-marketing-proposal/" class="mm-main-header-mobile__cta-button">
+          <span>Free Proposal</span>
+        </a>
+      </div>
+      
+      <div class="mm-main-header-mobile__phone">
+        <a href="tel:(888)9249349" class="mm-main-header-mobile__phone-link">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"></path>
+          </svg>
+          <span>(888) 924-9349</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+  // JavaScript for dropdown functionality
+  function initializeMenu() {
+    // Desktop dropdown functionality
+    const menuItems = document.querySelectorAll('.mm-main-header__menu-triger');
+    
+    // Keep track of which dropdown is currently open
+    let currentOpenDropdown: HTMLElement | null = null;
+    let isFormInteraction = false;
+    
+    // Function to open a dropdown
+    const openDropdown = (dropdown: HTMLElement) => {
+      // Close any previously open dropdown
+      if (currentOpenDropdown && currentOpenDropdown !== dropdown) {
+        currentOpenDropdown.style.display = 'none';
+      }
+      
+      // Open this dropdown
+      dropdown.style.display = 'block';
+      currentOpenDropdown = dropdown;
+    };
+    
+    // Function to close a dropdown with checks
+    const closeDropdown = (dropdown: HTMLElement) => {
+      // Don't close if we're interacting with a form inside
+      if (isFormInteraction) return;
+      
+      dropdown.style.display = 'none';
+      currentOpenDropdown = null;
+    };
+    
+    // Add event listeners to each menu item
+    menuItems.forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        // Only apply hover effects on desktop (above 1200px)
+        if (window.innerWidth >= 1200) {
+          const target = item.getAttribute('data-target');
+          const dropdown = document.getElementById(`dp-${target}`);
+          if (dropdown instanceof HTMLElement) {
+            openDropdown(dropdown);
+          }
+        }
+      });
+      
+      item.addEventListener('mouseleave', (e) => {
+        // Only apply hover effects on desktop (above 1200px)
+        if (window.innerWidth >= 1200) {
+          const target = item.getAttribute('data-target');
+          const dropdown = document.getElementById(`dp-${target}`);
+          
+          // Check if the mouse is moving to the dropdown
+          const mouseEvent = e as MouseEvent;
+          const relatedTarget = mouseEvent.relatedTarget as Node | null;
+          
+          if (dropdown instanceof HTMLElement && relatedTarget && !dropdown.contains(relatedTarget)) {
+            // Set a timeout to close the dropdown, giving time for other events
+            setTimeout(() => {
+              // Only close if we're not interacting with a form
+              if (!isFormInteraction && dropdown && !dropdown.matches(':hover')) {
+                closeDropdown(dropdown);
+              }
+            }, 100);
+          }
+        }
+      });
+    });
+    
+    // Enhanced form element interaction handling
+    // Target all interactive elements in dropdowns
+    const formSelectors = [
+      '.mm-main-header__menu-dropdown input',
+      '.mm-main-header__menu-dropdown button',
+      '.mm-main-header__menu-dropdown .button',
+      '.mm-main-header__menu-dropdown .gform_button',
+      '.form_style_1',
+      '.formWrapper',
+      '.gform_body',
+      '.gform_fields',
+      '.gfield',
+      '.gform_footer'
+    ];
+    
+    const formElements = document.querySelectorAll(formSelectors.join(', '));
+    
+    // Add event listeners for different interaction types
+    formElements.forEach(element => {
+      ['mouseenter', 'mouseover', 'focus', 'click'].forEach(eventType => {
+        element.addEventListener(eventType, () => {
+          // Only apply interactions on desktop (above 1200px)
+          if (window.innerWidth >= 1200) {
+            isFormInteraction = true;
+            
+            // Find the parent dropdown
+            const dropdown = element.closest('.mm-main-header__menu-dropdown');
+            if (dropdown instanceof HTMLElement) {
+              openDropdown(dropdown);
+            }
+          }
+        });
+      });
+      
+      // Ensure we track when interaction ends
+      ['mouseleave'].forEach(eventType => {
+        element.addEventListener(eventType, () => {
+          // Only apply interactions on desktop (above 1200px)
+          if (window.innerWidth >= 1200) {
+            // Small delay before resetting the flag to allow other events to fire
+            setTimeout(() => {
+              isFormInteraction = false;
+            }, 200);
+          }
+        });
+      });
+    });
+    
+    // Prevent form submissions from closing dropdowns
+    const forms = document.querySelectorAll('.mm-main-header__menu-dropdown form');
+    forms.forEach(form => {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Only apply interactions on desktop (above 1200px)
+        if (window.innerWidth >= 1200) {
+          // Keep the dropdown open for form processing
+          const dropdown = form.closest('.mm-main-header__menu-dropdown');
+          if (dropdown instanceof HTMLElement) {
+            openDropdown(dropdown);
+          }
+          
+          // Regular form processing would go here
+          // For demonstration, reset isFormInteraction after a short delay
+          setTimeout(() => {
+            isFormInteraction = false;
+          }, 500);
+        }
+      });
+    });
+    
+    // Add mouseleave event to dropdowns
+    const dropdowns = document.querySelectorAll('.mm-main-header__menu-dropdown');
+    dropdowns.forEach(dropdown => {
+      if (dropdown instanceof HTMLElement) {
+        dropdown.addEventListener('mouseleave', () => {
+          // Only apply interactions on desktop (above 1200px)
+          if (window.innerWidth >= 1200) {
+            // Only close if we're not interacting with a form
+            if (!isFormInteraction) {
+              setTimeout(() => {
+                if (!isFormInteraction) {
+                  closeDropdown(dropdown);
+                }
+              }, 100);
+            }
+          }
+        });
+      }
+    });
+
+    // Mobile menu functionality
+    const mobileMenuTrigger = document.querySelector('.mm-main-header__menu-burger');
+    const mobileMenu = document.querySelector('.mm-main-header-mobile');
+    const mobileMenuClose = document.querySelector('.mm-main-header-mobile__close-button');
+    
+    if (mobileMenuTrigger && mobileMenu && mobileMenuClose) {
+      mobileMenuTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mobileMenu instanceof HTMLElement) {
+          mobileMenu.style.display = 'block';
+        }
+        document.body.classList.add('menu-open');
+      });
+      
+      mobileMenuClose.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (mobileMenu instanceof HTMLElement) {
+          mobileMenu.style.display = 'none';
+        }
+        document.body.classList.remove('menu-open');
+      });
+    }
+    
+    // Mobile menu accordion functionality
+    const mobileToggleButtons = document.querySelectorAll('.mm-main-header-mobile__toggle');
+    
+    mobileToggleButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const parentItem = button.closest('.mm-main-header-mobile__item');
+        if (!parentItem) return;
+        
+        const submenu = parentItem.querySelector('.mm-main-header-mobile__submenu');
+        const icon = button.querySelector('.mm-main-header-mobile__toggle-icon');
+        
+        if (submenu instanceof HTMLElement) {
+          if (submenu.style.display === 'none' || !submenu.style.display) {
+            submenu.style.display = 'block';
+            if (icon) icon.classList.add('rotated');
+          } else {
+            submenu.style.display = 'none';
+            if (icon) icon.classList.remove('rotated');
+          }
+        }
+      });
+    });
+    
+    // Mobile submenu accordion functionality
+    const mobileSubToggleButtons = document.querySelectorAll('.mm-main-header-mobile__subtoggle');
+    
+    mobileSubToggleButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const parentItem = button.closest('.mm-main-header-mobile__subitem');
+        if (!parentItem) return;
+        
+        const tertiary = parentItem.querySelector('.mm-main-header-mobile__tertiary');
+        const icon = button.querySelector('.mm-main-header-mobile__toggle-icon');
+        
+        if (tertiary instanceof HTMLElement) {
+          if (tertiary.style.display === 'none' || !tertiary.style.display) {
+            tertiary.style.display = 'block';
+            if (icon) icon.classList.add('rotated');
+          } else {
+            tertiary.style.display = 'none';
+            if (icon) icon.classList.remove('rotated');
+          }
+        }
+      });
+    });
+    
+    // Handle window resize
+    let resizeTimeout: number | null = null;
+    
+    window.addEventListener('resize', () => {
+      // Debounce resize event
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
+      }
+      
+      resizeTimeout = setTimeout(() => {
+        const isMobile = window.innerWidth < 1200;
+        const mobileMenu = document.querySelector('.mm-main-header-mobile') as HTMLElement | null;
+        
+        // Close desktop dropdowns on mobile
+        if (isMobile && currentOpenDropdown) {
+          currentOpenDropdown.style.display = 'none';
+          currentOpenDropdown = null;
+        }
+        
+        // Hide mobile menu when resizing to desktop
+        if (!isMobile && mobileMenu && mobileMenu.style.display === 'block') {
+          mobileMenu.style.display = 'none';
+          document.body.classList.remove('menu-open');
+        }
+      }, 200) as unknown as number;
+    });
+  }
+
+  // Initialize menu on page load
+  document.addEventListener('DOMContentLoaded', initializeMenu);
+
+  // Re-initialize menu after view transitions
+  document.addEventListener('astro:page-load', initializeMenu);
+</script>
+
+<style>
+  .mm-main-header-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    overflow-y: auto;
+  }
+  
+  .mm-main-header-mobile__inner {
+    background-color: #22303d;
+    max-width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  
+  .mm-main-header-mobile__close {
+    text-align: right;
+    margin-bottom: 20px;
+  }
+  
+  .mm-main-header-mobile__close-button {
+    display: inline-block;
+    padding: 10px;
+  }
+  
+  .mm-main-header-mobile__close-button svg {
+    fill: #fff;
+  }
+  
+  .mm-main-header-mobile__item {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .mm-main-header-mobile__item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+  }
+  
+  .mm-main-header-mobile__link {
+    color: #fff;
+    font-size: 18px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .mm-main-header-mobile__toggle, 
+  .mm-main-header-mobile__subtoggle {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mm-main-header-mobile__toggle-icon {
+    fill: #fff;
+    transition: transform 0.3s ease;
+  }
+  
+  .mm-main-header-mobile__toggle-icon.rotated {
+    transform: rotate(45deg);
+  }
+  
+  .mm-main-header-mobile__submenu {
+    padding-left: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .mm-main-header-mobile__subitem {
+    margin-bottom: 10px;
+  }
+  
+  .mm-main-header-mobile__subitem-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+  }
+  
+  .mm-main-header-mobile__sublink {
+    color: #e5e5e5;
+    font-size: 16px;
+    text-decoration: none;
+  }
+  
+  .mm-main-header-mobile__tertiary {
+    padding-left: 15px;
+  }
+  
+  .mm-main-header-mobile__tertiary-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .mm-main-header-mobile__tertiary-item {
+    margin-bottom: 8px;
+  }
+  
+  .mm-main-header-mobile__tertiary-link {
+    color: #bbb;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  
+  .mm-main-header-mobile__cta {
+    margin: 20px 0;
+    text-align: center;
+  }
+  
+  .mm-main-header-mobile__cta-button {
+    display: inline-block;
+    background-color: #f26531;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  
+  .mm-main-header-mobile__phone {
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .mm-main-header-mobile__phone-link {
+    display: inline-flex;
+    align-items: center;
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .mm-main-header-mobile__phone-link svg {
+    fill: #f26531;
+    margin-right: 8px;
+  }
+  
+  @media (min-width: 1200px) {
+    .mm-main-header-mobile {
+      display: none !important;
+    }
+    
+    .mm-main-header__menu-burger {
+      display: none !important;
+    }
+  }
+  
+  @media (max-width: 1199px) {
+    .mm-main-header__menu-title-dp {
+      pointer-events: none;
+    }
+    
+    .mm-main-header__menu-dropdown {
+      display: none !important;
+    }
+    
+    /* Hide desktop menu items at smaller screens */
+    .mm-main-header__menu-div {
+      display: none !important;
+    }
+    
+    /* Show burger menu at smaller screens */
+    .mm-main-header__menu-burger {
+      display: block !important;
+    }
+    
+    /* Adjust header layout for mobile */
+    .mm-main-header {
+      padding: 15px;
+    }
+    
+    /* Keep logo and CTA/phone visible */
+    .mm-main-header__menu-cta,
+    .mm-main-header__menu-icon {
+      display: flex !important;
+    }
+  }
+  
+  body.menu-open {
+    overflow: hidden;
+  }
+</style> 

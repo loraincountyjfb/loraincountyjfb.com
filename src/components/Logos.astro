@@ -1,0 +1,48 @@
+---
+interface Logo {
+  image: {
+    url?: string;
+  };
+  alt: string;
+  link?: string;
+}
+
+interface Props {
+  title?: string;
+  logos: Logo[];
+}
+
+const { title, logos } = Astro.props;
+---
+
+<section class="py-12 px-4" transition:animate="fade">
+  {title && <h2 class="text-3xl font-bold text-center mb-8 animate-on-scroll fade-in">{title}</h2>}
+  <div class="container mx-auto">
+    <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+      {
+        logos.map((logo, index) => {
+          const content = (
+            <img
+              src={logo.image.url}
+              alt={logo.alt}
+              class="max-w-[250px] object-contain filter transition-all duration-300"
+            />
+          );
+
+          return logo.link ? (
+            <a
+              href={logo.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class={`inline-block animate-on-scroll fade-in delay-${index * 100}`}
+            >
+              {content}
+            </a>
+          ) : (
+            <div class={`inline-block animate-on-scroll fade-in delay-${index * 100}`}>{content}</div>
+          );
+        })
+      }
+    </div>
+  </div>
+</section> 

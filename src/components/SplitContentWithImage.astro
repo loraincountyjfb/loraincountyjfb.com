@@ -1,0 +1,129 @@
+---
+import { PortableText } from "astro-portabletext";
+import personPointing from "../../assets/images/components/split/pointing-girl.png";
+
+interface Props {
+  content: {
+    title?: string;
+    leftBox: {
+      title: string;
+      content: any[]; // Portable Text blocks
+    };
+    rightBox: {
+      title: string;
+      content: any[]; // Portable Text blocks
+    };
+    ctaLink?: {
+      text: string;
+      url: string;
+    };
+    circleColor: "peach" | "blue" | "green" | "yellow";
+  };
+}
+
+const { content } = Astro.props;
+
+const circleColorClasses = {
+  peach: "bg-peach-circle",
+  blue: "bg-blue-circle",
+  green: "bg-green-circle",
+  yellow: "bg-yellow-circle",
+} as const;
+---
+
+<section class="py-20 relative overflow-hidden" transition:animate="slide">
+  {
+    content.title && (
+      <div class="text-center mb-12 animate-on-scroll fade-in">
+        <h2 class="text-[50px] leading-[60px] tracking-[-0.03em] font-poppins font-bold mb-6 text-center">
+          {content.title}
+        </h2>
+      </div>
+    )
+  }
+
+  <div class="container mx-auto px-4 ">
+    <div class="flex flex-col lg:flex-row items-center justify-between gap-12 relative z-20">
+      <!-- Content boxes -->
+      <div class="w-full flex flex-col md:flex-row gap-8 mb-12 lg:mb-0 justify-between z-10 relative">
+        <!-- Left box -->
+        <div class="max-w-[670px] bg-white rounded-lg p-8 animate-on-scroll slide-in-left delay-100" style="box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);">
+          {
+            content.leftBox.title && (
+              <h3 class="text-[40px] font-semibold mb-4 font-poppins text-center">
+                {content.leftBox.title}
+              </h3>
+            )
+          }
+          <div class="font-poppins text-[16px] leading-[26px] text-primary">
+            <ul class="list-disc pl-5 space-y-2">
+              <PortableText value={content.leftBox.content} />
+            </ul>
+          </div>
+        </div>
+
+        <!-- Right box -->
+        <div class="max-w-[670px] bg-white rounded-lg p-8 animate-on-scroll slide-in-right delay-200" style="box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);">
+          {
+            content.rightBox.title && (
+            <h3 class="text-[40px] font-semibold mb-4 font-poppins text-center">
+                {content.rightBox.title}
+              </h3>
+            )
+          }
+          <div class="font-poppins text-[16px] leading-[26px] text-primary">
+            <ul class="list-disc pl-5 space-y-2">
+              <PortableText value={content.rightBox.content} />
+            </ul>
+          </div>
+        </div>
+      </div>
+
+  </div>
+    <!-- Image with circle background -->
+    <div class="w-full -mt-60 flex justify-center z-10 max-[1600px]:w-[80%] max-[1600px]:-mt-20 mx-auto relative hidden lg:block animate-on-scroll scale-in delay-300">
+     <div
+       class={`absolute ${circleColorClasses[content.circleColor]} w-[792px] h-[792px] rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`} style="z-index: -1;"
+     >
+     </div>
+
+     <img
+       src={personPointing.src}
+       alt="Person"
+       class="relative z-10 h-full object-contain object-bottom block mx-auto"
+     />
+
+     {
+       content.ctaLink && (
+         <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-20 w-full flex justify-center">
+           <a
+             href={content.ctaLink.url}
+             class="px-6 py-4 rounded-lg font-poppins text-[18px] font-semibold leading-6 text-white text-center uppercase bg-primary hover:bg-primary-dark transition-all duration-300 hover:scale-105 inline-block"
+           >
+             {content.ctaLink.text}
+           </a>
+         </div>
+       )
+     }
+   </div>
+  </div>
+</section>
+
+<style>
+  .bg-peach-circle {
+    background-color: rgba(255, 188, 169, 0.5);
+  }
+
+  .bg-blue-circle {
+    background-color: rgba(169, 188, 255, 0.5);
+  }
+
+  .bg-green-circle {
+    background-color: rgba(169, 255, 188, 0.5);
+  }
+
+  .bg-yellow-circle {
+    background-color: rgba(254, 232, 151, 0.5);
+  }
+</style>
+

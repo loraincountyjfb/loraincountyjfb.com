@@ -1,0 +1,19 @@
+---
+import '../styles/global.css';
+import MainLayout from '../layouts/main.astro';
+import ContentRenderer from '../components/ContentRenderer.astro';
+import { fetchHomepage, isPreviewMode } from '../lib/contentFetcher';
+
+// Determine if we're in preview mode
+const preview = isPreviewMode(Astro.url.href);
+
+// Fetch homepage content
+const homepage = await fetchHomepage(preview);
+---
+
+<MainLayout content={homepage}>
+  <ContentRenderer 
+    content={homepage.content || []} 
+    showContactForm={true}
+  />
+</MainLayout>

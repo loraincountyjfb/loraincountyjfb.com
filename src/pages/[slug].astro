@@ -1,0 +1,42 @@
+---
+import MainLayout from '../layouts/main.astro';
+import ContentRenderer from '../components/ContentRenderer.astro';
+import { fetchPageBySlug, isPreviewMode } from '../lib/contentFetcher';
+import { loadQuery } from '../../lib/load-query';
+import type { PageData } from '../lib/types';
+
+// Generate static paths
+export async function getStaticPaths() {
+  const { data: pages } = await loadQuery({
+    query: `*[_type == "page" && defined(slug.current)]`,
+    params: {},
+    enabled: true
+  });
+
+  return pages.map(({ slug }: { slug: { current: string } }) => {
+    return {
+      params: {
+        slug: slug.current,
+      },
+    };
+  });
+}
+
+// Get the slug from params
+const { slug } = Astro.params;
+
+// Determine if we're in preview mode
+const preview = isPreviewMode(Astro.url.href);
+
+// Fetch the page content
+const page = await fetchPageBySlug(slug as string, preview);
+
+// Redirect to 404 if page not found
+if (!page || !page.title) {
+  return Astro.redirect('/404');
+}
+---
+
+<MainLayout content={page}>
+  <ContentRenderer content={page.content || []} />
+</MainLayout>

@@ -1,0 +1,74 @@
+---
+import { PortableText } from "astro-portabletext";
+
+interface CaseStudy {
+  clientLogo: {
+    url?: string;
+  };
+  content: any[]; // Portable Text blocks
+  ctaLink?: {
+    text: string;
+    url: string;
+  };
+}
+
+interface Props {
+  content: {
+    title: string;
+    studies: CaseStudy[];
+  };
+}
+
+const { content } = Astro.props;
+---
+
+<section class="py-20 bg-[#065787]" transition:animate="slide">
+  <div class="container mx-auto px-4">
+    <h2 class="text-[50px] leading-[60px] tracking-[-0.03em] font-poppins font-bold mb-16 text-center text-white animate-on-scroll fade-in">
+      {content.title}
+    </h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {content.studies.map((study, index) => (
+        <div class={`flex flex-col rounded-[50px] border-t-[5px] border-white overflow-hidden transition-all duration-300 animate-on-scroll scale-in delay-${index * 100}`}>
+          <div class="p-8 pt-32 flex items-center justify-center h-32">
+            <img 
+              src={study.clientLogo.url} 
+              alt="Client Logo" 
+              class="object-contain max-w-[237px]"
+            />
+          </div>
+          
+          <div class="p-6 mt-12 flex-grow">
+            <div class="prose prose-lg mb-6 font-poppins text-[16px] leading-[26px] text-white">
+              <PortableText value={study.content} />
+            </div>
+            
+            {study.ctaLink && (
+              <div class="mt-4 flex justify-center animate-on-scroll slide-up delay-300">
+                <a 
+                  href={study.ctaLink.url}
+                  class="flex items-center text-primary font-bold hover:text-primary-dark transition-colors font-poppins uppercase text-white text-[20px]"
+                >
+                  {study.ctaLink.text}
+                  <svg width="22" height="19" viewBox="0 0 22 19" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="ml-2">
+        <rect x="0.5" y="0.5" width="21" height="18" fill="url(#pattern0_2_40)"></rect>
+        <defs>
+          <pattern id="pattern0_2_40" patternContentUnits="objectBoundingBox" width="1" height="1">
+            <use xlink:href="#image0_2_40" transform="matrix(0.027027 0 0 0.0315315 0 -0.0202703)"></use>
+          </pattern>
+          <image id="image0_2_40" width="37" height="33" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACUAAAAhCAYAAABeD2IVAAACv0lEQVRYCbXXS4gVRxQG4PH9GiQqBhFfoGCCIoLkQTCCRgVBkBAiuBAJ6M7ZqEtBNIsgEuIiuFCjGwkiorhJCIordRHdiMTgQlHEBxpUEMHEx2cV9g3FnZ6e6nt7zqarq875z9/V1ec/3dOTafgAKzEuM2Ro3fAtHnpvt/DV0GasQMd0nC7IpJe3+CXuXkV4s0sYhi14ljIpGT/A181mL0HDPJwvIVA1dRLTSuC6m8JI7MCLquwVa0/xXdzl7pgU0ViEyxUJ6yydxZyuiGEG/q2TNcM37trYjolhCu5nJKrjch2jOiYVAzEJRxA/9W7sNfZhfIsQxmAjlrfmal2Lih2LYyd2FUvShPgM1xKw4/gw9ckahyedgJ8QnzrHXgbfnenrQm8Fxj9x57LItDvh07anLCN4AfPTWKxCzm7/Ho7MrDQ2a4zRgckuxN1I7Tm2YngLCJNxtOa5jDh9KU4Lb9ArFuBSweq3oHsz06Cwo98gSk6ndhEfpZhZ40IPp6bOUVpC4T3VKZO2uH5nM82VPca5NuAmbvuyCZQ5YjveNMGkwHgSy0hZrtK50DksC13nXixOHfAF/m6AWH6nUbTBB5Ov6lWo0j+k2lZU7e/xXwfk6vVkWBeavXsDJLqBL9t2rU63ESXtcHb3WnxVJwYgk05H4AOY2CKHEcVZq+rLbmJFK2bQKzaFwhiloI7dxdoUHHNLOtgoXT+mgp3G9BuHajwbf9RhUuL7K/6vZUVt24xI+k980i/xQBOFZMSS34Q9xvqBcmXN4+MmmLRhxNrVm0WgzKkQ3TNtoN3eHirLVXsOG/CoSza3g3Cvrp28KiAe0vDfd6wDYvF17e/qlVURi2tYE/7h7mSS+wufD4bZyHosiPi5QnCjpOyOEtNIwjogoT1ZWiK4seYsrIPTuG8U39Cy7glV+wq2RSlpPEkC+A5Zkjx7zgFD3gAAAABJRU5ErkJggg=="></image>
+        </defs>
+      </svg>
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+</style> 

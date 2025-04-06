@@ -1,0 +1,54 @@
+---
+import type { PageContent } from '../lib/types';
+import Hero from './Hero.astro';
+import Content from './Content.astro';
+import ThreeColumn from './ThreeColumn.astro';
+import Logos from './Logos.astro';
+import SplitContentWithImage from './SplitContentWithImage.astro';
+import CaseStudies from './CaseStudies.astro';
+import ContactForm from './ContactForm.astro';
+
+interface Props {
+  content: PageContent[];
+  showContactForm?: boolean;
+  emptyContentFallback?: boolean;
+}
+
+const { 
+  content,
+  showContactForm = false,
+  emptyContentFallback = true
+} = Astro.props;
+---
+
+<main>
+  {content?.map((block: PageContent) => {
+    switch (block._type) {
+      case 'hero':
+        return <Hero content={block} />;
+      case 'content':
+        return <Content content={block} />;
+      case 'threeColumn':
+        return <ThreeColumn content={block} />;
+      case 'logos':
+        return <Logos title={block.title} logos={block.logos} />;
+      case 'splitContentWithImage':
+        return <SplitContentWithImage content={block} />;
+      case 'caseStudies':
+        return <CaseStudies content={block} />;
+      default:
+        return null;
+    }
+  })}
+  
+  {/* Fallback if no content blocks are defined */}
+  {emptyContentFallback && (!content || content.length === 0) && (
+    <div class="container mx-auto py-12 text-center">
+      <h1 class="text-4xl font-bold mb-4">Welcome to Mosaic eMarketing</h1>
+      <p class="mb-8">The page content hasn't been set up in Sanity yet.</p>
+    </div>
+  )}
+  
+  {/* Contact form at the bottom if requested */}
+  {showContactForm && <ContactForm />}
+</main> 
