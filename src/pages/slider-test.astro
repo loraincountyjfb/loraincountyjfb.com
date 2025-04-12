@@ -1,0 +1,147 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Slider from '../components/Slider.astro';
+import type { SliderContent } from '../lib/types';
+
+// Create dummy slider content with fallback to color backgrounds if images fail
+const dummySliderContent: SliderContent = {
+  _type: 'slider',
+  title: 'Design Pictures',
+  description: 'Check out our winning youth-designed apparel! Creative artwork showcasing fair spirit and agricultural pride. Vote for your favorites and wear our story!',
+  slides: [
+    {
+      image: {
+        // Using placeholders that are more likely to work than Unsplash
+        url: 'https://placehold.co/800x600/e63946/ffffff?text=Youth+Fair+Winner'
+      },
+      alt: 'Youth with fair entry',
+      caption: 'Our 2024 Youth Design Contest Winner'
+    },
+    {
+      image: {
+        url: 'https://placehold.co/800x600/e9c46a/000000?text=Fair+T-Shirt'
+      },
+      alt: '2024 Fair T-Shirt',
+      caption: '2024 Limited Edition County Fair T-Shirt'
+    },
+    {
+      image: {
+        url: 'https://placehold.co/800x600/2a9d8f/ffffff?text=Merchandise'
+      },
+      alt: 'Fair merchandise display',
+      caption: 'Merchandise available at the fair office'
+    },
+    {
+      image: {
+        url: 'https://placehold.co/800x600/264653/ffffff?text=Fair+Store'
+      },
+      alt: 'County Fair Store',
+      caption: 'Visit our store for more designs'
+    }
+  ],
+  autoplay: true,
+  interval: 5000
+};
+
+// Create a second slider with different design
+const secondSliderContent: SliderContent = {
+  _type: 'slider',
+  title: 'Fair Attractions',
+  description: 'Explore the exciting attractions at this year\'s county fair!',
+  slides: [
+    {
+      image: {
+        url: 'https://placehold.co/800x600/f4a261/000000?text=Carnival+Rides'
+      },
+      alt: 'Carnival rides',
+      caption: 'Thrilling carnival rides for all ages'
+    },
+    {
+      image: {
+        url: 'https://placehold.co/800x600/457b9d/ffffff?text=Livestock'
+      },
+      alt: 'Livestock competition',
+      caption: 'Award-winning livestock competitions'
+    },
+    {
+      image: {
+        url: 'https://placehold.co/800x600/e76f51/ffffff?text=Fair+Food'
+      },
+      alt: 'Fair food vendors',
+      caption: 'Delicious fair food from local vendors'
+    },
+    {
+      image: {
+        url: 'https://placehold.co/800x600/1d3557/ffffff?text=Live+Music'
+      },
+      alt: 'Live music',
+      caption: 'Live music performances every evening'
+    },
+    {
+      image: {
+        url: 'https://placehold.co/800x600/7209b7/ffffff?text=Craft+Market'
+      },
+      alt: 'Craft market',
+      caption: 'Local artisans showcase their crafts'
+    }
+  ],
+  autoplay: false
+};
+
+// Add fallback for image loading errors
+const handleImageErrors = `
+  document.addEventListener('DOMContentLoaded', () => {
+    const slideImages = document.querySelectorAll('.slide img');
+    slideImages.forEach((img, index) => {
+      img.addEventListener('error', () => {
+        // Replace failed image with a colored div
+        const colors = ['#f87171', '#60a5fa', '#4ade80', '#fbbf24', '#a78bfa'];
+        const slideDiv = img.closest('.slide-inner') || img.closest('.slide');
+        if (slideDiv) {
+          const color = colors[index % colors.length];
+          img.style.display = 'none';
+          slideDiv.style.backgroundColor = color;
+          slideDiv.style.height = '320px';
+          
+          // Add a text label
+          const label = document.createElement('div');
+          label.className = 'flex items-center justify-center h-full text-white font-bold text-xl';
+          label.textContent = 'Slide ' + (index + 1);
+          slideDiv.appendChild(label);
+        }
+      });
+    });
+  });
+`;
+---
+
+<Layout title="Slider Test Page">
+  <div class="container mx-auto py-8 px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Slider Component Test Page</h1>
+    <p class="text-lg mb-12 text-center">This page demonstrates the slider component with multiple visible slides, similar to the screenshot</p>
+    
+    <!-- Render the first slider -->
+    <Slider content={dummySliderContent} />
+    
+    <!-- Spacer -->
+    <div class="my-16 border-t border-gray-200"></div>
+    
+    <!-- Render the second slider -->
+    <Slider content={secondSliderContent} />
+    
+    <!-- Instructions for testing -->
+    <div class="mt-16 p-6 bg-gray-100 rounded-lg">
+      <h2 class="text-xl font-semibold mb-4">Testing Instructions</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>The first slider has autoplay enabled (5 second interval)</li>
+        <li>The second slider has autoplay disabled and requires manual navigation</li>
+        <li>Hover over a slider to show the navigation controls more prominently</li>
+        <li>Click the indicator dots to jump to a specific slide</li>
+        <li>The sliders now show multiple slides with a peek of adjacent slides</li>
+        <li>Inactive slides are slightly rotated to create a visual effect</li>
+      </ul>
+    </div>
+  </div>
+</Layout>
+
+<script set:html={handleImageErrors}></script> 

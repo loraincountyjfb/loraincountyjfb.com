@@ -82,7 +82,17 @@ export const PAGE_CONTENT_QUERY = `
       text,
       url
     }
-  }
+  },
+  // Slider fields
+  "slides": slides[]{
+    "image": image{
+      "url": asset->url
+    },
+    alt,
+    caption
+  },
+  autoplay,
+  interval
 }`;
 
 /**

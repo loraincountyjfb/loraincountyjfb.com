@@ -99,13 +99,29 @@ export interface CaseStudiesContent {
   }[];
 }
 
+export interface SliderContent {
+  _type: 'slider';
+  title: string;
+  description?: string;
+  slides: {
+    image: {
+      url?: string;
+    };
+    alt?: string;
+    caption?: string;
+  }[];
+  autoplay?: boolean;
+  interval?: number;
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
   | ThreeColumnContent 
   | LogosContent 
   | SplitContentWithImageContent 
-  | CaseStudiesContent;
+  | CaseStudiesContent
+  | SliderContent;
 
 export interface PageData {
   title: string;

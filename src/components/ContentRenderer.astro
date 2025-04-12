@@ -7,6 +7,7 @@ import Logos from './Logos.astro';
 import SplitContentWithImage from './SplitContentWithImage.astro';
 import CaseStudies from './CaseStudies.astro';
 import ContactForm from './ContactForm.astro';
+import Slider from './Slider.astro';
 
 interface Props {
   content: PageContent[];
@@ -36,6 +37,8 @@ const {
         return <SplitContentWithImage content={block} />;
       case 'caseStudies':
         return <CaseStudies content={block} />;
+      case 'slider':
+        return <Slider content={block} />;
       default:
         return null;
     }

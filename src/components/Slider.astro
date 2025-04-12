@@ -1,0 +1,637 @@
+---
+import type { SliderContent } from '../lib/types';
+
+interface Props {
+  content: SliderContent;
+}
+
+const { content } = Astro.props;
+const { title, description, slides = [], autoplay = true, interval = 5000 } = content;
+---
+
+<section class="slider-section py-12 px-4">
+  <div class="container mx-auto">
+    <h2 class="text-4xl font-bold text-center mb-4">{title}</h2>
+    {description && <p class="text-center mb-8 max-w-3xl mx-auto">{description}</p>}
+    
+    <div class="slider-container relative">
+      <div class="slider-wrapper overflow-visible rounded-lg px-12">
+        <div 
+          class="slides-track flex transition-transform duration-500" 
+          id="slides-track"
+          tabindex="0"
+          role="region"
+          aria-label={`${title} slider`}
+        >
+          {slides.map((slide, index) => (
+            <div 
+              class="slide flex-shrink-0 relative p-2 transition-all" 
+              data-index={index}
+              aria-hidden={index !== 0 ? "true" : "false"}
+              aria-roledescription="slide"
+              aria-label={`Slide ${index + 1} of ${slides.length}`}
+            >
+              <div class="slide-inner rounded-lg overflow-hidden transform transition-transform">
+                <img 
+                  src={slide.image?.url} 
+                  alt={slide.alt || `Slide ${index + 1}`} 
+                  class="w-full h-[320px] object-cover rounded-lg" 
+                />
+                {slide.caption && (
+                  <div class="caption absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
+                    {slide.caption}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <button 
+        class="slider-nav-btn prev absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-100 rounded-full p-2 z-10 transition-all shadow-md"
+        aria-label="Previous slide"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      
+      <button 
+        class="slider-nav-btn next absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-100 rounded-full p-2 z-10 transition-all shadow-md"
+        aria-label="Next slide"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+      
+      <div class="slider-indicators flex justify-center mt-4" role="tablist">
+        {slides.map((_, index) => (
+          <button 
+            class="indicator-dot w-3 h-3 mx-1 rounded-full bg-gray-300 transition-all" 
+            data-index={index}
+            aria-label={`Go to slide ${index + 1}`}
+            aria-selected={index === 0 ? "true" : "false"}
+            role="tab"
+          ></button>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ autoplay, interval }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const slidesTrack = document.getElementById('slides-track');
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+    const dots = document.querySelectorAll('.indicator-dot');
+    
+    if (!slidesTrack || slides.length === 0) return;
+    
+    let currentIndex = 0;
+    const slideCount = slides.length;
+    let slideWidth;
+    let slideVisibleWidth;
+    let autoplayInterval;
+    let isDragging = false;
+    let startPos = 0;
+    let currentTranslate = 0;
+    let prevTranslate = 0;
+
+    // Show multiple slides with partial visibility
+    const VISIBLE_SLIDES = 1; // Number of full slides visible
+    const PARTIAL_SLIDE_VISIBILITY = 0.3; // Percentage of adjacent slides visible
+    
+    // Set up the slider
+    function initSlider() {
+      // Calculate slide dimensions
+      calculateSlideWidth();
+      
+      // If we have multiple slides, ensure infinite effect works properly
+      if (slideCount > 1) {
+        // Adjust slide order to create an infinite illusion
+        setupInfiniteEffect();
+      }
+      
+      // Position slides initially
+      positionSlides();
+      
+      // Set active state for first slide and dot
+      updateActiveState();
+      
+      // Add event listeners
+      prevBtn?.addEventListener('click', goToPrevSlide);
+      nextBtn?.addEventListener('click', goToNextSlide);
+      
+      // Attach click events to indicators
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => goToSlide(index));
+      });
+      
+      // Add keyboard navigation
+      slidesTrack?.addEventListener('keydown', handleKeyDown);
+      
+      // Add drag events for touch/mouse
+      slidesTrack?.addEventListener('mousedown', dragStart);
+      slidesTrack?.addEventListener('touchstart', dragStart);
+      slidesTrack?.addEventListener('mouseup', dragEnd);
+      slidesTrack?.addEventListener('touchend', dragEnd);
+      slidesTrack?.addEventListener('mouseleave', dragEnd);
+      slidesTrack?.addEventListener('mousemove', drag);
+      slidesTrack?.addEventListener('touchmove', drag);
+      
+      // Start autoplay if enabled
+      if (autoplay && slideCount > 1) {
+        startAutoplay();
+        
+        // Pause autoplay on hover
+        const sliderContainer = document.querySelector('.slider-container');
+        sliderContainer?.addEventListener('mouseenter', stopAutoplay);
+        sliderContainer?.addEventListener('touchstart', stopAutoplay);
+        sliderContainer?.addEventListener('mouseleave', startAutoplay);
+        sliderContainer?.addEventListener('touchend', startAutoplay);
+      }
+      
+      // Update on window resize
+      window.addEventListener('resize', handleResize);
+    }
+    
+    function calculateSlideWidth() {
+      const containerWidth = slidesTrack.parentElement.offsetWidth;
+      // Calculate width for main visible slide plus partial visibility of adjacent slides
+      slideVisibleWidth = containerWidth / (VISIBLE_SLIDES + (PARTIAL_SLIDE_VISIBILITY * 2));
+      slideWidth = slideVisibleWidth * (1 + 0.1); // Add a bit of spacing
+    }
+    
+    function positionSlides() {
+      slides.forEach((slide, index) => {
+        slide.style.width = `${slideVisibleWidth}px`;
+        
+        // Apply styling to the inner content for active/inactive slides
+        const inner = slide.querySelector('.slide-inner');
+        if (inner) {
+          if (index === currentIndex) {
+            inner.classList.add('active-slide');
+            inner.style.transform = 'scale(1) rotate(0deg)';
+          } else {
+            inner.classList.remove('active-slide');
+            
+            // Apply skew effect to inactive slides
+            const rotateDirection = index < currentIndex ? 2 : -2;
+            inner.style.transform = `scale(0.9) rotate(${rotateDirection}deg)`;
+          }
+        }
+      });
+      
+      // Update the infinite loop effect
+      if (slideCount > 1) {
+        setupInfiniteEffect();
+      }
+      
+      updateSlidePosition();
+    }
+    
+    function setupInfiniteEffect() {
+      // When the slider initializes, we want to make sure the first and last slides
+      // are always visible when needed to create the infinite loop effect
+      const firstSlide = slides[0];
+      const lastSlide = slides[slideCount - 1];
+      
+      // On initialization and when resizing/updating
+      slides.forEach((slide, index) => {
+        // Reset all orders first
+        slide.style.order = '';
+        
+        // Setup the inner styles for the infinite effect
+        const inner = slide.querySelector('.slide-inner');
+        if (inner) {
+          // Create custom animation for first and last slides
+          if (index === 0 && currentIndex === slideCount - 1) {
+            // This is the first slide when the last slide is active - positioned to right
+            inner.style.transform = `scale(0.9) rotate(-2deg)`;
+          } else if (index === slideCount - 1 && currentIndex === 0) {
+            // This is the last slide when the first slide is active - positioned to left
+            inner.style.transform = `scale(0.9) rotate(2deg)`;
+          }
+        }
+      });
+      
+      // Always keep the first slide visible at the right of the last slide
+      if (currentIndex === slideCount - 1) {
+        firstSlide.style.order = slideCount;
+      }
+      
+      // Always keep the last slide visible at the left of the first slide
+      if (currentIndex === 0) {
+        lastSlide.style.order = '-1';
+      }
+    }
+    
+    function updateSlidePosition(animate = true) {
+      // Calculate offset to center the current slide with partial visibility of adjacent slides
+      const totalWidth = slideWidth * slideCount;
+      const visibleWidth = slidesTrack.parentElement.offsetWidth;
+      const center = (visibleWidth - slideVisibleWidth) / 2;
+      const offset = center - (currentIndex * slideWidth);
+      
+      if (!animate) {
+        slidesTrack.style.transition = 'none';
+      } else {
+        slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+      }
+      
+      slidesTrack.style.transform = `translateX(${offset}px)`;
+      prevTranslate = offset;
+      
+      // Re-enable transition
+      if (!animate) {
+        setTimeout(() => {
+          slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+        }, 50);
+      }
+    }
+    
+    function handleResize() {
+      calculateSlideWidth();
+      
+      // Ensure infinite effect is maintained on resize
+      if (slideCount > 1) {
+        setupInfiniteEffect();
+      }
+      
+      positionSlides();
+    }
+    
+    function updateActiveState() {
+      // Update slides
+      slides.forEach((slide, index) => {
+        slide.setAttribute('aria-hidden', index !== currentIndex ? 'true' : 'false');
+        
+        // Add visual effects to show active/inactive state
+        const inner = slide.querySelector('.slide-inner');
+        if (inner) {
+          if (index === currentIndex) {
+            inner.classList.add('active-slide');
+            inner.style.transform = 'scale(1) rotate(0deg)';
+          } else {
+            inner.classList.remove('active-slide');
+            
+            // Apply skew effect to inactive slides
+            const rotateDirection = index < currentIndex ? 2 : -2;
+            inner.style.transform = `scale(0.9) rotate(${rotateDirection}deg)`;
+          }
+        }
+      });
+      
+      // Update indicators
+      dots.forEach((dot, index) => {
+        if (index === currentIndex) {
+          dot.classList.add('bg-blue-500');
+          dot.classList.remove('bg-gray-300');
+          dot.setAttribute('aria-selected', 'true');
+        } else {
+          dot.classList.remove('bg-blue-500');
+          dot.classList.add('bg-gray-300');
+          dot.setAttribute('aria-selected', 'false');
+        }
+      });
+      
+      // Announce slide change for screen readers
+      const liveRegion = document.getElementById('slider-live-region') || createLiveRegion();
+      liveRegion.textContent = `Showing slide ${currentIndex + 1} of ${slideCount}`;
+    }
+    
+    function createLiveRegion() {
+      const region = document.createElement('div');
+      region.id = 'slider-live-region';
+      region.className = 'sr-only';
+      region.setAttribute('aria-live', 'polite');
+      region.setAttribute('aria-atomic', 'true');
+      document.body.appendChild(region);
+      return region;
+    }
+    
+    function goToSlide(index, animate = true) {
+      // Don't proceed if dragging
+      if (isDragging) return;
+      
+      // Store previous index for animation direction
+      const prevIndex = currentIndex;
+      
+      currentIndex = index;
+      
+      // Handle edge cases for infinite loop effect
+      if (currentIndex < 0) {
+        currentIndex = slideCount - 1;
+        
+        if (animate) {
+          // Create smooth transition from first to last slide
+          slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+          const visibleWidth = slidesTrack.parentElement.offsetWidth;
+          const center = (visibleWidth - slideVisibleWidth) / 2;
+          const tempOffset = center + slideWidth; // Move one slide left from the first position
+          
+          slidesTrack.style.transform = `translateX(${tempOffset}px)`;
+          
+          // Brief delay then snap to the last slide
+          setTimeout(() => {
+            slidesTrack.style.transition = 'none';
+            updateActiveState();
+            updateSlidePosition(false);
+            
+            // Re-enable transition after the snap
+            setTimeout(() => {
+              slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+            }, 50);
+          }, 50);
+          
+          return;
+        }
+      }
+      
+      if (currentIndex >= slideCount) {
+        currentIndex = 0;
+        
+        if (animate) {
+          // Create smooth transition from last to first slide
+          slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+          const visibleWidth = slidesTrack.parentElement.offsetWidth;
+          const center = (visibleWidth - slideVisibleWidth) / 2;
+          const lastSlidePos = center - ((slideCount - 1) * slideWidth);
+          const tempOffset = lastSlidePos - slideWidth; // Move one slide right from the last position
+          
+          slidesTrack.style.transform = `translateX(${tempOffset}px)`;
+          
+          // Brief delay then snap to the first slide
+          setTimeout(() => {
+            slidesTrack.style.transition = 'none';
+            updateActiveState();
+            updateSlidePosition(false);
+            
+            // Re-enable transition after the snap
+            setTimeout(() => {
+              slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+            }, 50);
+          }, 50);
+          
+          return;
+        }
+      }
+      
+      updateActiveState();
+      updateSlidePosition(animate);
+    }
+    
+    function goToNextSlide() {
+      if (currentIndex === slideCount - 1) {
+        // Special handling for infinite loop when going from last to first slide
+        const lastIndex = currentIndex;
+        
+        // First move to a duplicate of the first slide that's positioned after the last slide
+        const firstSlide = slides[0];
+        firstSlide.style.order = slideCount;
+        
+        // Update the index but don't immediately change slides
+        currentIndex = 0;
+        
+        // Update active states immediately for visual feedback
+        updateActiveState();
+        
+        // Animate to the "duplicate" first slide
+        slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+        const visibleWidth = slidesTrack.parentElement.offsetWidth;
+        const center = (visibleWidth - slideVisibleWidth) / 2;
+        const nextPos = center - (lastIndex * slideWidth) - slideWidth;
+        slidesTrack.style.transform = `translateX(${nextPos}px)`;
+        
+        // After animation, quickly reset to the real first slide position
+        setTimeout(() => {
+          slidesTrack.style.transition = 'none';
+          setupInfiniteEffect();
+          updateSlidePosition(false);
+          
+          // Re-enable transitions
+          setTimeout(() => {
+            slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+          }, 50);
+        }, 500);
+      } else {
+        // Normal slide movement
+        goToSlide(currentIndex + 1);
+      }
+    }
+    
+    function goToPrevSlide() {
+      if (currentIndex === 0) {
+        // Special handling for infinite loop when going from first to last slide
+        const firstIndex = currentIndex;
+        
+        // First move to a duplicate of the last slide that's positioned before the first slide
+        const lastSlide = slides[slideCount - 1];
+        lastSlide.style.order = '-1';
+        
+        // Update the index but don't immediately change slides
+        currentIndex = slideCount - 1;
+        
+        // Update active states immediately for visual feedback
+        updateActiveState();
+        
+        // Animate to the "duplicate" last slide
+        slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+        const visibleWidth = slidesTrack.parentElement.offsetWidth;
+        const center = (visibleWidth - slideVisibleWidth) / 2;
+        const prevPos = center - (firstIndex * slideWidth) + slideWidth;
+        slidesTrack.style.transform = `translateX(${prevPos}px)`;
+        
+        // After animation, quickly reset to the real last slide position
+        setTimeout(() => {
+          slidesTrack.style.transition = 'none';
+          setupInfiniteEffect();
+          updateSlidePosition(false);
+          
+          // Re-enable transitions
+          setTimeout(() => {
+            slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+          }, 50);
+        }, 500);
+      } else {
+        // Normal slide movement
+        goToSlide(currentIndex - 1);
+      }
+    }
+    
+    function startAutoplay() {
+      stopAutoplay();
+      if (autoplay && slideCount > 1) {
+        autoplayInterval = setInterval(goToNextSlide, interval);
+      }
+    }
+    
+    function stopAutoplay() {
+      if (autoplayInterval) {
+        clearInterval(autoplayInterval);
+      }
+    }
+    
+    function handleKeyDown(e) {
+      // Stop autoplay on key interaction
+      stopAutoplay();
+      
+      switch(e.key) {
+        case 'ArrowLeft':
+          goToPrevSlide();
+          e.preventDefault();
+          break;
+        case 'ArrowRight':
+          goToNextSlide();
+          e.preventDefault();
+          break;
+        case 'Home':
+          goToSlide(0);
+          e.preventDefault();
+          break;
+        case 'End':
+          goToSlide(slideCount - 1);
+          e.preventDefault();
+          break;
+      }
+    }
+    
+    function getPositionX(event) {
+      return event.type.includes('mouse') 
+        ? event.pageX 
+        : event.touches[0].clientX;
+    }
+    
+    function dragStart(event) {
+      // Stop autoplay while dragging
+      stopAutoplay();
+      
+      startPos = getPositionX(event);
+      isDragging = true;
+      slidesTrack.style.cursor = 'grabbing';
+      
+      // Disable transition while dragging
+      slidesTrack.style.transition = 'none';
+    }
+    
+    function drag(event) {
+      if (isDragging) {
+        const currentPosition = getPositionX(event);
+        const diff = currentPosition - startPos;
+        
+        // Add resistance at the edges if we're not doing infinite looping
+        let adjustedDiff = diff;
+        
+        // Calculate current slide position
+        const visibleWidth = slidesTrack.parentElement.offsetWidth;
+        const center = (visibleWidth - slideVisibleWidth) / 2;
+        const currentSlidePos = center - (currentIndex * slideWidth);
+        
+        // Allow full movement for all slides in infinite mode
+        currentTranslate = prevTranslate + adjustedDiff;
+        
+        // Apply transform
+        slidesTrack.style.transform = `translateX(${currentTranslate}px)`;
+      }
+    }
+    
+    function dragEnd() {
+      isDragging = false;
+      slidesTrack.style.cursor = 'grab';
+      
+      // Re-enable transition
+      slidesTrack.style.transition = 'transform 0.5s ease-in-out';
+      
+      // Determine slide change based on drag distance
+      const dragDistance = currentTranslate - prevTranslate;
+      const slideThreshold = slideWidth * 0.2; // 20% threshold
+      
+      if (dragDistance < -slideThreshold) {
+        goToNextSlide();
+      } else if (dragDistance > slideThreshold) {
+        goToPrevSlide();
+      } else {
+        // Return to current slide if threshold not met
+        goToSlide(currentIndex);
+      }
+      
+      // Resume autoplay if enabled
+      if (autoplay) {
+        startAutoplay();
+      }
+    }
+    
+    // Initialize slider
+    initSlider();
+  });
+</script>
+
+<style>
+  .slider-nav-btn {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+  
+  .slider-nav-btn:hover {
+    opacity: 1;
+  }
+  
+  .slider-container:not(:hover) .slider-nav-btn {
+    opacity: 0.3;
+  }
+  
+  .indicator-dot.bg-blue-500 {
+    transform: scale(1.2);
+  }
+  
+  .slides-track {
+    cursor: grab;
+  }
+  
+  .slide-inner {
+    transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    will-change: transform;
+  }
+  
+  .slide-inner.active-slide {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  /* Enhanced animations for slide transitions */
+  @keyframes slideEnterRight {
+    from { transform: scale(0.8) translateX(20%) rotate(-3deg); opacity: 0.7; }
+    to { transform: scale(0.9) translateX(0) rotate(-2deg); opacity: 1; }
+  }
+  
+  @keyframes slideEnterLeft {
+    from { transform: scale(0.8) translateX(-20%) rotate(3deg); opacity: 0.7; }
+    to { transform: scale(0.9) translateX(0) rotate(2deg); opacity: 1; }
+  }
+  
+  /* Target the last slide when it appears to the left of the first slide */
+  [data-index="0"] ~ [data-index]:last-child .slide-inner:not(.active-slide) {
+    animation: slideEnterLeft 0.5s ease-out forwards;
+  }
+  
+  /* Target the first slide when it appears to the right of the last slide */
+  [data-index]:last-child ~ [data-index="0"] .slide-inner:not(.active-slide) {
+    animation: slideEnterRight 0.5s ease-out forwards;
+  }
+</style> 
