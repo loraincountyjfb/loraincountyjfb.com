@@ -13,6 +13,7 @@ export default {
       },
       fontFamily: {
         "source-serif-4": ["'Source Serif 4'", "serif"],
+        "source-sans-pro": ["'Source Sans Pro'", "sans-serif"],
       },
     },
   },
