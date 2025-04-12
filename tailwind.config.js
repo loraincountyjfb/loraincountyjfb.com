@@ -12,8 +12,7 @@ export default {
         "primary-light": "#FFF8F6",
       },
       fontFamily: {
-        poppins: ["Poppins", "sans-serif"],
-        montserrat: ["Montserrat", "sans-serif"],
+        "source-serif-4": ["'Source Serif 4'", "serif"],
       },
     },
   },

@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: 'Montserrat', sans-serif;
-}
-
 .container {
     padding-left: 20px;
     padding-right: 20px;

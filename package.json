@@ -16,6 +16,7 @@
     "@astrojs/sitemap": "^3.3.0",
     "@fontsource/montserrat": "^5.2.5",
     "@fontsource/poppins": "^5.2.5",
+    "@fontsource/source-serif-4": "^5.2.6",
     "@fontsource/twinkle-star": "^5.2.5",
     "@sanity/astro": "^3.2.6",
     "@sanity/client": "^6.28.3",
