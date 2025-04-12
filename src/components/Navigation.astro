@@ -1,126 +1,5 @@
 ---
-import '../styles/header.scss';
-import { sanityClient } from "sanity:client";
-import { loadQuery } from '../../lib/load-query';
-import type { SanityDocument } from "@sanity/client";
-import imageUrlBuilder from '@sanity/image-url';
-import marketingExpertise from '../../assets/images/marketing-expertise.webp';
-import phoneIcon from '../../assets/images/icon-phone.webp';
-
-import partnerLogo1 from '../../assets/images/menu/logos/arthritis.png';
-import partnerLogo2 from '../../assets/images/menu/logos/o-neill.png';
-import partnerLogo3 from '../../assets/images/menu/logos/soltera.png';
-import partnerLogo4 from '../../assets/images/menu/logos/apex.png';
-
-const builder = imageUrlBuilder(sanityClient);
-
-function urlFor(source: any) {
-  if (source) {
-    if (builder.image(source)) {
-      return builder.image(source);
-    } else {
-      return source;
-    }
-  }
-  return null;
-}
-
-// Define TypeScript interfaces for the Sanity data structure
-// These interfaces match the schema defined in headerMenuType.ts
-interface CalloutType {
-  subTitle?: string;
-  title?: string;
-  link?: string;
-  backgroundImage?: string;
-}
-
-interface DropdownSubMenuItem {
-  label: string;
-  link: string;
-}
-
-interface DropdownMenuItem {
-  label: string;
-  link: string;
-  image?: string;
-  dropdownSubMenu?: DropdownSubMenuItem[];
-}
-
-interface Column {
-  dropdownMenu: DropdownMenuItem[];
-}
-
-interface TileItem {
-  subTitle?: string;
-  title?: string;
-  image?: any;
-  link?: string;
-}
-
-interface MenuItem {
-  label: string;
-  link: string;
-  type?: 'email-signup-left' | 'email-signup-right' | 'tiles' | 'phone-left' | 'phone-right' | 'callout';
-  callout?: CalloutType;
-  columns?: Column[];
-  tiles?: TileItem[];
-}
-
-interface MenuItemWrapper {
-  menu: MenuItem[];
-}
-
-interface HeaderMenuType extends SanityDocument {
-  title: string;
-  menuItems: MenuItemWrapper[];
-}
-
-// Query to fetch the header menu data from Sanity
-// This GROQ query matches the structure defined in the schema and interfaces above
-const HEADER_MENU_QUERY = `*[_type == "headerMenu" && defined(slug.current)][0]{
-  title,
-  menuItems[] {
-    menu[] {
-      label,
-      link,
-      type,
-      callout {
-        subTitle,
-        title,
-        link,
-        backgroundImage
-      },
-      tiles[] {
-        subTitle,
-        title,
-        image,
-        link
-      },
-      columns[] {
-        dropdownMenu[] {
-          label,
-          link,
-          image,
-          dropdownSubMenu[] {
-            label, 
-            link
-          }
-        }
-      }
-    }
-  }
-}`;
-
-// Fetch the header menu data
-const { data } = await loadQuery({
-  query: HEADER_MENU_QUERY,
-  params: {},
-  enabled: true,
-});
-
-// Use type assertion to inform TypeScript about the structure
-// This ensures type safety when accessing nested properties
-const headerMenu = data as HeaderMenuType;
+// Add any imports here if needed
 ---
 
 <nav
@@ -137,8 +16,8 @@ const headerMenu = data as HeaderMenuType;
       <!-- Logo -->
       <a href="/">
         <img
-          src="/images/mosaic-logo-min.png"
-          alt="Company Logo"
+          src="/images/logo.png"
+          alt="LCJFB"
           class="box-border object-contain overflow-hidden shrink-0 aspect-[0.64] h-[51px] min-h-5 min-w-5 w-[51px]"
         />
       </a>
@@ -274,28 +153,4 @@ const headerMenu = data as HeaderMenuType;
   
   // Re-initialize after view transitions
   document.addEventListener('astro:page-load', initializeMenu);
-</script>
-<script>
-  // JavaScript for dropdown functionality
-  function initializeMenu() {
-    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const closeMobileMenu = document.getElementById('close-mobile-menu');
-    
-    if (mobileMenuToggle && mobileMenu && closeMobileMenu) {
-      mobileMenuToggle.addEventListener('click', () => {
-        mobileMenu.classList.remove('translate-x-full');
-      });
-      
-      closeMobileMenu.addEventListener('click', () => {
-        mobileMenu.classList.add('translate-x-full');
-      });
-    }
-  }
-
-  // Initialize on page load
-  document.addEventListener('DOMContentLoaded', initializeMenu);
-  
-  // Re-initialize after view transitions
-  document.addEventListener('astro:page-load', initializeMenu);
-</script>
+</script> 
