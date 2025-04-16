@@ -18,12 +18,12 @@ export default defineConfig({
     sitemap(),
     prefetch(),
     sanity({
-      projectId: "3935zoc2",
+      projectId: "8j5t4dvh",
       dataset: "production",
       useCdn: false, // for static builds
       stega: {
         enabled: true,
-        studioUrl: "https://mosaicemarketing.sanity.studio/",
+        studioUrl: "https://lcjfb.sanity.studio/",
       },
     }),
     react(),
@@ -32,5 +32,5 @@ export default defineConfig({
   adapter: netlify(),
   site: isProduction
     ? "https://mosaicemarketing.com"
-    : "https://mosaic-emarketing.netlify.app",
+    : "https://lcfjb.netlify.app",
 });
