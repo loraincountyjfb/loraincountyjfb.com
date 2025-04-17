@@ -2,94 +2,177 @@
 import { PortableText } from "astro-portabletext";
 import Button from "./Button.astro";
 
+interface ButtonType {
+  text: string;
+  link: string;
+}
+
+interface FeatureBlockType {
+  title: string;
+  icon?: { asset?: { url?: string } };
+  link?: string;
+  backgroundColor?: string;
+}
+
+interface SocialLinkType {
+  platform: string;
+  url: string;
+  customIcon?: { asset?: { url?: string } };
+}
+
 interface Props {
   content: {
+    heroLayout: 'simpleButtons' | 'imageWithText' | 'featureBlocks' | 'teamFormat';
     title: string;
-    description: string;
-    link: string;
-    linkText: string;
-    image?: {
-      url?: string;
-    };
+    subtitle?: string;
+    mainImage?: { url?: string };
+    secondaryImage?: { url?: string };
+    buttons?: ButtonType[];
+    featureBlocks?: FeatureBlockType[];
+    socialLinks?: SocialLinkType[];
+    backgroundColor?: string;
+    textColor?: string;
   };
 }
 
 const { content } = Astro.props;
 
-const spacingClasses = {
-  none: 'py-0',
-  small: 'py-4',
-  medium: 'py-8',
-  large: 'py-16'
-};
+function getStyle(bg?: string, color?: string) {
+  return {
+    ...(bg ? { background: bg } : {}),
+    ...(color ? { color } : {}),
+  };
+}
 
-const buttonVariantClasses = {
-  primary: 'bg-primary text-white hover:bg-primary-dark',
-  secondary: 'bg-secondary text-white hover:bg-secondary-dark',
-  text: 'text-primary hover:text-primary-dark'
-};
-
+console.log(content);
 ---
 
-<section class="hero-component" transition:animate="slide">
+<section class="hero-component" style={getStyle(content.backgroundColor, content.textColor)} transition:animate="slide">
   <div class="container mx-auto py-8">
-    <div class="grid lg:grid-cols-2 gap-x-10 items-center">
-      <div class="col-span-1">
-      <h1 class="font-poppins font-bold text-[50px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
-        {content.title}
-      </h1>
-      <p class="font-poppins font-normal text-[22px] leading-[39px] tracking-[0%] mt-6 text-primary animate-on-scroll slide-up delay-100">
-        {content.description}
-      </p>
-      <div class="mt-8 animate-on-scroll slide-up delay-200">
-        <Button href={content.link}>  
-          {content.linkText}
-        </Button>
-      </div>
-    </div>
-    {content.image && (
-      <div class="col-span-1 animate-on-scroll fade-in delay-300">
-        <img 
-          src={content.image.url} 
-          alt={content.title}
-          class="w-full h-full object-cover"
-        />
+    {content.heroLayout === 'simpleButtons' && (
+      <div class="grid items-center justify-center">
+        <div class="col-span-1 text-center">
+          <h1 class="font-source-serif-4 font-bold text-[50px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+            {content.title}
+          </h1>
+          {content.subtitle && (
+            <p class="font-source-sans-pro font-normal text-[22px] leading-[39px] mt-6 animate-on-scroll slide-up delay-100">
+              {content.subtitle}
+            </p>
+          )}
+          {content.buttons && content.buttons.length > 0 && (
+            <div class="flex flex-wrap gap-4 mt-8">
+              {content.buttons.map((btn) => (
+                <Button href={btn.link}>{btn.text}</Button>
+              ))}
+            </div>
+          )}
+        </div>
+        {content.mainImage?.url && (
+          <div class="col-span-1 animate-on-scroll fade-in delay-300">
+            <img src={content.mainImage.url} alt={content.title} class="w-full h-full object-cover rounded-xl" />
+          </div>
+        )}
       </div>
     )}
+    {content.heroLayout === 'imageWithText' && (
+      <div class="grid lg:grid-cols-2 gap-x-10 items-center">
+        {content.mainImage?.url && (
+          <div class="col-span-1 animate-on-scroll fade-in delay-100">
+            <img src={content.mainImage.url} alt={content.title} class="w-full h-full object-cover rounded-xl" />
+          </div>
+        )}
+        <div class="col-span-1">
+          <h1 class="font-poppins font-bold text-[50px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+            {content.title}
+          </h1>
+          {content.subtitle && (
+            <p class="font-poppins font-normal text-[22px] leading-[39px] mt-6 animate-on-scroll slide-up delay-100">
+              {content.subtitle}
+            </p>
+          )}
+          {content.buttons && content.buttons.length > 0 && (
+            <div class="flex flex-wrap gap-4 mt-8">
+              {content.buttons.map((btn) => (
+                <Button href={btn.link}>{btn.text}</Button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+    {content.heroLayout === 'featureBlocks' && (
+      <div class="text-center">
+        <h1 class="font-poppins font-bold text-[50px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+          {content.title}
+        </h1>
+        {content.subtitle && (
+          <p class="font-poppins font-normal text-[22px] leading-[39px] mt-6 animate-on-scroll slide-up delay-100">
+            {content.subtitle}
+          </p>
+        )}
+      </div>
+    )}
+    {content.heroLayout === 'teamFormat' && (
+       <div class="grid items-center justify-center">
+        <div class="col-span-1 text-center">
+          <h1 class="font-source-serif-4 font-bold text-[50px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+            {content.title}
+          </h1>
+          {content.subtitle && (
+            <p class="font-source-sans-pro font-normal text-[22px] leading-[39px] mt-6 animate-on-scroll slide-up delay-100">
+              {content.subtitle}
+            </p>
+          )}
+        </div>
+      </div>
+      <div class="team-format-grid grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+        {/* Left: Main Image */}
+        <div class="team-format-image hidden lg:block">
+          {content.mainImage?.url && (
+            <img src={content.mainImage.url} alt={content.title} class="w-full h-64 object-cover rounded-xl" />
+          )}
+        </div>
+        {/* Middle: Feature Blocks */}
+        <div class="team-format-features flex flex-col gap-6">
+          {content.featureBlocks && content.featureBlocks.length > 0 && (
+            content.featureBlocks.slice(0, 2).map((block) => (
+              <a href={block.link || '#'} class="rounded-xl flex shadow-md transition-transform hover:scale-105 py-6 px-8 col-span-1" style={block.backgroundColor ? { background: block.backgroundColor } : {}}>
+                <span class="flex flex-col">
+                {block.icon?.asset?.url && (
+                  <img src={block.icon.asset.url} alt={block.title} class="mb-2 object-contain" />
+                )}
+                <span class="font-bold text-center font-source-serif-4 text-[50px]">{block.title}</span>
+                </span>
+                <span class="bg-white rounded-full w-[90px] h-[90px] flex items-center justify-center">
+                  <span class="text-black font-bold text-center font-source-serif-4 text-[50px]">+</span>
+                </span>
+              </a>
+            ))
+          )}
+        </div>
+        {/* Right: Secondary Image */}
+        <div class="team-format-image hidden lg:block col-span-1">
+          {content.secondaryImage?.url && (
+            <img src={content.secondaryImage.url} alt={content.title + ' secondary'} class="w-full h-64 object-cover rounded-xl" />
+          )}
+        </div>
+      </div>
+    )}
+    {content.featureBlocks && content.featureBlocks.length > 0 && (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+        {content.featureBlocks.map((block) => (
+          <a href={block.link || '#'} class="rounded-xl p-6 flex flex-col items-center justify-center shadow-md transition-transform hover:scale-105" style={block.backgroundColor ? { background: block.backgroundColor } : {}}>
+            {block.icon?.asset?.url && (
+              <img src={block.icon.asset.url} alt={block.title} class="w-16 h-16 mb-4 object-contain" />
+            )}
+            <span class="font-bold text-lg text-center">{block.title}</span>
+          </a>
+        ))}
+      </div>
+    )}
+    {!['simpleButtons','imageWithText','featureBlocks','teamFormat'].includes(content.heroLayout) && (
+      <div class="text-center text-red-600 font-bold">Unknown hero layout: {content.heroLayout}</div>
+    )}
   </div>
-</div>
 </section>
-
-<style lang="scss">
-.hero-component {
-  position: relative;
-  &:before {
-    content: '';
-    background-image: url('/images/components/hero/hero-left-bottom.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    max-width: 611px;
-    bottom: 0;
-    left: 0;
-    max-height: 213px;
-    z-index: -1;
-  }
-  &:after {
-    content: '';
-    background-image: url('/images/components/hero/hero-right-bottom.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    max-width: 611px;
-    bottom: 200px;
-    right: 0;
-    max-height: 213px;
-    z-index: -1;
-  }
-}
-</style>

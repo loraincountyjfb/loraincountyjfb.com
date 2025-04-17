@@ -8,28 +8,37 @@ export const PAGE_CONTENT_QUERY = `
   title,
   content[]{
   _type,
+  // HERO FIELDS
+  heroLayout,
   title,
-  description,
-  link,
-  linkText,
-  "image": image{
-    "url": asset->url
+  subtitle,
+  "mainImage": mainImage{ "url": asset->url },
+  "secondaryImage": secondaryImage{ "url": asset->url },
+  buttons[]{ text, link },
+  featureBlocks[]{
+    title,
+    "icon": icon{ asset->{ url } },
+    link,
+    backgroundColor
   },
+  socialLinks[]{
+    platform,
+    url,
+    "customIcon": customIcon{ asset->{ url } }
+  },
+  backgroundColor,
+  textColor,
   // Three Column fields
   sectionTitle,
   "columns": columns[]{
     title,
     description,
-    "image": image{
-      "url": asset->url
-    }
+    "image": image{ "url": asset->url }
   },
   // Content block fields
   "features": features[]{
     text,
-    "icon": icon{
-      "url": asset->url
-    }
+    "icon": icon{ "url": asset->url }
   },
   "actions": actions[]{
     text,
@@ -52,9 +61,7 @@ export const PAGE_CONTENT_QUERY = `
   verticalAlignment,
   // Logos fields
   "logos": logos[]{
-    "image": image{
-      "url": asset->url
-    },
+    "image": image{ "url": asset->url },
     alt,
     link
   },
@@ -74,9 +81,7 @@ export const PAGE_CONTENT_QUERY = `
   circleColor,
   // Case Studies fields
   "studies": studies[]{
-    "clientLogo": clientLogo{
-      "url": asset->url
-    },
+    "clientLogo": clientLogo{ "url": asset->url },
     content,
     "ctaLink": ctaLink{
       text,
@@ -85,9 +90,7 @@ export const PAGE_CONTENT_QUERY = `
   },
   // Slider fields
   "slides": slides[]{
-    "image": image{
-      "url": asset->url
-    },
+    "image": image{ "url": asset->url },
     alt,
     caption
   },
