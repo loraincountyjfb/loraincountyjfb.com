@@ -2,6 +2,8 @@
 import { PortableText } from "astro-portabletext";
 import Button from "./Button.astro";
 import Arrow from "../../assets/svgs/arrow.svg";
+import { Icon } from "astro-icon/components";
+
 
 interface ButtonType {
   text: string;
@@ -45,7 +47,15 @@ function getStyle(bg?: string, color?: string) {
   };
 }
 
-console.log(content);
+// Social platform to icon mapping
+const socialIconMap = {
+  facebook: 'mingcute:facebook-line',
+  instagram: 'mingcute:instagram-line',
+  twitter: 'mingcute:twitter-line',
+  linkedin: 'mingcute:linkedin-line',
+  youtube: 'mingcute:youtube-line',
+  tiktok: 'mingcute:tiktok-line',
+};
 ---
 
 <section class="hero-component" style={getStyle(content.backgroundColor, content.textColor)} transition:animate="slide">
@@ -63,8 +73,8 @@ console.log(content);
           )}
           {content.buttons && content.buttons.length > 0 && (
             <div class="flex flex-wrap gap-4 mt-8">
-              {content.buttons.map((btn) => (
-                <Button href={btn.link}>{btn.text}</Button>
+              {content.buttons.map((btn, index) => (
+                <Button href={btn.link} background={`${index === 0 ? 'primary' : 'white'}`}>{btn.text}</Button>
               ))}
             </div>
           )}
@@ -78,44 +88,66 @@ console.log(content);
     )}
     {content.heroLayout === 'imageWithText' && (
       <div class="grid lg:grid-cols-2 gap-x-10 items-center">
-        {content.mainImage?.url && (
-          <div class="col-span-1 animate-on-scroll fade-in delay-100">
-            <img src={content.mainImage.url} alt={content.title} class="w-full h-full object-cover rounded-xl" />
-          </div>
-        )}
+
         <div class="col-span-1">
-          <h1 class="font-poppins font-bold text-[50px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+          <h1 class="font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
             {content.title}
           </h1>
           {content.subtitle && (
-            <p class="font-poppins font-normal text-[22px] leading-[39px] mt-6 animate-on-scroll slide-up delay-100">
+            <p class="font-source-serif-4 font-normal text-[20px] leading-[30px] mt-6 animate-on-scroll slide-up delay-100">
               {content.subtitle}
             </p>
           )}
           {content.buttons && content.buttons.length > 0 && (
             <div class="flex flex-wrap gap-4 mt-8">
-              {content.buttons.map((btn) => (
-                <Button href={btn.link}>{btn.text}</Button>
+              {content.buttons.map((btn, index) => (
+                <Button href={btn.link} background={`${index === 0 ? 'primary' : 'white'}`}>{btn.text}</Button>
               ))}
             </div>
           )}
         </div>
-      </div>
-    )}
-    {content.heroLayout === 'featureBlocks' && (
-      <div class="text-center">
-        <h1 class="font-poppins font-bold text-[50px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
-          {content.title}
-        </h1>
-        {content.subtitle && (
-          <p class="font-poppins font-normal text-[22px] leading-[39px] mt-6 animate-on-scroll slide-up delay-100">
-            {content.subtitle}
-          </p>
-        )}
+        <div class="col-span-1 animate-on-scroll fade-in delay-100 mt-10 lg:mt-0">
+          {content.mainImage?.url && (
+            <img src={content.mainImage.url} alt={content.title} class="w-full h-full object-cover rounded-xl" />
+          )}
+               <div class="mt-10 flex gap-6">
+          {content.featureBlocks && content.featureBlocks.length > 0 && (
+            <>
+              {content.featureBlocks[0] && (
+                <a href={content.featureBlocks[0].link || '#'} class="rounded-xl flex shadow-md transition-transform hover:scale-105 py-6 px-8 col-span-1 bg-primary max-w-[380px] mx-auto">
+                  <span class="flex flex-col">
+                    {content.featureBlocks[0].icon?.asset?.url && (
+                      <img src={content.featureBlocks[0].icon.asset.url} alt={content.featureBlocks[0].title} class="mb-2 object-contain" />
+                    )}
+                    <span class="font-bold text-center font-source-serif-4 text-[50px] leading-none">{content.featureBlocks[0].title}</span>
+                  </span>
+                  <span class="bg-white rounded-full w-[90px] h-[90px] flex items-center justify-center block mt-auto ml-5 flex-[0_0_90px]">
+                    <span class="text-black font-bold text-center font-source-serif-4 text-[50px]"><Arrow fill="black" /></span>
+                  </span>
+                </a>
+              )}
+              {content.featureBlocks[1] && (
+                <a href={content.featureBlocks[1].link || '#'} class="rounded-xl flex shadow-md transition-transform hover:scale-105 py-6 px-8 col-span-1 bg-[#DBDBDB] max-w-[380px] mx-auto">
+                  <span class="flex flex-col">
+                    {content.featureBlocks[1].icon?.asset?.url && (
+                      <img src={content.featureBlocks[1].icon.asset.url} alt={content.featureBlocks[1].title} class=" object-contain self-start" />
+                    )}
+                    <span class="font-bold font-source-serif-4 text-[50px] leading-none">{content.featureBlocks[1].title}</span>
+                    
+                  </span>
+                  <span class="bg-black rounded-full w-[90px] h-[90px] flex items-center justify-center block flex-[0_0_90px]">
+                    <span class="text-white font-bold text-center font-source-serif-4 text-[50px]"><Arrow class="-rotate-90" fill="white" /></span>
+                  </span>
+                </a>
+              )}
+            </>
+          )}
+        </div>
+        </div>
       </div>
     )}
     {content.heroLayout === 'teamFormat' && (
-        <div class="max-w-[850px] text-center mx-auto mb-[80px]">
+        <div class="max-w-[850px] text-center mx-auto">
           <h1 class="font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
             {content.title}
           </h1>
@@ -125,6 +157,35 @@ console.log(content);
             </p>
           )}
         </div>
+              <div class="team-format-buttons mb-10">
+      {(content.buttons && content.buttons.length > 0 || content.socialLinks && content.socialLinks.length > 0) && (
+        <div class="flex flex-wrap gap-4 justify-center">
+          {content.buttons && content.buttons.length > 0 && (
+            <div class="flex flex-wrap gap-4 mt-8 justify-center">
+              {content.buttons.map((btn, index) => (
+                <Button href={btn.link} background={`${index === 0 ? 'primary' : 'white'}`}>{btn.text}</Button>
+              ))}
+            </div>
+          )}
+          {content.socialLinks && content.socialLinks.length > 0 && (
+            <div class="flex flex-wrap gap-4 mt-8 justify-center">
+              {content.socialLinks.map((link, index) => {
+                const iconName = socialIconMap[link.platform.toLowerCase() as keyof typeof socialIconMap];
+                return (
+                  <a href={link.url} class="flex items-center justify-center" target="_blank" rel="noopener noreferrer" aria-label={link.platform}>
+                    {iconName ? (
+                     <Icon name={iconName} class="w-[50px] h-[50px]" />
+                    ) : (
+                      <span class="capitalize font-semibold">{link.platform}</span>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
       <div class="team-format-grid grid grid-cols-1 lg:[grid-template-columns:753px_378px_426px] gap-8 items-center">
         {/* Left: Main Image */}
         <div class="team-format-image">
@@ -165,25 +226,13 @@ console.log(content);
             </>
           )}
         </div>
-        {/* Right: Secondary Image */}
         <div class="team-format-image col-span-1">
           {content.secondaryImage?.url && (
             <img src={content.secondaryImage.url} alt={content.title + ' secondary'} class="w-full object-cover rounded-xl" />
           )}
         </div>
       </div>
-    )}
-    {content.featureBlocks && content.featureBlocks.length > 0 && (
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-        {content.featureBlocks.map((block) => (
-          <a href={block.link || '#'} class="rounded-xl p-6 flex flex-col items-center justify-center shadow-md transition-transform hover:scale-105" style={block.backgroundColor ? { background: block.backgroundColor } : {}}>
-            {block.icon?.asset?.url && (
-              <img src={block.icon.asset.url} alt={block.title} class="w-16 h-16 mb-4 object-contain" />
-            )}
-            <span class="font-bold text-lg text-center">{block.title}</span>
-          </a>
-        ))}
-      </div>
+
     )}
     {!['simpleButtons','imageWithText','featureBlocks','teamFormat'].includes(content.heroLayout) && (
       <div class="text-center text-red-600 font-bold">Unknown hero layout: {content.heroLayout}</div>

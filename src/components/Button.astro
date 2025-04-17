@@ -1,10 +1,14 @@
 ---
-let { href } = Astro.props;
+import ButtonArrow from '../../assets/svgs/button-arrow.svg';
+let { href, background } = Astro.props;
+let text = background === 'bg-primary' ? 'text-white' : 'text-black';
+let arrowColor = background === 'bg-primary' ? 'white' : 'black';
+background = background === "white" ? 'bg-[#EFEFEF]' : 'bg-primary';
 ---
 
 <a
-	class="px-9 py-2.5 text-lg font-semibold text-white bg-[#72B173] rounded-3xl border-solid transition-transform cursor-pointer border-b-[5px] border-b-black duration-[0.2s] max-sm:w-full max-sm:text-center hover:transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 uppercase"
+	class={`px-9 py-2.5 text-lg font-semibold rounded-3xl border-solid transition-transform cursor-pointer border-b-[5px] border-b-black duration-[0.2s] max-sm:w-full max-sm:text-center hover:transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 uppercase ${background} ${text} flex items-center gap-2`}
 	href={href}
 >
-	<slot />
+	<slot /> <ButtonArrow fill={arrowColor} stroke={arrowColor} />
 </a>
