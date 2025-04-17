@@ -7,9 +7,9 @@ export default {
         primary: "#374151",
       },
       backgroundColor: {
-        primary: "#EB5A31",
-        "primary-dark": "#C24626",
-        "primary-light": "#FFF8F6",
+        primary: "#72B173",
+        "primary-dark": "#225433",
+        "primary-light": "#F0F9F2",
       },
       fontFamily: {
         "source-serif-4": ["'Source Serif 4'", "serif"],

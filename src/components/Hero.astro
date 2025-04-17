@@ -1,6 +1,7 @@
 ---
 import { PortableText } from "astro-portabletext";
 import Button from "./Button.astro";
+import Arrow from "../../assets/svgs/arrow.svg";
 
 interface ButtonType {
   text: string;
@@ -114,47 +115,60 @@ console.log(content);
       </div>
     )}
     {content.heroLayout === 'teamFormat' && (
-       <div class="grid items-center justify-center">
-        <div class="col-span-1 text-center">
-          <h1 class="font-source-serif-4 font-bold text-[50px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+        <div class="max-w-[850px] text-center mx-auto mb-[80px]">
+          <h1 class="font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
             {content.title}
           </h1>
           {content.subtitle && (
-            <p class="font-source-sans-pro font-normal text-[22px] leading-[39px] mt-6 animate-on-scroll slide-up delay-100">
+            <p class="font-source-serif-4 font-normal text-[20px] leading-[30px] mt-6 animate-on-scroll slide-up delay-100">
               {content.subtitle}
             </p>
           )}
         </div>
-      </div>
-      <div class="team-format-grid grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+      <div class="team-format-grid grid grid-cols-1 lg:[grid-template-columns:753px_378px_426px] gap-8 items-center">
         {/* Left: Main Image */}
-        <div class="team-format-image hidden lg:block">
+        <div class="team-format-image">
           {content.mainImage?.url && (
-            <img src={content.mainImage.url} alt={content.title} class="w-full h-64 object-cover rounded-xl" />
+            <img src={content.mainImage.url} alt={content.title} class="w-full object-cover rounded-xl" />
           )}
         </div>
         {/* Middle: Feature Blocks */}
         <div class="team-format-features flex flex-col gap-6">
           {content.featureBlocks && content.featureBlocks.length > 0 && (
-            content.featureBlocks.slice(0, 2).map((block) => (
-              <a href={block.link || '#'} class="rounded-xl flex shadow-md transition-transform hover:scale-105 py-6 px-8 col-span-1" style={block.backgroundColor ? { background: block.backgroundColor } : {}}>
-                <span class="flex flex-col">
-                {block.icon?.asset?.url && (
-                  <img src={block.icon.asset.url} alt={block.title} class="mb-2 object-contain" />
-                )}
-                <span class="font-bold text-center font-source-serif-4 text-[50px]">{block.title}</span>
-                </span>
-                <span class="bg-white rounded-full w-[90px] h-[90px] flex items-center justify-center">
-                  <span class="text-black font-bold text-center font-source-serif-4 text-[50px]">+</span>
-                </span>
-              </a>
-            ))
+            <>
+              {content.featureBlocks[0] && (
+                <a href={content.featureBlocks[0].link || '#'} class="rounded-xl flex shadow-md transition-transform hover:scale-105 py-6 px-8 col-span-1 bg-primary max-w-[380px] mx-auto">
+                  <span class="flex flex-col">
+                    {content.featureBlocks[0].icon?.asset?.url && (
+                      <img src={content.featureBlocks[0].icon.asset.url} alt={content.featureBlocks[0].title} class="mb-2 object-contain" />
+                    )}
+                    <span class="font-bold text-center font-source-serif-4 text-[50px] leading-none">{content.featureBlocks[0].title}</span>
+                  </span>
+                  <span class="bg-white rounded-full w-[90px] h-[90px] flex items-center justify-center block mt-auto ml-5 flex-[0_0_90px]">
+                    <span class="text-black font-bold text-center font-source-serif-4 text-[50px]"><Arrow fill="black" /></span>
+                  </span>
+                </a>
+              )}
+              {content.featureBlocks[1] && (
+                <a href={content.featureBlocks[1].link || '#'} class="rounded-xl flex shadow-md transition-transform hover:scale-105 py-6 px-8 col-span-1 bg-[#DBDBDB] max-w-[380px] mx-auto">
+                  <span class="flex">
+                    <span class="font-bold font-source-serif-4 text-[50px] leading-none">{content.featureBlocks[1].title}</span>
+                    {content.featureBlocks[1].icon?.asset?.url && (
+                      <img src={content.featureBlocks[1].icon.asset.url} alt={content.featureBlocks[1].title} class=" object-contain" />
+                    )}
+                  </span>
+                  <span class="bg-black rounded-full w-[90px] h-[90px] flex items-center justify-center block flex-[0_0_90px]">
+                    <span class="text-white font-bold text-center font-source-serif-4 text-[50px]"><Arrow class="-rotate-90" fill="white" /></span>
+                  </span>
+                </a>
+              )}
+            </>
           )}
         </div>
         {/* Right: Secondary Image */}
-        <div class="team-format-image hidden lg:block col-span-1">
+        <div class="team-format-image col-span-1">
           {content.secondaryImage?.url && (
-            <img src={content.secondaryImage.url} alt={content.title + ' secondary'} class="w-full h-64 object-cover rounded-xl" />
+            <img src={content.secondaryImage.url} alt={content.title + ' secondary'} class="w-full object-cover rounded-xl" />
           )}
         </div>
       </div>

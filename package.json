@@ -9,10 +9,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.2.2",
-    "@astrojs/netlify": "^6.2.4",
+    "@astrojs/mdx": "^4.2.4",
+    "@astrojs/netlify": "^6.3.0",
     "@astrojs/prefetch": "^0.4.1",
-    "@astrojs/react": "^4.2.2",
+    "@astrojs/react": "^4.2.4",
     "@astrojs/sitemap": "^3.3.0",
     "@fontsource/montserrat": "^5.2.5",
     "@fontsource/poppins": "^5.2.5",
@@ -25,7 +25,7 @@
     "@types/canvas-confetti": "^1.9.0",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
-    "astro": "^5.5.5",
+    "astro": "^5.7.3",
     "astro-portabletext": "^0.11.1",
     "canvas-confetti": "^1.9.3",
     "intersection-observer": "^0.12.2",
