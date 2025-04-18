@@ -1,0 +1,86 @@
+---
+import { PortableText } from "astro-portabletext";
+import Button from "./Button.astro";
+import CalendarIcon from "../assets/svgs/grid.svg";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  content: {
+    title: string;
+    description: any[];
+    link?: string;
+    linkText?: string;
+    videos: {
+      video: {
+        url?: string;
+        alt?: string;
+        link?: string;
+      };
+      title: string;
+    }[];
+  };
+}
+
+const { content } = Astro.props;
+
+const { title, description, link, linkText, videos } = content;
+
+console.log(videos);
+---
+
+<section class="bg-white py-16 calendar-section">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="col-span-1">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {videos.map((video, idx) => (
+                <a
+                  href={video.link}
+                  target="_blank"
+                  class={`relative group rounded-2xl overflow-hidden shadow-lg transition-transform duration-200 hover:scale-[1.02] bg-gray-100 ${idx === 0 ? 'md:col-span-2 row-span-2 lg:col-span-2 lg:row-span-1' : ''}`}
+                >
+                  <img
+                    src={video.video.url}
+                    alt={video.video.alt}
+                    class="w-full h-64 object-cover group-hover:brightness-90 transition-all duration-200"
+                  />
+                  {/* Overlay for play button and title */}
+                  <span class="absolute bottom-0 left-0 w-full flex items-end p-4 bg-gradient-to-t from-black/70 to-transparent">
+                    <span class="flex items-center mr-3">
+                      <span class="bg-primary rounded-full p-2 mr-3">
+                        <Icon name="mingcute:youtube-line" class="w-8 h-8 text-white"/>
+                      </span>
+                      <span class="text-white font-bold text-xl md:text-2xl font-source-serif-4 drop-shadow-lg">
+                        {video.title}
+                      </span>
+                    </span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+      <div class="col-span-1">
+        <h2
+          class="text-4xl font-bold mb-8 font-source-serif-4 text-[80px] leading-[80px] tracking-[0%] animate-on-scroll slide-up"
+        >
+          {title}
+        </h2>
+        <div
+          class="font-source-serif-4 font-normal text-[20px] leading-1 tracking-[0%] mt-6 text-primary animate-on-scroll slide-up"
+        >
+          <PortableText value={description} />
+        </div>
+        <div class="max-w-[350px] mt-8 animate-on-scroll slide-up">
+          {
+            link && linkText && (
+              <Button href={link} class="mt-4" background="primary">
+                {linkText}
+              </Button>
+            )
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

@@ -133,6 +133,23 @@ export interface FacebookCalloutContent {
   };
 }
 
+export interface RelatedVideosContent {
+  _type: 'relatedVideos';
+  title: string;
+  description?: string;
+  link?: string;
+  linkText?: string;
+  videos: {
+    video: {
+      url?: string;
+      alt?: string;
+      link?: string;
+    };
+    title: string;
+  }[];
+}
+
+
 
 export type PageContent = 
   | HeroContent 
@@ -143,7 +160,8 @@ export type PageContent =
   | CaseStudiesContent
   | SliderContent
   | CalendarContent
-  | FacebookCalloutContent;
+  | FacebookCalloutContent
+  | RelatedVideosContent;
 
 export interface PageData {
   title: string;
