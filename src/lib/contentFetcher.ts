@@ -95,8 +95,19 @@ export const PAGE_CONTENT_QUERY = `
     caption
   },
   autoplay,
-  interval
+  interval,
+  "calendar": calendar[]{
+    title,
+    description,
+    link,
+    linkText
+  },
+  link, 
+  linkText,
+  description
 }`;
+
+
 
 /**
  * Fetch a page by slug
@@ -121,6 +132,8 @@ export async function fetchHomepage(preview: boolean = false): Promise<PageData>
     params: {},
     enabled: true
   });
+
+  console.log(homepage);
 
   // Return found homepage or fallback page data
   return homepage || { 

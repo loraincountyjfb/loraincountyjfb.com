@@ -114,6 +114,15 @@ export interface SliderContent {
   interval?: number;
 }
 
+export interface CalendarContent {
+  _type: 'calendar';
+  title: string;
+  description?: string;
+  link?: string;
+  linkText?: string;
+}
+
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -121,7 +130,8 @@ export type PageContent =
   | LogosContent 
   | SplitContentWithImageContent 
   | CaseStudiesContent
-  | SliderContent;
+  | SliderContent
+  | CalendarContent;
 
 export interface PageData {
   title: string;
