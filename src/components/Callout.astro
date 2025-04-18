@@ -1,0 +1,126 @@
+---
+import { PortableText } from "astro-portabletext";
+import Button from "./Button.astro";
+
+import blurLeft from '../../assets/images/join-us/blur-left.png';
+import blurRight from '../../assets/images/join-us/blur-right.png';
+import raysLeft from '../../assets/images/join-us/rays-left.png';
+import raysRight from '../../assets/images/join-us/rays-right.png';
+import star from '../../assets/images/join-us/star.png';
+import joinUsBg from '../../assets/images/join-us/background.png';
+
+interface Props {
+  content: {
+    title: string;
+    description: any[];
+    features?: {
+      text: string;
+      icon?: {
+        url?: string;
+      };
+    }[];
+    actions?: {
+      text: string;
+      link: string;
+      variant: 'primary' | 'secondary' | 'text';
+    }[];
+    media?: {
+      type: 'image' | 'video';
+      position: 'left' | 'right';
+      width?: number;
+      image?: {
+        url?: string;
+        alt?: string;
+      };
+      video?: string;
+      animation?: boolean;
+    };
+    spacing?: 'none' | 'small' | 'medium' | 'large';
+    background?: 'white' | 'primary-light' | 'light-gray';
+    verticalAlignment?: 'top' | 'center' | 'bottom';
+  };
+}
+
+const { content } = Astro.props;
+
+const spacingClasses = {
+  none: 'py-0',
+  small: 'py-4',
+  medium: 'py-8',
+  large: 'py-16'
+};
+
+const verticalAlignmentClasses = {
+  top: 'items-start',
+  middle: 'items-center',
+  bottom: 'items-end'
+} as const;
+
+// Get width classes based on media width
+const getWidthClasses = (mediaWidth: number) => {
+  if (mediaWidth >= 70) {
+    return {
+      media: 'lg:w-3/4', // 75%
+      content: 'lg:w-1/4' // 25%
+    };
+  } else if (mediaWidth >= 60) {
+    return {
+      media: 'lg:w-2/3', // 66.66%
+      content: 'lg:w-1/3' // 33.33%
+    };
+  } else if (mediaWidth >= 40) {
+    return {
+      media: 'lg:w-1/2', // 50%
+      content: 'lg:w-1/2' // 50%
+    };
+  } else {
+    return {
+      media: 'lg:w-1/3', // 33.33%
+      content: 'lg:w-2/3' // 66.66%
+    };
+  }
+};
+
+const widthClasses = getWidthClasses(content.media?.width || 50);
+
+const backgroundClasses = {
+  'white': 'bg-white',
+  'primary-light': 'bg-primary-light',
+  'light-gray': 'bg-gray-100'
+} as const;
+
+// Determine column order based on media position
+const mediaOrder = content.media?.position === 'left' ? 'order-1 lg:order-1' : 'order-1 lg:order-2';
+const contentOrder = content.media?.position === 'left' ? 'order-1 lg:order-2' : 'order-1 lg:order-1';
+const backgroundClass = backgroundClasses[content.background || 'white'] || backgroundClasses.white;
+---
+
+<section
+class="bg-gray4 relative h-[650px] flex items-center justify-center bg-cover bg-center"
+style=`background-image: url(${joinUsBg.src})`
+>
+<img src={blurLeft.src} class="w-[300px] absolute left-0 bottom-0" />
+<img src={blurRight.src} class="w-[300px] absolute right-0 bottom-0" />
+
+<div class="relative text-center w-full max-w-[800px] h-full max-h-[550px] ">
+
+  <img src={star.src} class="w-[138px] absolute left-[0px] top-[50px] xl:left-[-130px] md:top-[50px]" />
+  <img src={raysLeft.src} class="w-[194px] absolute bottom-[150px] left-0 md:bottom-[150px] md:left-0" />
+  <img src={raysRight.src} class="w-[194px] absolute top-0 right-0 md:top-0 md:right-0" />
+
+  <div class="flex flex-col items-center justify-center h-full">
+    <div>
+      <div class="font-bold mb-2 font-source-serif-4 text-[80px] leading-none" set:html={content.title}></div>
+        <div class="mt-10">
+          <Button
+            href={content.link}
+            background="primary"
+          >
+            {content.linkText}
+          </Button>
+        </div>
+    </div>
+  </div>
+</div>
+</section>
+

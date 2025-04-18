@@ -11,6 +11,7 @@ import Slider from './Slider.astro';
 import Calendar from './Calendar.astro';
 import FacebookCallout from './FacebookCallout.astro';
 import RelatedVideos from './RelatedVideos.astro';
+import Callout from './Callout.astro';
 
 interface Props {
   content: PageContent[];
@@ -48,6 +49,8 @@ const {
         return <FacebookCallout content={block} />;
       case 'relatedVideos':
         return <RelatedVideos content={block} />;
+      case 'callout':
+        return <Callout content={block} />;
       default:
         return null;
     }
