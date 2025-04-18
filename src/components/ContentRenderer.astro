@@ -9,6 +9,7 @@ import CaseStudies from './CaseStudies.astro';
 import ContactForm from './ContactForm.astro';
 import Slider from './Slider.astro';
 import Calendar from './Calendar.astro';
+import FacebookCallout from './FacebookCallout.astro';
 
 interface Props {
   content: PageContent[];
@@ -42,6 +43,8 @@ const {
         return <Slider content={block} />;
       case 'calendar':
         return <Calendar content={block} />;
+      case 'facebookCallout':
+        return <FacebookCallout content={block} />;
       default:
         return null;
     }

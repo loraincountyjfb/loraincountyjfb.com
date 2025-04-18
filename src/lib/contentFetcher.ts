@@ -104,7 +104,8 @@ export const PAGE_CONTENT_QUERY = `
   },
   link, 
   linkText,
-  description
+  description,
+  "image": image{ "url": asset->url },
 }`;
 
 
@@ -132,8 +133,6 @@ export async function fetchHomepage(preview: boolean = false): Promise<PageData>
     params: {},
     enabled: true
   });
-
-  console.log(homepage);
 
   // Return found homepage or fallback page data
   return homepage || { 

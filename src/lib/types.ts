@@ -122,6 +122,17 @@ export interface CalendarContent {
   linkText?: string;
 }
 
+export interface FacebookCalloutContent {
+  _type: 'facebookCallout';
+  title: string;
+  description?: string;
+  link?: string;
+  linkText?: string;
+  image?: {
+    url?: string;
+  };
+}
+
 
 export type PageContent = 
   | HeroContent 
@@ -131,7 +142,8 @@ export type PageContent =
   | SplitContentWithImageContent 
   | CaseStudiesContent
   | SliderContent
-  | CalendarContent;
+  | CalendarContent
+  | FacebookCalloutContent;
 
 export interface PageData {
   title: string;

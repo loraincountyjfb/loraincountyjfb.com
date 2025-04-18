@@ -22,11 +22,11 @@ const { title, description, link, linkText } = content;
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
       <div class="col-span-1">
         <div class="">
-          <h2 class="text-4xl font-bold mb-8 font-source-serif-4 text-[80px] leading-[80px] tracking-[0%]">{title}</h2>
-          <div class="font-source-serif-4 font-normal text-[20px] leading-1 tracking-[0%] mt-6 text-primary">
+          <h2 class="text-4xl font-bold mb-8 font-source-serif-4 text-[80px] leading-[80px] tracking-[0%] animate-on-scroll slide-up">{title}</h2>
+          <div class="font-source-serif-4 font-normal text-[20px] leading-1 tracking-[0%] mt-6 text-primary animate-on-scroll slide-up">
             <PortableText value={description} />
           </div>
-          <div class="max-w-[350px] mt-8">
+          <div class="max-w-[350px] mt-8 animate-on-scroll slide-up">
             {
               link && linkText && (
                 <Button href={link} class="mt-4" background="primary" >
@@ -37,7 +37,7 @@ const { title, description, link, linkText } = content;
           </div>
         </div>
       </div>
-      <div class="col-span-1">
+      <div class="col-span-1 animate-on-scroll slide-up">
         <iframe
           src="https://calendar.google.com/calendar/embed?src=family08926940881321806755%40group.calendar.google.com&ctz=America%2FNew_York"
           style="border: 0"

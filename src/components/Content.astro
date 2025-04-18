@@ -45,7 +45,7 @@ const spacingClasses = {
 
 const verticalAlignmentClasses = {
   top: 'items-start',
-  center: 'items-center',
+  middle: 'items-center',
   bottom: 'items-end'
 } as const;
 
@@ -86,7 +86,6 @@ const backgroundClasses = {
 const mediaOrder = content.media?.position === 'left' ? 'order-1 lg:order-1' : 'order-1 lg:order-2';
 const contentOrder = content.media?.position === 'left' ? 'order-1 lg:order-2' : 'order-1 lg:order-1';
 const backgroundClass = backgroundClasses[content.background || 'white'] || backgroundClasses.white;
-console.log(content.verticalAlignment);
 ---
 
 <section class={`${backgroundClass} ${spacingClasses[content.spacing || 'medium']}` + " content"} transition:animate="slide">
@@ -120,8 +119,8 @@ console.log(content.verticalAlignment);
 
         {content.actions && content.actions.length > 0 && (
           <div class="flex flex-wrap gap-4 mt-12 animate-on-scroll fade-up">
-            {content.actions.map(action => (
-              <Button href={action.link}>
+            {content.actions.map((action, index) => (
+              <Button href={action.link} background={index === 0 ? 'primary' : 'white'}>
                 {action.text}
               </Button>
             ))}
@@ -136,7 +135,7 @@ console.log(content.verticalAlignment);
             <img 
               src={content.media.image.url} 
               alt={content.media.image.alt || ''} 
-              class="w-full h-auto object-cover rounded-lg"
+              class="object-cover rounded-lg"
             />
           )}
           {content.media.type === 'video' && content.media.video && (
@@ -157,69 +156,6 @@ console.log(content.verticalAlignment);
     list-style-type: disc;
     margin-left: 20px;
   }
-  .media-container {
-    position: relative;
-    isolation: isolate;
-  }
-
-  .media-container::before,
-  .media-container::after {
-    content: '';
-    position: absolute;
-    z-index: 1;
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .media-container.animation-enabled::before {
-    width: 338.916px;
-    height: 338.916px;
-    border-radius: 338.916px;
-    background: rgba(255, 188, 169, 0.35);
-    filter: blur(17.4px);
-    transform: rotate(63.414deg);
-    bottom: -50px;
-    left: 100px;
-    animation-delay: 0s;
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .media-container.animation-enabled::after {
-    width: 133.045px;
-    height: 133.045px;
-    border-radius: 133.045px;
-    background: rgba(254, 232, 151, 0.41);
-    filter: blur(17.4px);
-    transform: rotate(63.414deg);
-    bottom: -30px;
-    left: 400px;
-    animation-delay: -3s;
-    animation: float-reverse 6s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: rotate(63.414deg) translate(0, 0);
-    }
-    50% {
-      transform: rotate(63.414deg) translate(50px, 50px);
-    }
-  }
-
-  @keyframes float-reverse {
-    0%, 100% {
-      transform: rotate(63.414deg) translate(0, 0);
-    }
-    50% {
-      transform: rotate(63.414deg) translate(-50px, -50px);
-    }
-  }
-  /* Ensure the pseudo-elements don't interfere with content */
-  .media-container img,
-  .media-container video {
-    position: relative;
-    z-index: 2;
-  }
-
   /* Animation classes for viewport-based animations */
   .animate-on-scroll {
     opacity: 0;
