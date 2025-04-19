@@ -111,7 +111,12 @@ export const PAGE_CONTENT_QUERY = `
     title,
     link
   },
-  sectionDescription
+  sectionDescription,
+  "sponsors": sponsors[]{
+    title,
+    numberOfColumns,
+    sponsorsList
+  }
 }`;
 
 

@@ -1,0 +1,30 @@
+---
+import { PortableText } from "astro-portabletext";
+import Button from "./Button.astro";
+import CalendarIcon from "../assets/svgs/grid.svg";
+import type { Sponsors } from "../lib/types";
+
+interface Props {
+  content: Sponsors;
+}
+
+const { content } = Astro.props;
+
+---
+
+<section class="bg-white py-16">
+  <div class="container mx-auto px-4 text-center">
+      {content.sponsors.map((sponsor) => (
+        <div class=" [box-shadow:-72px_124px_40px_0px_rgba(0,0,0,0),-46px_79px_37px_0px_rgba(0,0,0,0.01),-26px_44px_31px_0px_rgba(0,0,0,0.05),-12px_20px_23px_0px_rgba(0,0,0,0.09),-3px_5px_13px_0px_rgba(0,0,0,0.10)] p-12 rounded-lg mb-12">
+          <h2 class="font-bold mb-8 font-source-serif-4 text-[35px] leading-[40px] tracking-[0%] animate-on-scroll slide-up">{sponsor.title}</h2>
+        <div class={`grid grid-cols-1 lg:grid-cols-${sponsor.numberOfColumns} gap-4 ${sponsor.numberOfColumns === 2 ? 'max-w-[650px] mx-auto' : ''}`}>
+          {sponsor.sponsorsList.map((sponsor) => (
+            <div class="col-span-1">
+              {sponsor}
+            </div>
+          ))}
+        </div>
+        </div>
+      ))}
+  </div>
+</section>

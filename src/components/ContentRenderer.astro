@@ -12,7 +12,7 @@ import Calendar from './Calendar.astro';
 import FacebookCallout from './FacebookCallout.astro';
 import RelatedVideos from './RelatedVideos.astro';
 import Callout from './Callout.astro';
-
+import Sponsors from './Sponsors.astro';
 interface Props {
   content: PageContent[];
   showContactForm?: boolean;
@@ -51,6 +51,8 @@ const {
         return <RelatedVideos content={block} />;
       case 'callout':
         return <Callout content={block} />;
+      case 'sponsors':
+        return <Sponsors content={block} />;
       default:
         return null;
     }

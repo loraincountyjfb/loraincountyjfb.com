@@ -150,7 +150,15 @@ export interface RelatedVideosContent {
   }[];
 }
 
-
+// Sponsors content block
+export interface Sponsors {
+  _type: 'sponsors';
+  sponsors: {
+    title: string;
+    numberOfColumns: number;
+    sponsorsList: string[];
+  }[];
+}
 
 export type PageContent = 
   | HeroContent 
@@ -162,7 +170,8 @@ export type PageContent =
   | SliderContent
   | CalendarContent
   | FacebookCalloutContent
-  | RelatedVideosContent;
+  | RelatedVideosContent
+  | Sponsors;
 
 export interface PageData {
   title: string;
