@@ -38,6 +38,7 @@ export const PAGE_CONTENT_QUERY = `
   // Content block fields
   "features": features[]{
     text,
+    title,
     "icon": icon{ "url": asset->url }
   },
   "actions": actions[]{

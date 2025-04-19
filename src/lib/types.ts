@@ -17,6 +17,7 @@ export interface ContentBlock {
   description: any[];
   features?: {
     text: string;
+    title: string;
     icon?: {
       url?: string;
     };

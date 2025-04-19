@@ -23,15 +23,13 @@ const { content } = Astro.props;
 <section class="py-20" transition:animate="slide">
   <div class="container mx-auto px-4">
     <div class="max-w-3xl mx-auto text-center mb-16 animate-on-scroll fade-in">
-      <h2 class="text-[50px] font-bold font-source-serif-4 tracking-[-0.03em] text-[#18181B] mb-6">
-        {content.sectionTitle}
-      </h2>
+      <h2 class="text-[50px] font-bold font-source-serif-4 tracking-[-0.03em] text-[#18181B] mb-6" set:html={content.sectionTitle}></h2>
       <div class="font-source-serif-4 text-[#000] text-[20px] ">
         {content.description}
       </div>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 max-w-7xl mx-auto animate-on-scroll fade-in slide-up column-container">
       {content.columns.map((column, index) => (
         <div class={`flex flex-col items-center text-center animate-on-scroll scale-in delay-${index * 100}`}>
           {column.image?.url && (
@@ -41,9 +39,7 @@ const { content } = Astro.props;
                 class="w-full h-full object-contain"
               />
           )}
-          <h3 class="text-2xl font-bold mb-4 font-poppins text-[#18181B]">
-            {column.title}
-          </h3>
+          <h3 class="text-2xl font-bold mb-4 font-poppins text-[#18181B]" set:html={column.title}></h3>
           <div class="prose prose-lg max-w-none font-poppins text-[#52525B] prose-ul:pl-0 prose-li:pl-0">
             <PortableText value={column.description} />
           </div>

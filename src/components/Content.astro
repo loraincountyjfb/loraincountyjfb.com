@@ -1,37 +1,10 @@
 ---
 import { PortableText } from "astro-portabletext";
 import Button from "./Button.astro";
+import type { ContentBlock } from "../lib/types";
 
 interface Props {
-  content: {
-    title: string;
-    description: any[];
-    features?: {
-      text: string;
-      icon?: {
-        url?: string;
-      };
-    }[];
-    actions?: {
-      text: string;
-      link: string;
-      variant: 'primary' | 'secondary' | 'text';
-    }[];
-    media?: {
-      type: 'image' | 'video';
-      position: 'left' | 'right';
-      width?: number;
-      image?: {
-        url?: string;
-        alt?: string;
-      };
-      video?: string;
-      animation?: boolean;
-    };
-    spacing?: 'none' | 'small' | 'medium' | 'large';
-    background?: 'white' | 'primary-light' | 'light-gray';
-    verticalAlignment?: 'top' | 'center' | 'bottom';
-  };
+  content: ContentBlock;  
 }
 
 const { content } = Astro.props;
@@ -74,7 +47,8 @@ const getWidthClasses = (mediaWidth: number) => {
   }
 };
 
-const widthClasses = getWidthClasses(content.media?.width || 50);
+const hasMedia = (content.media?.image !== null && content.media?.image !== undefined) || (content.media?.video !== null && content.media?.video !== undefined);
+const widthClasses = hasMedia ? getWidthClasses(content.media?.width || 50) : { media: '', content: 'lg:w-1/2 mx-auto' };
 
 const backgroundClasses = {
   'white': 'bg-white',
@@ -86,6 +60,7 @@ const backgroundClasses = {
 const mediaOrder = content.media?.position === 'left' ? 'order-1 lg:order-1' : 'order-1 lg:order-2';
 const contentOrder = content.media?.position === 'left' ? 'order-1 lg:order-2' : 'order-1 lg:order-1';
 const backgroundClass = backgroundClasses[content.background || 'white'] || backgroundClasses.white;
+
 ---
 
 <section class={`${backgroundClass} ${spacingClasses[content.spacing || 'medium']}` + " content"} transition:animate="slide">
@@ -103,15 +78,18 @@ const backgroundClass = backgroundClasses[content.background || 'white'] || back
         {content.features && content.features.length > 0 && (
           <div class="space-y-4 mb-8 animate-on-scroll fade-up">
             {content.features.map((feature, index) => (
-              <div class="flex items-center gap-4 animate-on-scroll fade-up" style={`animation-delay: ${index * 100}ms`}>
-                {feature.icon?.url && (
+              <div class="flex flex-start items-start gap-4 animate-on-scroll fade-up" style={`animation-delay: ${index * 100}ms`}>
                   <img 
                     src={feature.icon.url} 
                     alt="" 
-                    class="w-6 h-6 object-contain"
+                    class="object-contain"
                   />
-                )}
-                <span class="text-lg font-source-sans-pro">{feature.text}</span>
+                  <div class="font-source-sans-pro text-lg leading-[39px] tracking-[0%]">
+                    <div class="font-source-serif-4 text-[30px] leading-[39px] tracking-[0%] font-bold">{feature.title}</div>
+                    <div class="font-source-serif-4 text-[20px] leading-[39px] tracking-[0%]">
+                      <PortableText value={feature.text} />
+                    </div>
+                  </div>
               </div>
             ))}
           </div>
@@ -129,7 +107,7 @@ const backgroundClass = backgroundClasses[content.background || 'white'] || back
       </div>
 
       {/* Media Column */}
-      {content.media && (
+      {hasMedia && (
         <div class={`w-full ${mediaOrder} ${widthClasses.media} mt-8 lg:mt-0 media-container ${content.media.animation ? 'animation-enabled' : ''} animate-on-scroll fade-in`}>
           {content.media.type === 'image' && content.media.image?.url && (
             <img 
