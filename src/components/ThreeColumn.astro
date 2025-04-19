@@ -12,32 +12,36 @@ interface Column {
 interface Props {
   content: {
     sectionTitle: string;
+    sectionDescription: any[];
     columns: Column[];
   };
 }
 
 const { content } = Astro.props;
+
+console.log(content);
 ---
 
-<section class="bg-[#FFF5F7] py-20" transition:animate="slide">
+<section class="py-20" transition:animate="slide">
   <div class="container mx-auto px-4">
     <div class="max-w-3xl mx-auto text-center mb-16 animate-on-scroll fade-in">
-      <h2 class="text-[40px] font-bold font-poppins tracking-[-0.03em] text-[#18181B] mb-6">
+      <h2 class="text-[50px] font-bold font-source-serif-4 tracking-[-0.03em] text-[#18181B] mb-6">
         {content.sectionTitle}
       </h2>
+      <div class="font-source-serif-4 text-[#000] text-[20px] ">
+        {content.description}
+      </div>
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 max-w-7xl mx-auto">
       {content.columns.map((column, index) => (
         <div class={`flex flex-col items-center text-center animate-on-scroll scale-in delay-${index * 100}`}>
           {column.image?.url && (
-            <div class="w-[72px] h-[72px] mb-6">
               <img 
                 src={column.image.url} 
                 alt={column.title}
                 class="w-full h-full object-contain"
               />
-            </div>
           )}
           <h3 class="text-2xl font-bold mb-4 font-poppins text-[#18181B]">
             {column.title}

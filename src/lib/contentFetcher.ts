@@ -110,7 +110,8 @@ export const PAGE_CONTENT_QUERY = `
     "video": image{ "url": asset->url, "alt": asset->alt }, 
     title,
     link
-  }
+  },
+  sectionDescription
 }`;
 
 

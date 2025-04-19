@@ -45,6 +45,7 @@ export interface ContentBlock {
 export interface ThreeColumnContent {
   _type: 'threeColumn';
   sectionTitle: string;
+  sectionDescription: any[];
   columns: {
     title: string;
     description: any[];

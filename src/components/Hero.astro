@@ -63,7 +63,7 @@ const socialIconMap = {
     {content.heroLayout === 'simpleButtons' && (
       <div class="grid items-center justify-center">
         <div class="col-span-1 text-center">
-          <h1 class="font-source-serif-4 font-bold text-[50px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+          <h1 class="font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
             {content.title}
           </h1>
           {content.subtitle && (
@@ -72,7 +72,7 @@ const socialIconMap = {
             </p>
           )}
           {content.buttons && content.buttons.length > 0 && (
-            <div class="flex flex-wrap gap-4 mt-8">
+            <div class="flex flex-wrap gap-4 mt-8 justify-center">
               {content.buttons.map((btn, index) => (
                 <Button href={btn.link} background={`${index === 0 ? 'primary' : 'white'}`}>{btn.text}</Button>
               ))}
