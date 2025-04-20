@@ -33,7 +33,7 @@ const { content } = Astro.props;
         <div class={`flex flex-col rounded-[50px] border-t-[5px] border-white overflow-hidden transition-all duration-300 animate-on-scroll scale-in delay-${index * 100}`}>
           <div class="p-8 pt-32 flex items-center justify-center h-32">
             <img 
-              src={study.clientLogo.url} 
+              src={study.clientLogo?.url} 
               alt="Client Logo" 
               class="object-contain max-w-[237px]"
             />

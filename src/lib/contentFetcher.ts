@@ -117,6 +117,12 @@ export const PAGE_CONTENT_QUERY = `
     title,
     numberOfColumns,
     sponsorsList
+  },
+  "timelineEvents": timelineEvents[]{
+    title,
+    year,
+    description,
+    "image": image{ "url": asset->url }
   }
 }`;
 

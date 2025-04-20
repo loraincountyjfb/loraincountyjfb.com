@@ -161,6 +161,18 @@ export interface Sponsors {
   }[];
 }
 
+export interface TimelineContent {
+  _type: 'timeline';
+  timelineEvents: {
+    title: string;
+    year: number;
+    description: any[];
+    image: {
+      url?: string;
+    };
+  }[];
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -172,7 +184,8 @@ export type PageContent =
   | CalendarContent
   | FacebookCalloutContent
   | RelatedVideosContent
-  | Sponsors;
+  | Sponsors
+  | TimelineContent;
 
 export interface PageData {
   title: string;

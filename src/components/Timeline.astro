@@ -1,0 +1,41 @@
+---
+import { PortableText } from "astro-portabletext";
+import Button from "./Button.astro";
+import CalendarIcon from "../assets/svgs/grid.svg";
+import type { TimelineEvent } from "../lib/types";
+import TimelineIcon from "../../assets/svgs/timeline.svg";
+
+interface Props {
+  content: TimelineEvent[];
+}
+
+const { content } = Astro.props;
+---
+
+<div class="relative flex flex-col items-center py-10">
+    <div class="container mx-auto px-4">
+        <h2 class="font-source-serif-4 text-[40px] leading-[50px] font-bold mb-10 flex items-center gap-2 text-center mx-auto justify-center">Previous Year Placements</h2>
+  
+    <!-- Vertical Timeline Line -->
+    <div class="absolute w-1 bg-[#654BCD] left-1/2 transform -translate-x-1/2 hidden lg:block animate-on-scroll slide-up" style={`height: calc(100% - ${content.timelineEvents.length > 1 ? '480px' : '0px'})`}></div>
+  
+    <!-- Timeline Entries -->
+    {content.timelineEvents.map((entry, index) => (
+      <div class={`flex w-full ${index % 2 === 0 ? 'justify-start' : 'justify-end'} mb-10 relative`}>
+        <div class={`w-full lg:w-5/12 p-6 bg-white rounded-lg shadow-lg animate-on-scroll slide-up ${index % 2 === 0 ? 'lg:mr-10 ml-0' : 'lg:ml-10 mr-0'}`}>
+          <img src={entry.image.url} alt={`Timeline image for ${entry.year}`} class="w-full h-40 object-cover rounded-lg mb-4" />
+          <h2 class="text-2xl font-semibold">{entry.year}</h2>
+          <p class="text-lg font-medium text-green-600">{entry.placement}</p>
+            <div class="font-source-sans-pro font-normal text-[22px] leading-[39px] tracking-[0%] mt-6 text-primary animate-on-scroll fade-up">
+            <PortableText value={entry.description} />
+          </div>
+        </div>
+        <div class="absolute left-1/2 transform -translate-x-1/2 hidden lg:block">
+          <div class="w-[72px] h-[72px] bg-[#654BCD] rounded-full flex items-center justify-center p-4">
+            <TimelineIcon />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>

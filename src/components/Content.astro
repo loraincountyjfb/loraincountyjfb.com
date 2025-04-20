@@ -80,7 +80,7 @@ const backgroundClass = backgroundClasses[content.background || 'white'] || back
             {content.features.map((feature, index) => (
               <div class="flex flex-start items-start gap-4 animate-on-scroll fade-up" style={`animation-delay: ${index * 100}ms`}>
                   <img 
-                    src={feature.icon.url} 
+                    src={feature.icon?.url} 
                     alt="" 
                     class="object-contain"
                   />
@@ -111,8 +111,8 @@ const backgroundClass = backgroundClasses[content.background || 'white'] || back
         <div class={`w-full ${mediaOrder} ${widthClasses.media} mt-8 lg:mt-0 media-container ${content.media.animation ? 'animation-enabled' : ''} animate-on-scroll fade-in`}>
           {content.media.type === 'image' && content.media.image?.url && (
             <img 
-              src={content.media.image.url} 
-              alt={content.media.image.alt || ''} 
+              src={content.media.image?.url} 
+              alt={content.media.image?.alt || ''} 
               class="object-cover rounded-lg"
             />
           )}

@@ -23,7 +23,7 @@ const { title, logos } = Astro.props;
         logos.map((logo, index) => {
           const content = (
             <img
-              src={logo.image.url}
+              src={logo.image?.url}
               alt={logo.alt}
               class="max-w-[250px] object-contain filter transition-all duration-300"
             />
