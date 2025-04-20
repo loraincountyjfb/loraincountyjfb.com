@@ -14,6 +14,8 @@ import RelatedVideos from './RelatedVideos.astro';
 import Callout from './Callout.astro';
 import Sponsors from './Sponsors.astro';
 import Timeline from './Timeline.astro';
+import News from './News.astro';
+
 interface Props {
   content: PageContent[];
   showContactForm?: boolean;
@@ -56,6 +58,8 @@ const {
         return <Sponsors content={block} />;
       case 'timeline':
         return <Timeline content={block} />;
+      case 'news':
+        return <News content={block} />;
       default:
         return null;
     }

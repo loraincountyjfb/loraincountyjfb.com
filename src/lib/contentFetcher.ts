@@ -123,6 +123,24 @@ export const PAGE_CONTENT_QUERY = `
     year,
     description,
     "image": image{ "url": asset->url }
+  },
+  "news": news[]{
+    title,
+    "image": image{ "url": asset->url },
+    link,
+    linkText
+  },
+  // Donor Images fields
+  "donorImages": donorImages[]{
+    title,
+    "image": image{ "url": asset->url }
+  },
+  // Winners fields
+  "winners": winners[]{
+    title,
+    year,
+    description,
+    "image": image{ "url": asset->url }
   }
 }`;
 

@@ -173,6 +173,48 @@ export interface TimelineContent {
   }[];
 }
 
+export interface NewsContent {
+  _type: 'news';
+  title: string;
+  description: any[];
+  news: {
+    title: string;
+    image?: {
+      url?: string;
+    };
+    link?: string;
+    linkText?: string;
+  }[];
+}
+
+export interface DonorImagesContent {
+  _type: 'donorImages';
+  title: string;
+  description: any[];
+  link?: string;
+  linkText?: string;
+  donorImages: {
+    title: string;
+    image?: {
+      url?: string;
+    };
+  }[];
+}
+
+export interface WinnersContent {
+  _type: 'winners';
+  title: string;
+  description: any[];
+  winners: {
+    title: string;
+    year: number;
+    description: any[];
+    image?: {
+      url?: string;
+    };
+  }[];
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -185,7 +227,10 @@ export type PageContent =
   | FacebookCalloutContent
   | RelatedVideosContent
   | Sponsors
-  | TimelineContent;
+  | TimelineContent
+  | NewsContent
+  | DonorImagesContent
+  | WinnersContent;
 
 export interface PageData {
   title: string;

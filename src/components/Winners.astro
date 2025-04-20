@@ -1,0 +1,29 @@
+import type { WinnersContent } from '../lib/types';
+export interface Props {
+  content: WinnersContent;
+}
+const { content } = Astro.props;
+---
+<section class="winners-block">
+  <header>
+    <h2>{content.title}</h2>
+    {content.description && (
+      <div class="winners-description">
+        {content.description.map((block, i) => <Fragment key={i}>{block}</Fragment>)}
+      </div>
+    )}
+  </header>
+  <ul class="winners-list">
+    {content.winners.map((winner, idx) => (
+      <li class="winner-item" key={idx}>
+        <h3>{winner.title} <span>({winner.year})</span></h3>
+        {winner.image?.url && <img src={winner.image.url} alt={winner.title} />}
+        {winner.description && (
+          <div class="winner-description-block">
+            {winner.description.map((block, i) => <Fragment key={i}>{block}</Fragment>)}
+          </div>
+        )}
+      </li>
+    ))}
+  </ul>
+</section> 

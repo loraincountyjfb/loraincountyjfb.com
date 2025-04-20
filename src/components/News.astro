@@ -1,0 +1,32 @@
+---
+import type { NewsContent } from '../lib/types';
+import Button from './Button.astro';
+import { PortableText } from "astro-portabletext";
+export interface Props {
+  content: NewsContent;
+}
+const { content } = Astro.props;
+---
+<section class="news-block">
+    <div class="container mx-auto px-4">
+    <h2 class="text-[50px] leading-[60px] tracking-[-0.03em] font-source-serif-4 font-bold mb-6 animate-on-scroll slide-up text-center">
+        {content.title}
+       </h2>
+       <div class="font-source-serif-4 font-normal text-[22px] leading-[39px] tracking-[0%] mt-6 text-primary animate-on-scroll slide-up text-center max-w-[800px] mx-auto mb-12">
+        <PortableText value={content.description} />
+      </div>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    {content.news.map((item, idx) => (
+      <div class="news-item flex flex-col justify-center items-center">
+        {item.image?.url && <a href={item.link}><img src={item.image.url} alt={item.title} /></a>}
+        <h3 class="text-[30px] leading-[24px] tracking-[0%] font-source-serif-4 font-bold mb-6 animate-on-scroll slide-up text-center mt-6">{item.title}</h3>
+        {item.link && (
+          <Button href={item.link} class="news-link mx-auto">
+            {item.linkText || 'Read more'}
+          </Button>
+        )}
+      </div>
+    ))}
+  </div>
+  </div>
+</section> 

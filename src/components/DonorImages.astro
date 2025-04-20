@@ -1,0 +1,29 @@
+import type { DonorImagesContent } from '../lib/types';
+export interface Props {
+  content: DonorImagesContent;
+}
+const { content } = Astro.props;
+---
+<section class="donor-images-block">
+  <header>
+    <h2>{content.title}</h2>
+    {content.description && (
+      <div class="donor-description">
+        {content.description.map((block, i) => <Fragment key={i}>{block}</Fragment>)}
+      </div>
+    )}
+    {content.link && (
+      <a href={content.link} class="donor-link">
+        {content.linkText || 'Learn more'}
+      </a>
+    )}
+  </header>
+  <ul class="donor-images-list">
+    {content.donorImages.map((item, idx) => (
+      <li class="donor-image-item" key={idx}>
+        <h3>{item.title}</h3>
+        {item.image?.url && <img src={item.image.url} alt={item.title} />}
+      </li>
+    ))}
+  </ul>
+</section> 
