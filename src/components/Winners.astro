@@ -1,29 +1,38 @@
+---
 import type { WinnersContent } from '../lib/types';
+import Button from './Button.astro';
+import { PortableText } from "astro-portabletext";
 export interface Props {
   content: WinnersContent;
 }
 const { content } = Astro.props;
+const bgColors = [
+  'border-[rgba(221,241,76,0.32)]',
+  'border-[#EDE9FF]',
+  'border-[#FFD9D0]'
+];
 ---
-<section class="winners-block">
-  <header>
-    <h2>{content.title}</h2>
-    {content.description && (
-      <div class="winners-description">
-        {content.description.map((block, i) => <Fragment key={i}>{block}</Fragment>)}
+<section class="winners-block py-24">
+    <div class="container mx-auto px-4 mb-12">
+    <h2 class="text-[50px] leading-[60px] tracking-[-0.03em] font-source-serif-4 font-bold mb-6 animate-on-scroll slide-up text-center">
+        {content.title}
+       </h2>
+       <div class="font-source-serif-4 font-normal text-[22px] leading-[39px] tracking-[0%] mt-6 text-primary animate-on-scroll slide-up text-center max-w-[800px] mx-auto mb-12">
+        <PortableText value={content.description} />
       </div>
-    )}
-  </header>
-  <ul class="winners-list">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
     {content.winners.map((winner, idx) => (
-      <li class="winner-item" key={idx}>
-        <h3>{winner.title} <span>({winner.year})</span></h3>
-        {winner.image?.url && <img src={winner.image.url} alt={winner.title} />}
-        {winner.description && (
-          <div class="winner-description-block">
-            {winner.description.map((block, i) => <Fragment key={i}>{block}</Fragment>)}
+      <div class="news-item flex flex-col flex-start items-start bg-[#FFFFFF] [box-shadow:-72px_124px_40px_0px_rgba(0,0,0,0),-46px_79px_37px_0px_rgba(0,0,0,0.01),-26px_44px_31px_0px_rgba(0,0,0,0.05),-12px_20px_23px_0px_rgba(0,0,0,0.09),-3px_5px_13px_0px_rgba(0,0,0,0.10)] rounded-xl p-8 animate-on-scroll slide-up">
+        {winner.image?.url && (
+          <div class={`rounded-full border-[20px] flex items-center justify-center mb-4 ${bgColors[idx] || bgColors[0]}`}>
+            <img src={winner.image.url} alt={winner.title} class="rounded-full object-cover w-[100px] h-[100px]" />
           </div>
         )}
-      </li>
+        <div class="text-[18px] leading-[24px] tracking-[0%] font-source-sans-pro font-light animate-on-scroll slide-up mt-2 text-[#e2684a]">{winner.year}</div>
+        <div class="text-[22px] leading-[24px] tracking-[0%] font-source-serif-4 font-bold animate-on-scroll slide-up mt-2">{winner.title}</div>
+        <div class="text-[20px] leading-[24px] tracking-[0%] font-source-serif-4 animate-on-scroll slide-up mt-2"><PortableText value={winner.description} /></div>
+      </div>
     ))}
-  </ul>
+  </div>
+  </div>
 </section> 
