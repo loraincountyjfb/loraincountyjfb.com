@@ -24,8 +24,6 @@ interface Props {
 const { content } = Astro.props;
 
 const { title, description, link, linkText, videos } = content;
-
-console.log(videos);
 ---
 
 <section class="bg-white py-16 calendar-section">
@@ -37,8 +35,8 @@ console.log(videos);
                 <a
                   href={video.link}
                   target="_blank"
-                  class={`relative group rounded-2xl overflow-hidden shadow-lg transition-transform duration-200 hover:scale-[1.02] bg-gray-100 ${idx === 0 ? 'md:col-span-2 row-span-2 lg:col-span-2 lg:row-span-1' : ''}`}
-                >
+                  class={`relative group rounded-2xl overflow-hidden shadow-lg transition-transform duration-200 hover:scale-[1.02] bg-gray-100 animate-on-scroll slide-up ${idx === 0 ? 'md:col-span-2 row-span-2 lg:col-span-2 lg:row-span-1' : ''}`}
+                style={`transition-delay: ${idx * 100}ms`}>
                   <img
                     src={video.video.url}
                     alt={video.video.alt}

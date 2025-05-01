@@ -1,31 +1,36 @@
 ---
 import type { DonorImagesContent } from '../lib/types';
 import Button from './Button.astro';
+import { PortableText } from "astro-portabletext";
 export interface Props {
   content: DonorImagesContent;
 }
 const { content } = Astro.props;
 ---
-<section class="donor-images-block">
-  <header>
-    <h2>{content.title}</h2>
-    {content.description && (
-      <div class="donor-description">
-        {content.description.map((block, i) => <Fragment key={i}>{block}</Fragment>)}
-      </div>
-    )}
-    {content.link && (
-      <a href={content.link} class="donor-link">
-        {content.linkText || 'Learn more'}
-      </a>
-    )}
-  </header>
-  <ul class="donor-images-list">
-    {content.donorImages.map((item, idx) => (
-      <li class="donor-image-item" key={idx}>
-        <h3>{item.title}</h3>
-        {item.image?.url && <img src={item.image.url} alt={item.title} />}
-      </li>
-    ))}
-  </ul>
+<section class="donor-images-block py-24">
+    <div class="container mx-auto px-4">
+        <h2 class="text-[50px] leading-[60px] tracking-[-0.03em] font-source-serif-4 font-bold mb-6 animate-on-scroll slide-up text-center">
+            {content.title}
+           </h2>
+           <div class="font-source-serif-4 font-normal text-[22px] leading-[39px] tracking-[0%] mt-6 text-primary animate-on-scroll slide-up text-center max-w-[800px] mx-auto mb-12">
+            <PortableText value={content.description} />
+          </div>
+          <div class="flex justify-center">
+          <Button href={content.link} class="mx-auto" background="primary">
+            {content.linkText || 'Learn more'}
+          </Button>
+          </div>
+    </div>
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[1000px] mx-auto my-12">
+            {content.donorImages.map((item, idx) => (
+                <div class="flex flex-col items-center justify-center animate-on-scroll slide-up" style={`transition-delay: ${idx * 100}ms`}>
+                <div class={`rounded-full border-[20px] flex items-center justify-center mb-4 border-[rgba(221,241,76,0.32)]`}>
+                    {item.image?.url && <img src={item.image.url} alt={item.title} />}
+                </div>
+                <h3 class="text-[30px] font-source-serif-4 font-bold">{item.title}</h3>
+                </div>
+            ))}
+        </div>
+    </div>
 </section> 

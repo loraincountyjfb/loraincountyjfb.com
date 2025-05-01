@@ -18,8 +18,8 @@ const { content } = Astro.props;
         <div class=" [box-shadow:-72px_124px_40px_0px_rgba(0,0,0,0),-46px_79px_37px_0px_rgba(0,0,0,0.01),-26px_44px_31px_0px_rgba(0,0,0,0.05),-12px_20px_23px_0px_rgba(0,0,0,0.09),-3px_5px_13px_0px_rgba(0,0,0,0.10)] p-12 rounded-2xl mb-12 max-w-[1400px] mx-auto">
           <h2 class="font-bold mb-16 font-source-serif-4 text-[35px] leading-[40px] tracking-[0%] animate-on-scroll slide-up">{sponsor.title}</h2>
         <div class={`grid grid-cols-1 lg:grid-cols-${sponsor.numberOfColumns} gap-4 text-left ${sponsor.numberOfColumns === 2 ? 'max-w-[650px]' : 'max-w-[1200px]'} mx-auto`}>
-          {sponsor.sponsorsList.map((sponsor) => (
-            <div class="col-span-1 font-source-serif-4 text-[20px] leading-[24px] tracking-[0%] animate-on-scroll slide-up">
+          {sponsor.sponsorsList.map((sponsor, idx) => (
+            <div class="col-span-1 font-source-serif-4 text-[20px] leading-[24px] tracking-[0%] animate-on-scroll slide-up" style={`transition-delay: ${idx * 100}ms`}>
               {sponsor}
             </div>
           ))}

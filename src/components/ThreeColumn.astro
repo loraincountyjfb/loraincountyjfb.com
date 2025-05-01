@@ -20,7 +20,7 @@ interface Props {
 const { content } = Astro.props;
 ---
 
-<section class="py-20" transition:animate="slide">
+<section class="py-20" transition:animate="fade">
   <div class="container mx-auto px-4">
     <div class="max-w-3xl mx-auto text-center mb-16 animate-on-scroll fade-in">
       <h2 class="text-[50px] font-bold font-source-serif-4 tracking-[-0.03em] text-[#18181B] mb-6" set:html={content.sectionTitle}></h2>
