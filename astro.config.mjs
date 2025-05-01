@@ -15,18 +15,25 @@ const isProduction = process.env.NODE_ENV === "production";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), sitemap(), prefetch(), sanity({
-    projectId: "8j5t4dvh",
-    dataset: "production",
-    useCdn: false, // for static builds
-    stega: {
-      enabled: true,
-      studioUrl: "https://lcjfb.sanity.studio/",
-    },
-  }), react(), icon()],
+  integrations: [
+    tailwind(),
+    sitemap(),
+    prefetch(),
+    sanity({
+      projectId: "8j5t4dvh",
+      dataset: "production",
+      useCdn: false, // for static builds
+      stega: {
+        enabled: true,
+        studioUrl: "https://lcjfb.sanity.studio/",
+      },
+    }),
+    react(),
+    icon(),
+  ],
   output: isProduction ? "static" : "server",
   adapter: netlify(),
   site: isProduction
-    ? "https://mosaicemarketing.com"
+    ? "https://www.loraincountyjfb.com"
     : "https://lcfjb.netlify.app",
 });
