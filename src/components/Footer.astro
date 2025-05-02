@@ -98,23 +98,14 @@ const currentYear = new Date().getFullYear();
 
 // Process the copyright text to include the current year
 // Replace any occurrence of a static year with the current year
-const copyrightText = footer.copyrightText 
-  ? footer.copyrightText.replace(/\d{4}/g, currentYear.toString())
-  : `© ${currentYear} mosaicemarketing.com. All rights reserved.`;
+const copyrightText = `© ${currentYear} Lorain County JFB. All rights reserved.`;
 ---
 
-<footer class="footer-gradient text-white py-16">
-  <div class="container mx-auto px-4">
+<footer class="">
+  <div class="container mx-auto px-4 mt-[25vh]">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       <!-- Logo and Social Section -->
       <div class="lg:col-span-3 lg:pl-0 pl-8">
-        {footer.logo && (
-          <img 
-            src={urlFor(footer.logo).url()} 
-            alt="Mosaic eMarketing" 
-            class="h-12 mb-6"
-          />
-        )}
         <div class="flex gap-4 mb-6">
           {footer.socialLinks?.map((social) => (
             <a 
@@ -176,12 +167,12 @@ const copyrightText = footer.copyrightText
     </div>
 
     <!-- Copyright and Affiliation -->
-    <div class="flex flex-col md:flex-row justify-between items-center bg-primary rounded-[50px] mt-12 p-8">
-      <p class="text-lg mb-4 md:mb-0 text-white font-semibold">
+    <div class="flex flex-col md:flex-row text-center items-center justify-center mt-12 p-8">
+      <p class="text-lg mb-4 md:mb-0 text-gray-500 font-semibold">
         {copyrightText}
       </p>
       {footer.affiliationInfo && (
-        <p class="text-lg mb-4 md:mb-0 text-white font-semibold">
+        <p class="text-lg mb-4 md:mb-0 text-gray-500 font-semibold">
           {footer.affiliationInfo.text}
           <a 
             href={footer.affiliationInfo.affiliateUrl}

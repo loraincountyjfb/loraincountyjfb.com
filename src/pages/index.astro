@@ -3,6 +3,7 @@ import '../styles/global.css';
 import MainLayout from '../layouts/main.astro';
 import ContentRenderer from '../components/ContentRenderer.astro';
 import { fetchHomepage, isPreviewMode } from '../lib/contentFetcher';
+import PigForm from '../components/PigForm.astro';
 
 // Determine if we're in preview mode
 const preview = isPreviewMode(Astro.url.href);
@@ -14,6 +15,6 @@ const homepage = await fetchHomepage(preview);
 <MainLayout content={homepage}>
   <ContentRenderer 
     content={homepage.content || []} 
-    showContactForm={true}
   />
+  <PigForm />
 </MainLayout>

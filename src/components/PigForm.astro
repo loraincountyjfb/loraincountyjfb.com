@@ -1,0 +1,214 @@
+
+<div class="max-w-4xl mx-auto bg-primary py-12 px-4 sm:px-6 lg:px-8 rounded-2xl" transition:animate="fade" id="pig-form">
+  <div class="mx-auto">
+    <div class="text-white mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <h2 class="text-6xl font-bold mb-4 text-white font-poppins animate-on-scroll slide-up">Pig Form</h2>
+                
+            </div>
+        </div>
+    </div>
+
+    <form 
+      name="discovery-request" 
+      method="POST" 
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+      class="space-y-6 animate-on-scroll fade-in delay-200"
+      action="/thank-you-pig-form"
+    >
+      <input type="hidden" name="form-name" value="pig-form" />
+      <input type="hidden" name="page-url" id="page-url" />
+      <input type="hidden" name="referrer" id="referrer" />
+      
+      {/* Honeypot field */}
+      <p class="hidden">
+        <label>
+          Don't fill this out if you're human: <input name="bot-field" />
+        </label>
+      </p>
+
+      <div class="animate-on-scroll slide-up delay-100">
+        <div>
+          <input 
+            type="text" 
+            name="exhibitor_name" 
+            id="exhibitor_name" 
+            placeholder="Exhibitor name" 
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+        </div>
+       
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-200">
+        <div>
+            <input 
+              type="text" 
+              name="club_name" 
+              id="club_name" 
+              placeholder="Club name" 
+              required
+              class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+            />
+          </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-300">
+        <div>
+          <input 
+            type="tel" 
+            name="contact_number" 
+            id="contact_number" 
+            placeholder="Contact number" 
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+          />
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-400">
+        <input 
+          type="text" 
+          name="eid_tag_number" 
+          id="eid_tag_number" 
+          required
+          placeholder="EID tag number"
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+        />
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-500">
+        <input 
+          type="text" 
+          name="jfb_or_farm_eid_tag_used" 
+          id="jfb_or_farm_eid_tag_used" 
+          required
+          placeholder="JFB or Farm EID tag used"
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+        />
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-500">
+        <input 
+          type="text" 
+          name="breed_of_pig" 
+          id="breed_of_pig" 
+          required
+          placeholder="Breed of pig"
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+        />
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-500">
+        <label for="sex_of_pig" class="text-white mb-2 block">Sex of pig:</label>
+        <select 
+          name="sex_of_pig" 
+          id="sex_of_pig" 
+          required
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+        >
+          <option value="">Select sex</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-500">
+        <label for="pig_photo" class="text-white mb-2 block">Upload photo of pig with tag:</label>
+        <input 
+          type="file" 
+          name="pig_photo" 
+          id="pig_photo" 
+          accept="image/*"
+          required
+          class="w-full text-white"
+        />
+      </div>
+
+      <div class="animate-on-scroll fade-in delay-500">
+        <button 
+          type="submit" 
+          class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-[#1e3a49] hover:bg-[#152a36] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+        >
+          SUBMIT
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function getTrafficSource() {
+    const referrer = document.referrer;
+    const url = new URL(window.location.href);
+    let source = 'Direct';
+    let searchKeywords = 'Not Available';
+    
+    // Check if came from Google
+    if (referrer && referrer.includes('google')) {
+      source = 'Google';
+      // Try to get search terms from URL parameters (if available)
+      const searchParams = url.searchParams;
+      const qParam = searchParams.get('q');
+      const utmTerm = searchParams.get('utm_term');
+      
+      if (qParam) {
+        searchKeywords = qParam;
+      } else if (utmTerm) {
+        searchKeywords = utmTerm;
+      }
+    } 
+    // Check for UTM parameters
+    else if (url.searchParams.has('utm_source')) {
+      const utmSource = url.searchParams.get('utm_source');
+      const utmTerm = url.searchParams.get('utm_term');
+      
+      source = utmSource || 'Direct';
+      if (utmTerm) {
+        searchKeywords = utmTerm;
+      }
+    }
+    // If referrer exists but not Google
+    else if (referrer) {
+      source = new URL(referrer).hostname;
+    }
+
+    return { source, searchKeywords };
+  }
+
+  // Add hidden fields for traffic source tracking
+  const form = document.querySelector('form[name="discovery-request"]');
+  if (form) {
+    const { source, searchKeywords } = getTrafficSource();
+    
+    // Create and append traffic source field
+    const sourceInput = document.createElement('input');
+    sourceInput.type = 'hidden';
+    sourceInput.name = 'traffic_source';
+    sourceInput.value = source;
+    form.appendChild(sourceInput);
+
+    // Create and append search keywords field
+    const keywordsInput = document.createElement('input');
+    keywordsInput.type = 'hidden';
+    keywordsInput.name = 'search_keywords';
+    keywordsInput.value = searchKeywords;
+    form.appendChild(keywordsInput);
+
+    // Set the page URL
+    const pageUrlInput = document.getElementById('page-url') as HTMLInputElement;
+    if (pageUrlInput) {
+      pageUrlInput.value = window.location.href;
+    }
+    
+    // Set the full referrer
+    const referrerInput = document.getElementById('referrer') as HTMLInputElement;
+    if (referrerInput) {
+      referrerInput.value = document.referrer || 'Direct';
+    }
+  }
+</script> 
