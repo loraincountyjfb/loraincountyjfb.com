@@ -38,7 +38,14 @@ const { title, description, link, linkText } = content;
         </div>
       </div>
       <div class="col-span-1 animate-on-scroll slide-up">
-        <iframe src="https://calendar.google.com/calendar/embed?src=c_b367ee6ca9b167f5e021e10d10914b513a6104f754b86c58d158d422557f2e35%40group.calendar.google.com&ctz=America%2FNew_York" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+        <div class="calendar-container w-full overflow-hidden">
+          <iframe 
+            src="https://calendar.google.com/calendar/embed?src=c_b367ee6ca9b167f5e021e10d10914b513a6104f754b86c58d158d422557f2e35%40group.calendar.google.com&ctz=America%2FNew_York" 
+            class="w-full h-[400px] md:h-[500px] lg:h-[600px]" 
+            frameborder="0" 
+            scrolling="no">
+          </iframe>
+        </div>
       </div>
     </div>
   </div>
@@ -50,5 +57,15 @@ const { title, description, link, linkText } = content;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+  }
+  
+  .calendar-container {
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    
+    @media (max-width: 768px) {
+      margin-top: 2rem;
+    }
   }
 </style>

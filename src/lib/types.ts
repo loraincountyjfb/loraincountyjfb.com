@@ -215,6 +215,21 @@ export interface WinnersContent {
   }[];
 }
 
+export interface ScheduleContent {
+  _type: 'schedule';
+  title: string;
+  description: any[];
+  scheduleItems: {
+    day: string;
+    startTime: string;
+    items: {
+      category: string;
+      item: string;
+    }[];
+  }[];
+  note?: string;
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -230,7 +245,8 @@ export type PageContent =
   | TimelineContent
   | NewsContent
   | DonorImagesContent
-  | WinnersContent;
+  | WinnersContent
+  | ScheduleContent;
 
 export interface PageData {
   title: string;

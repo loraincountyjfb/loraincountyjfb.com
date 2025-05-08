@@ -141,7 +141,17 @@ export const PAGE_CONTENT_QUERY = `
     year,
     description,
     "image": image{ "url": asset->url }
-  }
+  },
+  // Schedule fields
+  "scheduleItems": scheduleItems[]{
+    day,
+    startTime,
+    "items": items[]{
+      category,
+      item
+    }
+  },
+  note
 }`;
 
 

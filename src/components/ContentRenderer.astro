@@ -17,6 +17,7 @@ import Timeline from './Timeline.astro';
 import News from './News.astro';
 import DonorImages from './DonorImages.astro';
 import Winners from './Winners.astro';
+import Schedule from './Schedule.astro';
 
 interface Props {
   content: PageContent[];
@@ -66,6 +67,8 @@ const {
         return <DonorImages content={block} />;
       case 'winners':
         return <Winners content={block} />;
+      case 'schedule':
+        return <Schedule content={block} />;
       default:
         return null;
     }
