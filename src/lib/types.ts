@@ -230,6 +230,16 @@ export interface ScheduleContent {
   note?: string;
 }
 
+export interface RequirementsContent {
+  _type: 'requirements';
+  title: string;
+  requirementsTitle: string;
+  requirementsLocation: string;
+  requirementItems: {
+    item: string;
+  }[];
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -246,7 +256,8 @@ export type PageContent =
   | NewsContent
   | DonorImagesContent
   | WinnersContent
-  | ScheduleContent;
+  | ScheduleContent
+  | RequirementsContent;
 
 export interface PageData {
   title: string;

@@ -151,7 +151,13 @@ export const PAGE_CONTENT_QUERY = `
       item
     }
   },
-  note
+  note,
+  // Requirements fields
+  requirementsTitle,
+  requirementsLocation,
+  "requirementItems": requirementItems[]{
+    item
+  }
 }`;
 
 

@@ -1,0 +1,57 @@
+---
+import type { RequirementsContent } from "../lib/types";
+import CalendarIcon from "../../assets/images/icon-calendar.png";
+import { Image } from "astro:assets";
+import { PortableText } from "astro-portabletext";
+
+interface Props {
+  content: RequirementsContent;
+}
+
+const { content } = Astro.props;
+const { title, requirementsTitle, requirementsLocation, requirementItems = [] } = content;
+---
+
+<section class="py-16 requirements-background">
+  <div class="container mx-auto px-4">
+    <div class="mx-auto max-w-4xl">
+    <div class="flex justify-between items-center flex-wrap lg:no-wrap">
+        <h1 class="text-5xl sm:text-6xl font-bold text-center mb-4 font-source-serif-4">{title}</h1>
+        <Image src={CalendarIcon} alt="Calendar Icon" class="w-[139px] h-[139px] hidden lg:block">
+    </div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto mt-12">
+      <div class="bg-white rounded-[30px] overflow-hidden shadow-lg">
+        <div class="bg-[#2B2B2B] p-4 text-white text-center">
+          <h2 class="text-xl font-source-serif-4 font-bold">{requirementsTitle}</h2>
+          
+        </div>
+        <div class="p-6">
+            <p class="text-md mt-1 font-source-serif-4 font-bold mb-4">{requirementsLocation}</p>
+          <ul class="space-y-4">
+            {requirementItems.map((item) => (
+              <li class="flex items-start">
+                <div class="text-green-600 mr-3 mt-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="font-source-serif-4"><PortableText value={item.item} /></div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .requirements-background {
+    background-image: url("/images/grid.svg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>
