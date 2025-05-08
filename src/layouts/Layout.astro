@@ -6,6 +6,7 @@ import '@fontsource/source-serif-4';
 import '@fontsource/source-serif-4/700.css';
 import '@fontsource/source-sans-pro';
 import { ViewTransitions } from 'astro:transitions';
+import '../components/ScrollAnimations.astro';
 
 interface Props {
   title: string;
@@ -26,44 +27,6 @@ const { title } = Astro.props;
     <Header />
     <slot />
     <Footer />
-    
-    <script is:inline>
-      // Initialize intersection observer for animations
-      function setupObserver() {
-        // Select all elements to animate
-        const animElements = document.querySelectorAll('.animate-on-scroll');
-        
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('animate');
-              // Optional: stop observing once animated
-              observer.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.15 });
-        
-        animElements.forEach(el => observer.observe(el));
-      }
-
-      // Function to initialize observers and load polyfill if needed
-      function initializeObservers() {
-        if (!window.IntersectionObserver) {
-          // Load polyfill if needed
-          const script = document.createElement('script');
-          script.src = 'https://cdn.jsdelivr.net/npm/intersection-observer@0.12.2/intersection-observer.min.js';
-          document.head.appendChild(script);
-          script.onload = setupObserver;
-        } else {
-          setupObserver();
-        }
-      }
-
-      // Initialize on page load
-      document.addEventListener('DOMContentLoaded', initializeObservers);
-      
-      // Re-initialize after view transitions
-      document.addEventListener('astro:page-load', initializeObservers);
-    </script>
+    <ScrollAnimations />
   </body>
 </html> 
