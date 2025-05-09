@@ -19,6 +19,7 @@ import DonorImages from './DonorImages.astro';
 import Winners from './Winners.astro';
 import Schedule from './Schedule.astro';
 import Requirements from './Requirements.astro';
+import AwardTabs from './AwardTabs.astro';
 
 interface Props {
   content: PageContent[];
@@ -72,6 +73,8 @@ const {
         return <Schedule content={block} />;
       case 'requirements':
         return <Requirements content={block} />;
+      case 'awardTabs':
+        return <AwardTabs content={block} />;
       default:
         return null;
     }

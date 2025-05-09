@@ -240,6 +240,21 @@ export interface RequirementsContent {
   }[];
 }
 
+export interface AwardTabsContent {
+  _type: 'awardTabs';
+  title: string;
+  tabs: {
+    title: string;
+    content: {
+      category: string;
+      items: {
+        title: string;
+        value: string;
+      }[];
+    }[];
+  }[];
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -257,7 +272,8 @@ export type PageContent =
   | DonorImagesContent
   | WinnersContent
   | ScheduleContent
-  | RequirementsContent;
+  | RequirementsContent
+  | AwardTabsContent;
 
 export interface PageData {
   title: string;

@@ -157,6 +157,17 @@ export const PAGE_CONTENT_QUERY = `
   requirementsLocation,
   "requirementItems": requirementItems[]{
     item
+  },
+  // Award Tabs fields
+  "tabs": tabs[]{
+    title,
+    "content": content[]{
+      category,
+      "items": items[]{
+        title,
+        value
+      }
+    }
   }
 }`;
 

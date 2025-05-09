@@ -1,172 +1,177 @@
+---
+// No props needed for this component
+---
+
 <script is:inline>
-    // Initialize intersection observer for animations
-    function setupObserver() {
-      // Select all elements to animate
-      const animElements = document.querySelectorAll('.animate-on-scroll');
-      
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animate');
-            // Optional: stop observing once animated
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.15 });
-      
-      animElements.forEach(el => observer.observe(el));
-    }
-
-    // Function to initialize observers and load polyfill if needed
-    function initializeObservers() {
-      if (!window.IntersectionObserver) {
-        // Load polyfill if needed
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/intersection-observer@0.12.2/intersection-observer.min.js';
-        document.head.appendChild(script);
-        script.onload = setupObserver;
-      } else {
-        setupObserver();
-      }
-    }
-
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', initializeObservers);
+  // Initialize intersection observer for animations
+  function setupObserver() {
+    // Select all elements to animate
+    const animElements = document.querySelectorAll('.animate-on-scroll');
     
-    // Re-initialize after view transitions
-    document.addEventListener('astro:page-load', initializeObservers);
-  </script>
-  <style is:global>
-    .content ul {
-      list-style-type: disc;
-      margin-left: 20px;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+          // Optional: stop observing once animated
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    
+    animElements.forEach(el => observer.observe(el));
+  }
+
+  // Function to initialize observers and load polyfill if needed
+  function initializeObservers() {
+    if (!window.IntersectionObserver) {
+      // Load polyfill if needed
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/intersection-observer@0.12.2/intersection-observer.min.js';
+      document.head.appendChild(script);
+      script.onload = setupObserver;
+    } else {
+      setupObserver();
     }
-    /* Animation classes for viewport-based animations */
-    .animate-on-scroll {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', initializeObservers);
   
-    .animate-on-scroll.animate {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  
-    .fade-up {
-      transform: translateY(30px);
-    }
-  
-    .fade-in {
-      opacity: 0;
-    }
-  
-    .fade-up.animate {
-      transform: translateY(0);
-    }
-  
-    .fade-in.animate {
-      opacity: 1;
-    }
-    .slide-up {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
+  // Re-initialize after view transitions
+  document.addEventListener('astro:page-load', initializeObservers);
+</script>
 
-.slide-up.animate {
-  opacity: 1;
-  transform: translateY(0);
-}
-/* Animation delays */
-.delay-100 {
-  transition-delay: 100ms;
-}
+<style is:global>
+  .content ul {
+    list-style-type: disc;
+    margin-left: 20px;
+  }
+  /* Animation classes for viewport-based animations */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
 
-.delay-200 {
-  transition-delay: 200ms;
-}
+  .animate-on-scroll.animate {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
-.delay-300 {
-  transition-delay: 300ms;
-}
+  .fade-up {
+    transform: translateY(30px);
+  }
 
-.delay-400 {
-  transition-delay: 400ms;
-}
+  .fade-in {
+    opacity: 0;
+  }
 
-.delay-450 {
-  transition-delay: 450ms;
-}
+  .fade-up.animate {
+    transform: translateY(0);
+  }
 
-.delay-500 {
-  transition-delay: 500ms;
-}
+  .fade-in.animate {
+    opacity: 1;
+  }
+  .slide-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
 
-.delay-550 {
-  transition-delay: 550ms;
-}
+  .slide-up.animate {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Animation delays */
+  .delay-100 {
+    transition-delay: 100ms;
+  }
 
-.delay-600 {
-  transition-delay: 600ms;
-}
+  .delay-200 {
+    transition-delay: 200ms;
+  }
 
-.delay-650 {
-  transition-delay: 650ms;
-}
+  .delay-300 {
+    transition-delay: 300ms;
+  }
 
-.delay-700 {
-  transition-delay: 700ms;
-} 
+  .delay-400 {
+    transition-delay: 400ms;
+  }
 
-.delay-750 {
-  transition-delay: 750ms;
-}
+  .delay-450 {
+    transition-delay: 450ms;
+  }
 
-.delay-800 {
-  transition-delay: 800ms;
-}
+  .delay-500 {
+    transition-delay: 500ms;
+  }
 
-.delay-850 {
-  transition-delay: 850ms;
-}
+  .delay-550 {
+    transition-delay: 550ms;
+  }
 
-.delay-900 {
-  transition-delay: 900ms;
-}
+  .delay-600 {
+    transition-delay: 600ms;
+  }
 
-.delay-950 {
-  transition-delay: 950ms;
-}
+  .delay-650 {
+    transition-delay: 650ms;
+  }
 
-.delay-1000 {
-  transition-delay: 1000ms;
-} 
+  .delay-700 {
+    transition-delay: 700ms;
+  } 
 
-.delay-1050 {
-  transition-delay: 1050ms;
-}
+  .delay-750 {
+    transition-delay: 750ms;
+  }
 
-.delay-1100 {
-  transition-delay: 1100ms;
-}
+  .delay-800 {
+    transition-delay: 800ms;
+  }
 
-.delay-1150 {
-  transition-delay: 1150ms;
-}
+  .delay-850 {
+    transition-delay: 850ms;
+  }
 
-.delay-1200 {
-  transition-delay: 1200ms;
-}
+  .delay-900 {
+    transition-delay: 900ms;
+  }
 
-.delay-1250 {
-  transition-delay: 1250ms;
-}
+  .delay-950 {
+    transition-delay: 950ms;
+  }
 
-.delay-1300 {
-  transition-delay: 1300ms;
-}
+  .delay-1000 {
+    transition-delay: 1000ms;
+  } 
 
+  .delay-1050 {
+    transition-delay: 1050ms;
+  }
 
+  .delay-1100 {
+    transition-delay: 1100ms;
+  }
 
-  </style>
+  .delay-1150 {
+    transition-delay: 1150ms;
+  }
+
+  .delay-1200 {
+    transition-delay: 1200ms;
+  }
+
+  .delay-1250 {
+    transition-delay: 1250ms;
+  }
+
+  .delay-1300 {
+    transition-delay: 1300ms;
+  }
+</style>
+
+<!-- Empty fragment to make it a valid component -->
+<></> 

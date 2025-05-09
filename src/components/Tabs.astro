@@ -1,0 +1,112 @@
+---
+import type { TabsContent } from "../lib/types";
+
+interface Props {
+  content: TabsContent;
+}
+
+const { content } = Astro.props;
+const { title, tabs } = content;
+---
+
+<section class="py-16 bg-[#f8f8f8]">
+  <div class="container mx-auto px-4">
+    <h1 class="text-5xl sm:text-6xl font-bold text-center mb-12 font-source-serif-4">{title}</h1>
+
+    <div class="max-w-[1200px] mx-auto">
+      <div class="bg-white rounded-[30px] overflow-hidden custom-shadow grid grid-cols-1 md:grid-cols-4">
+        <!-- Tab Navigation -->
+        <div class="bg-[#2B2B2B] p-4 gap-2 col-span-1">
+          {tabs.map((tab, index) => (
+            <button
+              class="tab-button block text-white px-6 py-3 rounded-full font-source-serif-4 text-lg transition-all duration-300 text-left"
+              data-tab={index}
+              data-active={index === 0}
+            >
+              {tab.title}
+            </button>
+          ))}
+        </div>
+
+        <!-- Tab Content -->
+        <div class="p-8 col-span-3">
+          {tabs.map((tab, tabIndex) => (
+            <div 
+              class="tab-content"
+              data-tab={tabIndex}
+              data-active={tabIndex === 0}
+            >
+              {tab.content.map((section) => (
+                <div class="mb-8 last:mb-0">
+                  <h3 class="text-2xl font-source-serif-4 font-bold mb-4">{section.category}</h3>
+                  <div class="grid grid-cols-1 gap-4">
+                    {section.items.map((item) => (
+                      <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 pb-4">
+                        <div class="font-source-serif-4 text-lg">{item.title}</div>
+                        <div class="font-source-serif-4 text-lg text-gray-600">{item.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .custom-shadow {
+    box-shadow: -478px 478px 189px 0px rgba(0, 0, 0, 0.00), 
+                -306px 306px 173px 0px rgba(0, 0, 0, 0.01), 
+                -172px 172px 146px 0px rgba(0, 0, 0, 0.03), 
+                -76px 77px 108px 0px rgba(0, 0, 0, 0.04), 
+                -19px 19px 60px 0px rgba(0, 0, 0, 0.05);
+  }
+
+  .tab-button[data-active="true"] {
+    background-color: #4CAF50;
+  }
+
+  .tab-button:not([data-active="true"]):hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content[data-active="true"] {
+    display: block;
+  }
+</style>
+
+<script>
+  function setupTabs() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const tabIndex = button.getAttribute('data-tab');
+
+        // Update active states for buttons
+        tabButtons.forEach(btn => btn.setAttribute('data-active', 'false'));
+        button.setAttribute('data-active', 'true');
+
+        // Update active states for content
+        tabContents.forEach(content => {
+          content.setAttribute('data-active', content.getAttribute('data-tab') === tabIndex);
+        });
+      });
+    });
+  }
+
+  // Setup tabs on initial load
+  setupTabs();
+
+  // Setup tabs when navigating between pages (for Astro's view transitions)
+  document.addEventListener('astro:page-load', setupTabs);
+</script> 

@@ -1,0 +1,211 @@
+---
+import '../styles/global.css';
+import MainLayout from '../layouts/main.astro';
+import Tabs from '../components/Tabs.astro';
+
+// Sample data for demonstration
+const tabsContent = {
+  _type: 'tabs',
+  title: 'All Awards',
+  tabs: [
+    {
+      title: 'Market Beef Award Donors',
+      content: [
+        {
+          category: 'Lottery Steer Classes',
+          items: [
+            { title: 'Lottery Steer Grand Champion', value: 'Flynn Livestock' },
+            { title: 'Lottery Steer Reserve Grand Champion', value: 'Sunrise Cooperative' },
+            { title: '3rd-5th Overall Lottery Steers', value: 'Lottery Steer Club' },
+            { title: 'Lottery Steer Angus Champion', value: 'Charlie & Janet Alferio' },
+            { title: 'Lottery Steer Angus Reserve Champion', value: 'Wellington Implement' },
+            { title: 'Lottery Steer Hereford Champion', value: 'Briar Hill Farm' },
+            { title: 'Lottery Steer Hereford Reserve Champion', value: 'J. Hadjis Farms' },
+            { title: 'Lottery Steer Rate of Gain', value: 'John & Lisa Piwinski' }
+          ]
+        },
+        {
+          category: 'Modern Beef Classes',
+          items: [
+            { title: 'Modern Beef Champion Feeder Calf', value: 'Bremke For Judge' },
+            { title: 'Modern Beef Reserve Champion Feeder Calf', value: 'Polen Implement, Inc.' },
+            { title: 'Grand Champion Modern Beef Steer', value: 'Elyria Fence, Inc.' },
+            { title: 'Reserve Grand Champion Modern Beef Steer', value: 'Elyria Fence, Inc.' },
+            { title: '3rd-5th Overall Modern Beef Steer', value: 'Kelling Family' },
+            { title: 'Modern Beef Steer Rate of Gain', value: 'John & Lisa Piwinski' }
+          ]
+        },
+        {
+          category: 'Market Dairy Beef Classes',
+          items: [
+            { title: 'Grand Champion Dairy Steer', value: 'J. Hadjis Farms' },
+            { title: 'Reserve Grand Champion Dairy Steer', value: 'Born Farms' },
+            { title: '3rd-5th Overall Dairy Steers', value: 'Brenna Finnegan' },
+            { title: 'Champion Dairy Feeder', value: 'J. Hadjis Farms' },
+            { title: 'Reserve Champion Dairy Feeder', value: 'Briar Hill Farm' },
+            { title: 'Dairy Steer Rate of Gain', value: 'William & Debra Rose' }
+          ]
+        },
+        {
+          category: 'BBR Classes',
+          items: [
+            { title: 'Champion BBR Beef Steer Lorain County', value: 'Vicki Denes & Family' },
+            { title: 'Reserve Champion BBR Beef Steer Lorain County', value: 'Handrosh Farms' },
+            { title: 'Champion BBR Dairy Steer Lorain County', value: 'Faye Handrosh' },
+            { title: 'Reserve Champion BBR Dairy Steer Lorain County', value: 'Dawn Handrosh & Emma Lewis' }
+          ]
+        },
+        {
+          category: 'Showmanship Classes',
+          items: [
+            { title: 'Market Beef — Beg.', value: 'Firelands FFA Chapter' },
+            { title: 'Market Beef — Jr. Showmanship', value: 'Flynn Livestock' },
+            { title: 'Market Beef — Int. Showmanship', value: 'Tim & Amy Smith' },
+            { title: 'Market Beef — Sr. Showmanship', value: 'J. Hadjis Farms' }
+          ]
+        },
+        {
+          category: 'Supreme Beef Showmanship',
+          items: [
+            { title: 'Supreme Beef Showmanship Champion', value: 'Bremke For Judge' },
+            { title: 'Reserve Supreme Champion', value: 'Aaron, Dori & Delany Adams' }
+          ]
+        }
+      ]
+    },
+    {
+      title: 'Market Beef Award Donors 2',
+      content: [
+        {
+          category: 'Lottery Steer Classes 1',
+          items: [
+            { title: 'Lottery Steer Grand Champion', value: 'Flynn Livestock' },
+            { title: 'Lottery Steer Reserve Grand Champion', value: 'Sunrise Cooperative' },
+            { title: '3rd-5th Overall Lottery Steers', value: 'Lottery Steer Club' },
+            { title: 'Lottery Steer Angus Champion', value: 'Charlie & Janet Alferio' },
+            { title: 'Lottery Steer Angus Reserve Champion', value: 'Wellington Implement' },
+            { title: 'Lottery Steer Hereford Champion', value: 'Briar Hill Farm' },
+            { title: 'Lottery Steer Hereford Reserve Champion', value: 'J. Hadjis Farms' },
+            { title: 'Lottery Steer Rate of Gain', value: 'John & Lisa Piwinski' }
+          ]
+        },
+        {
+          category: 'Modern Beef Classes',
+          items: [
+            { title: 'Modern Beef Champion Feeder Calf', value: 'Bremke For Judge' },
+            { title: 'Modern Beef Reserve Champion Feeder Calf', value: 'Polen Implement, Inc.' },
+            { title: 'Grand Champion Modern Beef Steer', value: 'Elyria Fence, Inc.' },
+            { title: 'Reserve Grand Champion Modern Beef Steer', value: 'Elyria Fence, Inc.' },
+            { title: '3rd-5th Overall Modern Beef Steer', value: 'Kelling Family' },
+            { title: 'Modern Beef Steer Rate of Gain', value: 'John & Lisa Piwinski' }
+          ]
+        },
+        {
+          category: 'Market Dairy Beef Classes',
+          items: [
+            { title: 'Grand Champion Dairy Steer', value: 'J. Hadjis Farms' },
+            { title: 'Reserve Grand Champion Dairy Steer', value: 'Born Farms' },
+            { title: '3rd-5th Overall Dairy Steers', value: 'Brenna Finnegan' },
+            { title: 'Champion Dairy Feeder', value: 'J. Hadjis Farms' },
+            { title: 'Reserve Champion Dairy Feeder', value: 'Briar Hill Farm' },
+            { title: 'Dairy Steer Rate of Gain', value: 'William & Debra Rose' }
+          ]
+        },
+        {
+          category: 'BBR Classes',
+          items: [
+            { title: 'Champion BBR Beef Steer Lorain County', value: 'Vicki Denes & Family' },
+            { title: 'Reserve Champion BBR Beef Steer Lorain County', value: 'Handrosh Farms' },
+            { title: 'Champion BBR Dairy Steer Lorain County', value: 'Faye Handrosh' },
+            { title: 'Reserve Champion BBR Dairy Steer Lorain County', value: 'Dawn Handrosh & Emma Lewis' }
+          ]
+        },
+        {
+          category: 'Showmanship Classes',
+          items: [
+            { title: 'Market Beef — Beg.', value: 'Firelands FFA Chapter' },
+            { title: 'Market Beef — Jr. Showmanship', value: 'Flynn Livestock' },
+            { title: 'Market Beef — Int. Showmanship', value: 'Tim & Amy Smith' },
+            { title: 'Market Beef — Sr. Showmanship', value: 'J. Hadjis Farms' }
+          ]
+        },
+        {
+          category: 'Supreme Beef Showmanship',
+          items: [
+            { title: 'Supreme Beef Showmanship Champion', value: 'Bremke For Judge' },
+            { title: 'Reserve Supreme Champion', value: 'Aaron, Dori & Delany Adams' }
+          ]
+        }
+      ]
+    },
+    {
+      title: 'Dairy Award Donors',
+      content: []
+    },
+    {
+      title: 'Dog Award Donors',
+      content: []
+    },
+    {
+      title: 'Goat Award Donors',
+      content: []
+    },
+    {
+      title: 'Fowl Award Donors',
+      content: []
+    },
+    {
+      title: 'Horse Award Donors',
+      content: []
+    },
+    {
+      title: 'Small Animal & Self-determined Special Awards',
+      content: []
+    },
+    {
+      title: 'Rabbit Award Donors',
+      content: []
+    },
+    {
+      title: 'Sheep Award Donors',
+      content: []
+    },
+    {
+      title: 'Swine Award Donors',
+      content: []
+    },
+    {
+      title: 'Large Animal Sweepstakes Showmanship',
+      content: []
+    },
+    {
+      title: 'Small Animal Sweepstakes Showmanship',
+      content: []
+    },
+    {
+      title: 'Product & Still Life Award Donors',
+      content: []
+    },
+    {
+      title: 'Special Interest Project Award Donors',
+      content: []
+    },
+    {
+      title: 'Ffa Award Donors',
+      content: []
+    },
+    {
+      title: 'Royal Court/opening Ceremony Award Donors',
+      content: []
+    },
+    {
+      title: 'Public Speaking Award Donors',
+      content: []
+    }
+  ]
+};
+---
+
+<MainLayout content={{ title: 'Awards Example' }}>
+  <Tabs content={tabsContent} />
+</MainLayout> 
