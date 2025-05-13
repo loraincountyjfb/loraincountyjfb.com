@@ -1,5 +1,6 @@
 ---
 import { PortableText } from "astro-portabletext";
+import Button from "./Button.astro";
 
 interface Column {
   title: string;
@@ -14,6 +15,8 @@ interface Props {
     sectionTitle: string;
     sectionDescription: any[];
     columns: Column[];
+    buttonLabel?: string;
+    buttonHref?: string;
   };
 }
 
@@ -24,9 +27,11 @@ const { content } = Astro.props;
   <div class="container mx-auto px-4">
     <div class="max-w-3xl mx-auto text-center mb-16 animate-on-scroll fade-in">
       <h2 class="text-[50px] font-bold font-source-serif-4 tracking-[-0.03em] text-[#18181B] mb-6" set:html={content.sectionTitle}></h2>
-      <div class="font-source-serif-4 text-[#000] text-[20px] ">
-        {content.description}
-      </div>
+      {content.sectionDescription && (
+        <div class="font-source-serif-4 text-[#000] text-[20px] ">
+          {content.sectionDescription}
+        </div>
+      )}
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 max-w-7xl mx-auto animate-on-scroll fade-in slide-up column-container">
@@ -46,5 +51,11 @@ const { content } = Astro.props;
         </div>
       ))}
     </div>
+ 
+    {content.buttonLabel && content.buttonHref && (
+      <div class="flex justify-center mt-12">
+        <Button href={content.buttonHref} background="primary">{content.buttonLabel}</Button>
+      </div>
+    )}
   </div>
 </section> 

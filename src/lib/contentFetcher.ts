@@ -15,6 +15,8 @@ export const PAGE_CONTENT_QUERY = `
   "mainImage": mainImage{ "url": asset->url },
   "secondaryImage": secondaryImage{ "url": asset->url },
   buttons[]{ text, link },
+  buttonLabel,
+  buttonHref,
   featureBlocks[]{
     title,
     "icon": icon{ asset->{ url } },
