@@ -255,6 +255,60 @@ export interface AwardTabsContent {
   }[];
 }
 
+// Form type definitions
+export type FormType = 'cow' | 'pig' | 'chicken' | 'sheep' | 'general';
+
+// Field definitions for each form type
+export interface FormFields {
+  beef: {
+    weight: boolean;
+    grade: boolean;
+    age: boolean;
+    breed: boolean;
+  };
+  pig: {
+    weight: boolean;
+    litterSize: boolean;
+    age: boolean;
+    breed: boolean;
+  };
+  chicken: {
+    weight: boolean;
+    eggProduction: boolean;
+    age: boolean;
+    breed: boolean;
+  };
+  sheep: {
+    weight: boolean;
+    woolQuality: boolean;
+    age: boolean;
+    breed: boolean;
+  };
+  general: {
+    // Default fields that appear in all forms
+    firstName: boolean;
+    lastName: boolean;
+    email: boolean;
+    phone: boolean;
+    address: boolean;
+    notes: boolean;
+  };
+}
+
+export interface FormContent {
+  _type: 'form';
+  title: string;
+  description: string;
+  backgroundImage?: {
+    url?: string;
+    alt?: string;
+  };
+  submitButtonText?: string;
+  textPosition?: 'left' | 'right';
+  id?: string;
+  formType: FormType;
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -273,7 +327,8 @@ export type PageContent =
   | WinnersContent
   | ScheduleContent
   | RequirementsContent
-  | AwardTabsContent;
+  | AwardTabsContent
+  | FormContent;
 
 export interface PageData {
   title: string;

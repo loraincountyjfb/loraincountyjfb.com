@@ -20,6 +20,7 @@ import Winners from './Winners.astro';
 import Schedule from './Schedule.astro';
 import Requirements from './Requirements.astro';
 import AwardTabs from './AwardTabs.astro';
+import Form from './Form.astro';
 
 interface Props {
   content: PageContent[];
@@ -75,6 +76,8 @@ const {
         return <Requirements content={block} />;
       case 'awardTabs':
         return <AwardTabs content={block} />;
+      case 'form':
+        return <Form content={block} />;
       default:
         return null;
     }
