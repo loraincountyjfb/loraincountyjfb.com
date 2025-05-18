@@ -17,6 +17,7 @@ interface Props {
         link?: string;
       };
       title: string;
+      link?: string;
     }[];
   };
 }
@@ -24,6 +25,8 @@ interface Props {
 const { content } = Astro.props;
 
 const { title, description, link, linkText, videos } = content;
+
+console.log(videos)
 ---
 
 <section class="bg-white py-16 calendar-section">
@@ -33,15 +36,17 @@ const { title, description, link, linkText, videos } = content;
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {videos.map((video, idx) => (
                 <a
-                  href={video.link}
+                  href={video.video?.link || video.link}
                   target="_blank"
                   class={`relative group rounded-2xl overflow-hidden shadow-lg transition-transform duration-200 hover:scale-[1.02] bg-gray-100 animate-on-scroll slide-up ${idx === 0 ? 'md:col-span-2 row-span-2 lg:col-span-2 lg:row-span-1' : ''}`}
                 style={`transition-delay: ${idx * 100}ms`}>
-                  <img
-                    src={video.video.url}
-                    alt={video.video.alt}
-                    class="w-full h-64 object-cover group-hover:brightness-90 transition-all duration-200"
-                  />
+                  {video.video && (
+                    <img
+                      src={video.video.url}
+                      alt={video.video.alt}
+                      class="w-full h-64 object-cover group-hover:brightness-90 transition-all duration-200"
+                    />
+                  )}
                   {/* Overlay for play button and title */}
                   <span class="absolute bottom-0 left-0 w-full flex items-end p-4 bg-gradient-to-t from-black/70 to-transparent">
                     <span class="flex items-center mr-3">

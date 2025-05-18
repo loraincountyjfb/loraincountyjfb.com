@@ -27,6 +27,7 @@ interface Props {
   content: {
     heroLayout: 'simpleButtons' | 'imageWithText' | 'featureBlocks' | 'teamFormat';
     title: string;
+    headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     subtitle?: string;
     mainImage?: { url?: string };
     secondaryImage?: { url?: string };
@@ -39,6 +40,8 @@ interface Props {
 }
 
 const { content } = Astro.props;
+const headingClass = "font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up";
+const HeadingTag = content.headingLevel || 'h1';
 
 function getStyle(bg?: string, color?: string) {
   return {
@@ -63,9 +66,9 @@ const socialIconMap = {
     {content.heroLayout === 'simpleButtons' && (
       <div class="grid items-center justify-center">
         <div class="col-span-1 text-center">
-          <h1 class="font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+          <HeadingTag class={headingClass}>
             {content.title}
-          </h1>
+          </HeadingTag>
           {content.subtitle && (
             <p class="font-source-sans-pro font-normal text-[22px] leading-[39px] mt-6 animate-on-scroll slide-up delay-100">
               {content.subtitle}
@@ -90,9 +93,9 @@ const socialIconMap = {
       <div class="grid lg:grid-cols-2 gap-x-10 items-center">
 
         <div class="col-span-1">
-          <h1 class="font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+          <HeadingTag class={headingClass}>
             {content.title}
-          </h1>
+          </HeadingTag>
           {content.subtitle && (
             <p class="font-source-serif-4 font-normal text-[20px] leading-[30px] mt-6 animate-on-scroll slide-up delay-100">
               {content.subtitle}
@@ -148,9 +151,9 @@ const socialIconMap = {
     )}
     {content.heroLayout === 'teamFormat' && (
         <div class="max-w-[850px] text-center mx-auto">
-          <h1 class="font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up">
+          <HeadingTag class={headingClass}>
             {content.title}
-          </h1>
+          </HeadingTag>
           {content.subtitle && (
             <p class="font-source-serif-4 font-normal text-[20px] leading-[30px] mt-6 animate-on-scroll slide-up delay-100">
               {content.subtitle}
