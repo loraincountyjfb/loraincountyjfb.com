@@ -309,6 +309,33 @@ export interface FormContent {
   formType: FormType;
 }
 
+export interface VideosContent {
+  _type: 'videos';
+  heroLayout: 'simpleButtons' | 'imageWithText' | 'featureBlocks' | 'teamFormat';
+  title: string;
+  headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  subtitle?: string;
+  mainImage?: { url?: string };
+  secondaryImage?: { url?: string };
+  buttons?: {
+    text: string;
+    link: string;
+  }[];
+  featureBlocks?: {
+    title: string;
+    icon?: { asset?: { url?: string } };
+    link?: string;
+    backgroundColor?: string;
+  }[];
+  socialLinks?: {
+    platform: string;
+    url: string;
+    customIcon?: { asset?: { url?: string } };
+  }[];
+  backgroundColor?: string;
+  textColor?: string;
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -328,7 +355,8 @@ export type PageContent =
   | ScheduleContent
   | RequirementsContent
   | AwardTabsContent
-  | FormContent;
+  | FormContent
+  | VideosContent;
 
 export interface PageData {
   title: string;

@@ -36,7 +36,9 @@ export const PAGE_CONTENT_QUERY = `
   "columns": columns[]{
     title,
     description,
-    "image": image{ "url": asset->url }
+    "image": image{ "url": asset->url },
+    link,
+    linkText
   },
   // Content block fields
   "features": features[]{
@@ -171,7 +173,8 @@ export const PAGE_CONTENT_QUERY = `
         value
       }
     }
-  }
+  },
+  aboveTitleText
 }`;
 
 

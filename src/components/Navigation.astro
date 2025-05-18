@@ -148,13 +148,20 @@ const headerMenu = data as HeaderMenuType;
         class="flex overflow-hidden flex-wrap flex-auto gap-5 justify-center items-center max-md:hidden max-sm:hidden"
         role="menubar"
       >
-        <a
+        <!-- <a
           href="/history"
           class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           role="menuitem"
         >
           History
-        </a>
+        </a> -->
+        <a
+        href="/"
+        class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        role="menuitem"
+      >
+        Home
+      </a>
         <a
           href="/fair-entry"
           class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -162,7 +169,7 @@ const headerMenu = data as HeaderMenuType;
         >
           Fair Entry
         </a>
-        <a
+        <!-- <a
           href="/forms"
           class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           role="menuitem"
@@ -203,7 +210,7 @@ const headerMenu = data as HeaderMenuType;
           role="menuitem"
         >
           Departments
-        </a>
+        </a> -->
       </div>
 
       <!-- Cart Button -->
@@ -232,7 +239,7 @@ const headerMenu = data as HeaderMenuType;
 </nav>
 
 <!-- Mobile Menu (hidden by default) -->
-<!-- <div id="mobile-menu" class="fixed inset-0 z-50 bg-white transform translate-x-full transition-transform duration-300 ease-in-out">
+<div id="mobile-menu" class="fixed inset-0 z-50 bg-white transform translate-x-full transition-transform duration-300 ease-in-out">
   <div class="flex justify-end p-4">
     <button id="close-mobile-menu" class="text-gray-800 p-2">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -241,42 +248,12 @@ const headerMenu = data as HeaderMenuType;
     </button>
   </div>
   <div class="px-4 py-2 space-y-4">
-    <a href="/history" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">History</a>
+    <a href="/" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Home</a>
     <a href="/fair-entry" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Fair Entry</a>
-    <a href="/forms" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Forms</a>
-    <a href="/sponsorships" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Sponsorships</a>
-    <a href="/stock-the-trailer" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Stock the Trailer</a>
-    <a href="/livestock-auction" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Livestock Auction</a>
-    <a href="/junior-fair-apparel" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Junior Fair Apparel</a>
-    <a href="/departments" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Departments</a>
   </div>
-</div> -->
+</div>
 
 <script>
-  function initializeMenu() {
-    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const closeMobileMenu = document.getElementById('close-mobile-menu');
-    
-    if (mobileMenuToggle && mobileMenu && closeMobileMenu) {
-      mobileMenuToggle.addEventListener('click', () => {
-        mobileMenu.classList.remove('translate-x-full');
-      });
-      
-      closeMobileMenu.addEventListener('click', () => {
-        mobileMenu.classList.add('translate-x-full');
-      });
-    }
-  }
-
-  // Initialize on page load
-  document.addEventListener('DOMContentLoaded', initializeMenu);
-  
-  // Re-initialize after view transitions
-  document.addEventListener('astro:page-load', initializeMenu);
-</script>
-<script>
-  // JavaScript for dropdown functionality
   function initializeMenu() {
     const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');

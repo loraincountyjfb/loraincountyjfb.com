@@ -1,0 +1,127 @@
+---
+import { PortableText } from "astro-portabletext";
+import Button from "./Button.astro";
+import Arrow from "../../assets/svgs/arrow.svg";
+import { Icon } from "astro-icon/components";
+import PlayButton from "../../assets/svgs/player-button.svg";
+
+interface ButtonType {
+  text: string;
+  link: string;
+}
+
+interface FeatureBlockType {
+  title: string;
+  icon?: { asset?: { url?: string } };
+  link?: string;
+  backgroundColor?: string;
+}
+
+interface SocialLinkType {
+  platform: string;
+  url: string;
+  customIcon?: { asset?: { url?: string } };
+}
+
+interface Props {
+  content: {
+    heroLayout: 'simpleButtons' | 'imageWithText' | 'featureBlocks' | 'teamFormat';
+    title: string;
+    headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+    subtitle?: string;
+    mainImage?: { url?: string };
+    secondaryImage?: { url?: string };
+    buttons?: ButtonType[];
+    featureBlocks?: FeatureBlockType[];
+    socialLinks?: SocialLinkType[];
+    backgroundColor?: string;
+    textColor?: string;
+  };
+}
+
+const { content } = Astro.props;
+const headingClass = "font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up";
+const HeadingTag = content.headingLevel || 'h1';
+
+function getStyle(bg?: string, color?: string) {
+  return {
+    ...(bg ? { background: bg } : {}),
+    ...(color ? { color } : {}),
+  };
+}
+
+// Social platform to icon mapping
+const socialIconMap = {
+  facebook: 'mingcute:facebook-line',
+  instagram: 'mingcute:instagram-line',
+  twitter: 'mingcute:twitter-line',
+  linkedin: 'mingcute:linkedin-line',
+  youtube: 'mingcute:youtube-line',
+  tiktok: 'mingcute:tiktok-line',
+};
+---
+
+<section class="hero-component" style={getStyle(content.backgroundColor, content.textColor)} transition:animate="fade">
+  <div class="container mx-auto py-8">
+
+      <div class="grid lg:grid-cols-2 gap-x-10 items-center">
+
+        <div class="col-span-1">
+          <HeadingTag class={headingClass}>
+            {content.title}
+          </HeadingTag>
+          {content.subtitle && (
+            <p class="font-source-serif-4 font-normal text-[20px] leading-[30px] mt-6 animate-on-scroll slide-up delay-100">
+              {content.subtitle}
+            </p>
+          )}
+          {content.buttons && content.buttons.length > 0 && (
+            <div class="flex flex-wrap gap-4 mt-8">
+              {content.buttons.map((btn, index) => (
+                <Button href={btn.link} background={`${index === 0 ? 'primary' : 'white'}`}>{btn.text}</Button>
+              ))}
+            </div>
+          )}
+        </div>
+        <div class="col-span-1 animate-on-scroll slide-up delay-100 mt-10 lg:mt-0">
+
+               <div class="mt-10 flex gap-6 flex-wrap">
+          {content.featureBlocks && content.featureBlocks.length > 0 && (
+            <>
+              {content.featureBlocks[0] && (
+                <a href={content.featureBlocks[0].link || '#'} class="rounded-xl shadow-md transition-transform hover:scale-105 py-6 px-8 bg-primary mx-auto text-left" style={`background-image: url(${content.featureBlocks[0].icon?.asset?.url}); background-size: cover; background-position: center; background-repeat: no-repeat;padding-top: 100px`}>
+                  <span class="flex flex-col">
+                    <PlayButton />
+                    <span class="font-bold text-left font-source-serif-4 text-[50px] leading-none">{content.featureBlocks[0].title}</span>
+                  </span>
+                </a>
+              )}
+              {content.featureBlocks[1] && (
+                <a href={content.featureBlocks[0].link || '#'} class="rounded-xl flex shadow-md transition-transform hover:scale-105 py-6 px-8 col-span-1 bg-primary max-w-[380px] mx-auto">
+                  <span class="flex flex-col">
+                    {content.featureBlocks[0].icon?.asset?.url && (
+                      <img src={content.featureBlocks[0].icon.asset.url} alt={content.featureBlocks[0].title} class="mb-2 object-contain" />
+                    )}
+                    <PlayButton />
+                    <span class="font-bold text-left font-source-serif-4 text-[32px] leading-none">{content.featureBlocks[0].title}</span>
+                  </span>
+                </a>
+              )}
+              {content.featureBlocks[2] && (
+                <a href={content.featureBlocks[2].link || '#'} class="rounded-xl flex shadow-md transition-transform hover:scale-105 py-6 px-8 col-span-1 bg-[#DBDBDB] max-w-[380px] mx-auto">
+                  <span class="flex flex-col">
+                    {content.featureBlocks[2].icon?.asset?.url && (
+                      <img src={content.featureBlocks[2].icon.asset.url} alt={content.featureBlocks[2].title} class=" object-contain self-start" />
+                    )}
+                    <PlayButton />
+                    <span class="font-bold font-source-serif-4 text-[32px] leading-none">{content.featureBlocks[2].title}</span>                  
+                  </span>
+                </a>
+              )}
+            </>
+          )}
+        </div>
+        </div>
+      </div>
+  </div>
+</section>

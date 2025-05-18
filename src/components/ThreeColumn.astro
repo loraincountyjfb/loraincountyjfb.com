@@ -8,6 +8,8 @@ interface Column {
   image?: {
     url?: string;
   };
+  link: string;
+  linkText: string;
 }
 
 interface Props {
@@ -41,13 +43,16 @@ const { content } = Astro.props;
               <img 
                 src={column.image.url} 
                 alt={column.title}
-                class="w-full h-full object-contain"
+                class="w-full h-full object-contain mb-4"
               />
           )}
           <h3 class="text-2xl font-bold mb-4 font-poppins text-[#18181B]" set:html={column.title}></h3>
           <div class="prose prose-lg max-w-none font-poppins text-[#52525B] prose-ul:pl-0 prose-li:pl-0">
             <PortableText value={column.description} />
           </div>
+          {column.link && (
+            <Button href={column.link} background="primary">{column.linkText}</Button>
+          )}
         </div>
       ))}
     </div>
