@@ -3,6 +3,7 @@ import { loadQuery } from '../../lib/load-query';
 import type { SanityDocument } from "@sanity/client";
 import imageUrlBuilder from '@sanity/image-url';
 import { sanityClient } from "sanity:client";
+import WhiteLogo from '../../assets/images/white-logo.svg';
 
 
 const builder = imageUrlBuilder(sanityClient);
@@ -106,12 +107,12 @@ const copyrightText = `© ${currentYear} Lorain County JFB. All rights reserved.
     <div class="flex flex-col lg:flex-row justify-between gap-12">
       <!-- Logo and Social -->
       <div class="flex flex-col items-center lg:items-start gap-8 min-w-[220px]">
-        <img src="/assets/images/white-logo.svg" alt="Lorain County Junior Fair Board Logo" class="w-40 mb-4 max-w-[153px]" />
+        <WhiteLogo class="w-40 mb-4 max-w-[153px]" width="153" />
         <div class="flex gap-6 mb-2">
-          <a href="#" aria-label="Facebook" class="hover:text-gray-300">
+          <a href="https://www.facebook.com/LCJFB/" aria-label="Facebook" class="hover:text-gray-300">
             <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
           </a>
-          <a href="#" aria-label="YouTube" class="hover:text-gray-300">
+          <a href="https://www.youtube.com/user/loraincountyfair" aria-label="YouTube" class="hover:text-gray-300">
             <svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a2.994 2.994 0 0 0-2.112-2.116C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.386.57A2.994 2.994 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a2.994 2.994 0 0 0 2.112 2.116C4.495 20.5 12 20.5 12 20.5s7.505 0 9.386-.57a2.994 2.994 0 0 0 2.112-2.116C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
           </a>
         </div>
