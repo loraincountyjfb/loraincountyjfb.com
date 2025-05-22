@@ -1,4 +1,3 @@
-
 <div class="max-w-4xl mx-auto bg-primary py-12 px-4 sm:px-6 lg:px-8 rounded-2xl" transition:animate="fade" id="pig-form">
   <div class="mx-auto">
     <div class="text-white mb-8">
@@ -124,8 +123,15 @@
           type="file" 
           name="pig_photo" 
           id="pig_photo" 
+          accept="image/*"
           class="w-full text-white"
+          data-max-size="1"
         />
+        <p id="file-size-error" class="text-red-500 mt-2 hidden">
+          File is too large (max 1MB). Please reduce the size using 
+          <a href="https://tinypng.com" target="_blank" class="underline">TinyPNG</a> 
+          before uploading.
+        </p>
       </div>
 
       <div class="animate-on-scroll fade-in delay-500">
@@ -210,4 +216,25 @@
       referrerInput.value = document.referrer || 'Direct';
     }
   }
+
+  // Get all file inputs with max size restriction
+  const fileInputs = document.querySelectorAll<HTMLInputElement>('input[type="file"][data-max-size]');
+
+  fileInputs.forEach(input => {
+    input.addEventListener('change', function(e) {
+      const target = e.target as HTMLInputElement;
+      const file = target.files?.[0];
+      const maxSizeAttr = input.getAttribute('data-max-size');
+      const maxSize = maxSizeAttr ? parseFloat(maxSizeAttr) : 1; // Default to 1MB if not specified
+      const errorElement = input.parentElement?.querySelector('#file-size-error');
+      
+      if (file && errorElement && (file.size / 1024 / 1024) > maxSize) {
+        // File is too large
+        target.value = ''; // Clear the input
+        errorElement.classList.remove('hidden');
+      } else if (errorElement) {
+        errorElement.classList.add('hidden');
+      }
+    });
+  });
 </script> 
