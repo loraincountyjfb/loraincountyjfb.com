@@ -157,9 +157,13 @@
       <div class="animate-on-scroll fade-in delay-500">
         <button 
           type="submit" 
-          class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-[#1e3a49] hover:bg-[#152a36] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          id="submit-button"
+          class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-[#1e3a49] hover:bg-[#152a36] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#1e3a49]"
         >
-          SUBMIT
+          <span id="submit-text">SUBMIT</span>
+          <div id="submit-spinner" class="hidden ml-2">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          </div>
         </button>
       </div>
     </form>
@@ -402,12 +406,31 @@
   const statsSpan = document.getElementById('compression-stats');
   const fileSizeError = document.getElementById('file-size-error');
   const compressionError = document.getElementById('compression-error');
+  const submitButton = document.getElementById('submit-button');
+  const submitText = document.getElementById('submit-text');
+  const submitSpinner = document.getElementById('submit-spinner');
 
   function hideAllMessages() {
     progressDiv?.classList.add('hidden');
     resultDiv?.classList.add('hidden');
     fileSizeError?.classList.add('hidden');
     compressionError?.classList.add('hidden');
+  }
+
+  function setSubmitButtonState(isCompressing, hasImage = false) {
+    if (!submitButton || !submitText || !submitSpinner) return;
+
+    if (isCompressing) {
+      // Disable button during compression
+      submitButton.disabled = true;
+      submitText.textContent = 'COMPRESSING IMAGE...';
+      submitSpinner.classList.remove('hidden');
+    } else {
+      // Enable button when compression is done or no image
+      submitButton.disabled = false;
+      submitText.textContent = 'SUBMIT';
+      submitSpinner.classList.add('hidden');
+    }
   }
 
   /**
@@ -429,6 +452,10 @@
     
     const percentage = progressPercentages[progress.stage] || 0;
     progressBar.style.width = `${percentage}%`;
+
+    // Update submit button state based on compression stage
+    const isCompressing = progress.stage !== 'complete' && progress.stage !== 'error';
+    setSubmitButtonState(isCompressing, true);
   }
 
   if (fileInput) {
@@ -441,13 +468,21 @@
       hideAllMessages();
       compressedFile = null;
 
-      if (!file) return;
+      if (!file) {
+        // No file selected, enable submit button
+        setSubmitButtonState(false, false);
+        return;
+      }
+
+      // File selected, disable submit button until compression is done
+      setSubmitButtonState(true, true);
 
       // Validate file size (max 5MB for TinyPNG)
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
         fileSizeError?.classList.remove('hidden');
         target.value = ''; // Clear the input
+        setSubmitButtonState(false, false); // Re-enable submit since no valid file
         return;
       }
 
@@ -472,6 +507,9 @@
             // Hide progress and show result
             progressDiv?.classList.add('hidden');
             resultDiv?.classList.remove('hidden');
+            
+            // Enable submit button - compression complete
+            setSubmitButtonState(false, true);
           }
         } else {
           throw new Error(result.error || 'Compression failed');
@@ -488,6 +526,9 @@
         
         // Keep the original file if compression fails
         compressedFile = file;
+        
+        // Enable submit button - compression failed but we have original file
+        setSubmitButtonState(false, true);
       }
     });
   }
@@ -506,4 +547,7 @@
       // Form will submit normally with the compressed file
     });
   }
+
+  // Initialize submit button state
+  setSubmitButtonState(false, false);
 </script> 

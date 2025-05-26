@@ -6,6 +6,7 @@ This project now includes automatic image compression using the TinyPNG API for 
 
 - **Automatic Compression**: Photos are compressed using TinyPNG API before form submission
 - **Progress Indicators**: Users see real-time progress during compression
+- **Submit Button Control**: Form submission is disabled during compression to prevent premature submission
 - **Error Handling**: Graceful fallback if compression fails
 - **Size Validation**: Maximum 5MB file size limit
 - **Compression Stats**: Shows users how much space was saved
@@ -57,10 +58,12 @@ Deploy your site to Netlify. The functions will be automatically deployed with t
 ### User Experience
 1. User selects an image file in any form
 2. File is validated (max 5MB, image types only)
-3. Compression progress is shown with a progress bar
-4. Compressed image replaces the original
-5. Form submits with the smaller, compressed image
-6. User sees compression statistics (e.g., "Reduced from 2.1 MB to 890 KB (57% savings)")
+3. **Submit button is disabled** with "COMPRESSING IMAGE..." text and spinner
+4. Compression progress is shown with a progress bar
+5. Compressed image replaces the original
+6. **Submit button is re-enabled** once compression completes
+7. Form submits with the smaller, compressed image
+8. User sees compression statistics (e.g., "Reduced from 2.1 MB to 890 KB (57% savings)")
 
 ### Technical Flow
 1. **Client-side**: Image is converted to base64
