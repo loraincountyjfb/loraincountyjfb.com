@@ -46,9 +46,11 @@ cd netlify/functions
 npm install
 ```
 
+**Important**: The project includes a `netlify.toml` configuration file with the `@netlify/plugin-functions-install-core` plugin. This automatically installs function dependencies during Netlify's build process, resolving any "tinify dependency not found" errors.
+
 ### 4. Deploy
 
-Deploy your site to Netlify. The functions will be automatically deployed.
+Deploy your site to Netlify. The functions will be automatically deployed with their dependencies installed.
 
 ## How It Works
 
@@ -111,6 +113,26 @@ The system handles various error scenarios:
 For higher usage, upgrade your TinyPNG plan at [tinypng.com/developers](https://tinypng.com/developers)
 
 ## Troubleshooting
+
+### Function Dependencies Not Installing
+If you see errors like "tinify dependency not found" during Netlify deployment:
+
+1. **Check netlify.toml**: Ensure the `netlify.toml` file exists in your project root with:
+   ```toml
+   [[plugins]]
+   package = "@netlify/plugin-functions-install-core"
+   ```
+
+2. **Alternative Solutions**:
+   - **Option A**: Move tinify to main package.json:
+     ```bash
+     npm install tinify
+     ```
+   - **Option B**: Add to build command in netlify.toml:
+     ```toml
+     [build]
+     command = "npm run build && cd netlify/functions && npm install"
+     ```
 
 ### Function Not Working
 1. Check Netlify function logs in dashboard

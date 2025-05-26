@@ -34,7 +34,8 @@
     "react-dom": "^19.1.0",
     "react-is": "^19.0.0",
     "sanity": "^3.81.0",
-    "styled-components": "^6.1.16"
+    "styled-components": "^6.1.16",
+    "tinify": "^1.8.0"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
