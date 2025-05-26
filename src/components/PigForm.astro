@@ -119,26 +119,45 @@
 
       <div class="animate-on-scroll slide-up delay-500">
         <label for="pig_photo" class="text-white mb-2 block">Upload photo of pig with tag:</label>
-        <div id="image-compressor-container">
-          <input 
-            type="file" 
-            name="pig_photo" 
-            id="pig_photo" 
-            accept="image/*"
-            class="w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-gray-700 hover:file:bg-gray-100"
-          />
-          <p class="text-white/80 text-sm mt-2">
-            Images larger than 1MB will be automatically compressed using TinyPNG for optimal upload speed.
+        <input 
+          type="file" 
+          name="pig_photo" 
+          id="pig_photo" 
+          accept="image/*"
+          class="w-full text-white"
+          data-max-size="5"
+        />
+        
+        <!-- Compression progress indicator -->
+        <div id="compression-progress" class="mt-2 hidden">
+          <div class="flex items-center space-x-2">
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+            <span id="compression-message" class="text-white text-sm"></span>
+          </div>
+          <div class="w-full bg-white/20 rounded-full h-2 mt-2">
+            <div id="compression-bar" class="bg-white h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+        
+        <!-- Compression result -->
+        <div id="compression-result" class="mt-2 hidden">
+          <p class="text-green-400 text-sm">
+            ✓ Image compressed successfully! 
+            <span id="compression-stats"></span>
           </p>
         </div>
-        <div id="compression-status" class="mt-3 hidden"></div>
+        
+        <!-- Error messages -->
+        <p id="file-size-error" class="text-red-500 mt-2 hidden">
+          File is too large (max 5MB). Please choose a smaller image.
+        </p>
+        <p id="compression-error" class="text-red-500 mt-2 hidden"></p>
       </div>
 
       <div class="animate-on-scroll fade-in delay-500">
         <button 
           type="submit" 
-          id="submit-button"
-          class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-[#1e3a49] hover:bg-[#152a36] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-[#1e3a49] hover:bg-[#152a36] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         >
           SUBMIT
         </button>
@@ -148,6 +167,161 @@
 </div>
 
 <script>
+  // Image compression utility functions
+  /**
+   * @param {File} file
+   * @returns {Promise<string>}
+   */
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result;
+        // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+        const base64 = result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /**
+   * @param {string} base64
+   * @param {string} filename
+   * @param {string} mimeType
+   * @returns {File}
+   */
+  function base64ToFile(base64, filename, mimeType) {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: mimeType });
+    
+    return new File([blob], filename, { type: mimeType });
+  }
+
+  /**
+   * @param {File} file
+   * @param {Function} onProgress
+   * @returns {Promise<Object>}
+   */
+  async function compressImage(file, onProgress) {
+    try {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        throw new Error('File must be an image');
+      }
+
+      // Validate file size (max 5MB for TinyPNG)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        throw new Error('Image too large. Maximum size is 5MB.');
+      }
+
+      onProgress?.({
+        stage: 'reading',
+        message: 'Reading image file...'
+      });
+
+      // Convert file to base64
+      const base64Data = await fileToBase64(file);
+
+      onProgress?.({
+        stage: 'uploading',
+        message: 'Uploading to compression service...'
+      });
+
+      // Send to Netlify function for compression
+      const response = await fetch('/.netlify/functions/compress-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageData: base64Data,
+          filename: file.name,
+          mimeType: file.type
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      onProgress?.({
+        stage: 'compressing',
+        message: 'Compressing image...'
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Compression failed');
+      }
+
+      onProgress?.({
+        stage: 'complete',
+        message: `Compression complete! Saved ${result.compressionRatio}%`
+      });
+
+      return {
+        success: true,
+        compressedImage: result.compressedImage,
+        originalSize: result.originalSize,
+        compressedSize: result.compressedSize,
+        compressionRatio: result.compressionRatio,
+        filename: result.filename,
+        mimeType: result.mimeType
+      };
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      onProgress?.({
+        stage: 'error',
+        message: errorMessage
+      });
+
+      return {
+        success: false,
+        error: errorMessage
+      };
+    }
+  }
+
+  /**
+   * @param {Object} result
+   * @returns {File|null}
+   */
+  function createCompressedFile(result) {
+    if (!result.success || !result.compressedImage || !result.filename || !result.mimeType) {
+      return null;
+    }
+
+    return base64ToFile(result.compressedImage, result.filename, result.mimeType);
+  }
+
+  /**
+   * @param {number} bytes
+   * @returns {string}
+   */
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
   function getTrafficSource() {
     const referrer = document.referrer;
     const url = new URL(window.location.href);
@@ -208,294 +382,128 @@
     // Set the page URL
     const pageUrlInput = document.getElementById('page-url');
     if (pageUrlInput) {
-      (pageUrlInput as HTMLInputElement).value = window.location.href;
+      pageUrlInput.value = window.location.href;
     }
     
     // Set the full referrer
     const referrerInput = document.getElementById('referrer');
     if (referrerInput) {
-      (referrerInput as HTMLInputElement).value = document.referrer || 'Direct';
+      referrerInput.value = document.referrer || 'Direct';
     }
   }
 
-  // Image compression functionality
+  // Image compression handling
+  let compressedFile = null;
   const fileInput = document.getElementById('pig_photo');
-  const statusContainer = document.getElementById('compression-status');
-  const submitButton = document.getElementById('submit-button');
-  let isCompressing = false;
+  const progressDiv = document.getElementById('compression-progress');
+  const progressMessage = document.getElementById('compression-message');
+  const progressBar = document.getElementById('compression-bar');
+  const resultDiv = document.getElementById('compression-result');
+  const statsSpan = document.getElementById('compression-stats');
+  const fileSizeError = document.getElementById('file-size-error');
+  const compressionError = document.getElementById('compression-error');
 
-  // Utility functions
-  /**
-   * @param {number} bytes
-   */
-  function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  function hideAllMessages() {
+    progressDiv?.classList.add('hidden');
+    resultDiv?.classList.add('hidden');
+    fileSizeError?.classList.add('hidden');
+    compressionError?.classList.add('hidden');
   }
 
   /**
-   * @param {File} file
-   * @param {number} maxSizeKB
+   * @param {Object} progress
    */
-  function shouldCompress(file, maxSizeKB = 1024) {
-    return file.size > (maxSizeKB * 1024);
-  }
+  function updateProgress(progress) {
+    if (!progressMessage || !progressBar) return;
 
-  /**
-   * @param {File} file
-   */
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  /**
-   * @param {string} base64
-   * @param {string} filename
-   * @param {string} mimeType
-   */
-  function base64ToFile(base64, filename, mimeType = 'image/jpeg') {
-    const byteCharacters = atob(base64.split(',')[1]);
-    const byteNumbers = new Array(byteCharacters.length);
+    progressMessage.textContent = progress.message;
     
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
+    // Update progress bar based on stage
+    const progressPercentages = {
+      reading: 25,
+      uploading: 50,
+      compressing: 75,
+      complete: 100,
+      error: 0
+    };
     
-    const byteArray = new Uint8Array(byteNumbers);
-    return new File([byteArray], filename, { type: mimeType });
-  }
-
-  /**
-   * @param {File} file
-   * @param {Function} onProgress
-   */
-  async function compressImage(file, onProgress) {
-    try {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        throw new Error('Please select a valid image file');
-      }
-
-      // Check file size (max 500MB as per TinyPNG limits)
-      const maxSize = 500 * 1024 * 1024; // 500MB
-      if (file.size > maxSize) {
-        throw new Error('File size exceeds 500MB limit');
-      }
-
-      if (onProgress) {
-        onProgress({
-          stage: 'reading',
-          message: 'Reading image file...',
-          progress: 10
-        });
-      }
-
-      // Convert file to base64
-      const base64Data = await fileToBase64(file);
-
-      if (onProgress) {
-        onProgress({
-          stage: 'uploading',
-          message: 'Uploading to compression service...',
-          progress: 30
-        });
-      }
-
-      // Send to Netlify function for compression
-      const response = await fetch('/.netlify/functions/compress-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          imageData: base64Data,
-          filename: file.name
-        })
-      });
-
-      if (onProgress) {
-        onProgress({
-          stage: 'compressing',
-          message: 'Compressing image...',
-          progress: 70
-        });
-      }
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Compression failed');
-      }
-
-      if (onProgress) {
-        onProgress({
-          stage: 'complete',
-          message: 'Compression complete!',
-          progress: 100
-        });
-      }
-
-      return result;
-
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      
-      if (onProgress) {
-        onProgress({
-          stage: 'error',
-          message: errorMessage
-        });
-      }
-
-      return {
-        success: false,
-        error: errorMessage
-      };
-    }
-  }
-
-  /**
-   * @param {string} type
-   * @param {string} message
-   * @param {number} progress
-   */
-  function showStatus(type, message, progress) {
-    if (!statusContainer) return;
-
-    statusContainer.classList.remove('hidden');
-    
-    let bgColor = 'bg-blue-50 border-blue-200';
-    let textColor = 'text-blue-900';
-    let iconColor = 'text-blue-400';
-    
-    if (type === 'success') {
-      bgColor = 'bg-green-50 border-green-200';
-      textColor = 'text-green-900';
-      iconColor = 'text-green-400';
-    } else if (type === 'error') {
-      bgColor = 'bg-red-50 border-red-200';
-      textColor = 'text-red-900';
-      iconColor = 'text-red-400';
-    }
-
-    let progressBar = '';
-    if (type === 'progress' && progress !== undefined) {
-      progressBar = `
-        <div class="w-full bg-blue-200 rounded-full h-2 mt-2">
-          <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${progress}%"></div>
-        </div>
-      `;
-    }
-
-    statusContainer.innerHTML = `
-      <div class="p-3 ${bgColor} rounded-lg border">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <svg class="w-5 h-5 ${iconColor}" fill="currentColor" viewBox="0 0 20 20">
-              ${type === 'success' 
-                ? '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />'
-                : type === 'error'
-                ? '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />'
-                : '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />'
-              }
-            </svg>
-          </div>
-          <div class="ml-3">
-            <p class="text-sm font-medium ${textColor}">${message}</p>
-            ${progressBar}
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  function hideStatus() {
-    if (statusContainer) {
-      statusContainer.classList.add('hidden');
-    }
-  }
-
-  /**
-   * @param {Event} event
-   */
-  async function handleFileChange(event) {
-    const target = event.target;
-    const file = target.files?.[0];
-    
-    if (!file) {
-      hideStatus();
-      return;
-    }
-
-    // Check if compression is needed
-    if (!shouldCompress(file, 1024)) {
-      hideStatus();
-      return;
-    }
-
-    isCompressing = true;
-    if (submitButton && 'disabled' in submitButton) {
-      (submitButton as HTMLButtonElement).disabled = true;
-    }
-
-    try {
-      /**
-       * @param {Object} progress
-       */
-      const result = await compressImage(file, (progress) => {
-        showStatus('progress', progress.message, progress.progress);
-      });
-
-      if (result.success) {
-        const filename = result.filename || file.name.replace(/\.[^/.]+$/, '_compressed.jpg');
-        const compressedFile = base64ToFile(result.compressedImage, filename);
-        
-        if (compressedFile) {
-          // Replace the file in the input
-          const dataTransfer = new DataTransfer();
-          dataTransfer.items.add(compressedFile);
-          target.files = dataTransfer.files;
-
-          showStatus('success', 
-            `Image compressed successfully! Reduced by ${result.compressionRatio} (${formatFileSize(result.originalSize || 0)} → ${formatFileSize(result.compressedSize || 0)})`,
-            undefined
-          );
-        } else {
-          showStatus('error', 'Failed to create compressed file', undefined);
-        }
-      } else {
-        showStatus('error', result.error || 'Compression failed', undefined);
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      showStatus('error', `Compression failed: ${errorMessage}`, undefined);
-    } finally {
-      isCompressing = false;
-      if (submitButton && 'disabled' in submitButton) {
-        (submitButton as HTMLButtonElement).disabled = false;
-      }
-    }
+    const percentage = progressPercentages[progress.stage] || 0;
+    progressBar.style.width = `${percentage}%`;
   }
 
   if (fileInput) {
-    fileInput.addEventListener('change', handleFileChange);
+    fileInput.addEventListener('change', async function(e) {
+      const target = e.target;
+      if (!target || !target.files) return;
+      
+      const file = target.files[0];
+      
+      hideAllMessages();
+      compressedFile = null;
+
+      if (!file) return;
+
+      // Validate file size (max 5MB for TinyPNG)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        fileSizeError?.classList.remove('hidden');
+        target.value = ''; // Clear the input
+        return;
+      }
+
+      // Show progress indicator
+      progressDiv?.classList.remove('hidden');
+
+      try {
+        // Compress the image
+        const result = await compressImage(file, updateProgress);
+
+        if (result.success) {
+          // Create compressed file
+          compressedFile = createCompressedFile(result);
+          
+          if (compressedFile && statsSpan) {
+            const originalSize = formatFileSize(result.originalSize || 0);
+            const compressedSize = formatFileSize(result.compressedSize || 0);
+            const ratio = result.compressionRatio || 0;
+            
+            statsSpan.textContent = `Reduced from ${originalSize} to ${compressedSize} (${ratio}% savings)`;
+            
+            // Hide progress and show result
+            progressDiv?.classList.add('hidden');
+            resultDiv?.classList.remove('hidden');
+          }
+        } else {
+          throw new Error(result.error || 'Compression failed');
+        }
+      } catch (error) {
+        console.error('Compression error:', error);
+        
+        if (compressionError) {
+          compressionError.textContent = error instanceof Error ? error.message : 'Failed to compress image';
+          compressionError.classList.remove('hidden');
+        }
+        
+        progressDiv?.classList.add('hidden');
+        
+        // Keep the original file if compression fails
+        compressedFile = file;
+      }
+    });
   }
 
-  // Prevent form submission while compressing
+  // Handle form submission with compressed image
   if (form) {
-    form.addEventListener('submit', (event) => {
-      if (isCompressing) {
-        event.preventDefault();
-        showStatus('error', 'Please wait for image compression to complete', undefined);
+    form.addEventListener('submit', function(e) {
+      // If we have a compressed file, replace the original file input
+      if (compressedFile && fileInput) {
+        // Create a new FileList with the compressed file
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(compressedFile);
+        fileInput.files = dataTransfer.files;
       }
+      
+      // Form will submit normally with the compressed file
     });
   }
 </script> 

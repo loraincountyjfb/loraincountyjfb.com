@@ -17,6 +17,7 @@ exports.handler = async (event, context) => {
     };
   }
 
+  // Only allow POST requests
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
@@ -28,18 +29,23 @@ exports.handler = async (event, context) => {
   try {
     // Get TinyPNG API key from environment variables
     const apiKey = process.env.TINYPNG_API_KEY;
+
     if (!apiKey) {
+      console.error("TinyPNG API key not found in environment variables");
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: "TinyPNG API key not configured" }),
+        body: JSON.stringify({
+          error: "Server configuration error: TinyPNG API key not found",
+        }),
       };
     }
 
+    // Set the API key
     tinify.key = apiKey;
 
     // Parse the request body
-    const { imageData, filename } = JSON.parse(event.body);
+    const { imageData, filename, mimeType } = JSON.parse(event.body);
 
     if (!imageData) {
       return {
@@ -50,22 +56,39 @@ exports.handler = async (event, context) => {
     }
 
     // Convert base64 to buffer
-    const buffer = Buffer.from(imageData.split(",")[1], "base64");
+    const imageBuffer = Buffer.from(imageData, "base64");
 
-    // Compress the image
-    const source = tinify.fromBuffer(buffer);
-    const compressedBuffer = await source.toBuffer();
+    // Validate file size (max 5MB for TinyPNG)
+    if (imageBuffer.length > 5 * 1024 * 1024) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: "Image too large. Maximum size is 5MB.",
+        }),
+      };
+    }
 
-    // Convert back to base64
-    const compressedBase64 = `data:image/jpeg;base64,${compressedBuffer.toString("base64")}`;
+    console.log(
+      `Compressing image: ${filename}, original size: ${imageBuffer.length} bytes`
+    );
 
-    // Get compression stats
-    const originalSize = buffer.length;
+    // Compress the image using TinyPNG
+    const compressedBuffer = await tinify.fromBuffer(imageBuffer).toBuffer();
+
+    // Convert compressed buffer back to base64
+    const compressedBase64 = compressedBuffer.toString("base64");
+
+    const originalSize = imageBuffer.length;
     const compressedSize = compressedBuffer.length;
     const compressionRatio = (
       ((originalSize - compressedSize) / originalSize) *
       100
     ).toFixed(1);
+
+    console.log(
+      `Compression complete: ${filename}, compressed size: ${compressedSize} bytes, saved: ${compressionRatio}%`
+    );
 
     return {
       statusCode: 200,
@@ -75,31 +98,40 @@ exports.handler = async (event, context) => {
         compressedImage: compressedBase64,
         originalSize,
         compressedSize,
-        compressionRatio: `${compressionRatio}%`,
-        filename: filename || "compressed-image.jpg",
+        compressionRatio: parseFloat(compressionRatio),
+        filename,
+        mimeType,
       }),
     };
   } catch (error) {
-    console.error("Compression error:", error);
-
-    let errorMessage = "Failed to compress image";
-    let statusCode = 500;
+    console.error("Error compressing image:", error);
 
     // Handle specific TinyPNG errors
-    if (error.message.includes("AccountError")) {
-      errorMessage = "TinyPNG API limit reached or invalid API key";
-      statusCode = 429;
-    } else if (error.message.includes("ClientError")) {
-      errorMessage = "Invalid image format or corrupted image";
-      statusCode = 400;
+    if (error.message && error.message.includes("Credentials are invalid")) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: "Invalid TinyPNG API credentials",
+        }),
+      };
+    }
+
+    if (error.message && error.message.includes("Too many requests")) {
+      return {
+        statusCode: 429,
+        headers,
+        body: JSON.stringify({
+          error: "TinyPNG API rate limit exceeded. Please try again later.",
+        }),
+      };
     }
 
     return {
-      statusCode,
+      statusCode: 500,
       headers,
       body: JSON.stringify({
-        error: errorMessage,
-        details: error.message,
+        error: "Failed to compress image. Please try again.",
       }),
     };
   }

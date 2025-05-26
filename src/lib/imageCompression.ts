@@ -3,15 +3,15 @@ export interface CompressionResult {
   compressedImage?: string;
   originalSize?: number;
   compressedSize?: number;
-  compressionRatio?: string;
+  compressionRatio?: number;
   filename?: string;
+  mimeType?: string;
   error?: string;
 }
 
 export interface CompressionProgress {
   stage: 'reading' | 'uploading' | 'compressing' | 'complete' | 'error';
   message: string;
-  progress?: number;
 }
 
 /**
@@ -20,17 +20,22 @@ export interface CompressionProgress {
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 }
 
 /**
- * Converts base64 string to File object
+ * Creates a File object from base64 data
  */
-function base64ToFile(base64: string, filename: string, mimeType: string = 'image/jpeg'): File {
-  const byteCharacters = atob(base64.split(',')[1]);
+function base64ToFile(base64: string, filename: string, mimeType: string): File {
+  const byteCharacters = atob(base64);
   const byteNumbers = new Array(byteCharacters.length);
   
   for (let i = 0; i < byteCharacters.length; i++) {
@@ -38,11 +43,13 @@ function base64ToFile(base64: string, filename: string, mimeType: string = 'imag
   }
   
   const byteArray = new Uint8Array(byteNumbers);
-  return new File([byteArray], filename, { type: mimeType });
+  const blob = new Blob([byteArray], { type: mimeType });
+  
+  return new File([blob], filename, { type: mimeType });
 }
 
 /**
- * Compresses an image using TinyPNG API via Netlify function
+ * Compresses an image file using TinyPNG API via Netlify function
  */
 export async function compressImage(
   file: File,
@@ -51,19 +58,18 @@ export async function compressImage(
   try {
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      throw new Error('Please select a valid image file');
+      throw new Error('File must be an image');
     }
 
-    // Check file size (max 500MB as per TinyPNG limits)
-    const maxSize = 500 * 1024 * 1024; // 500MB
+    // Validate file size (max 5MB for TinyPNG)
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      throw new Error('File size exceeds 500MB limit');
+      throw new Error('Image too large. Maximum size is 5MB.');
     }
 
     onProgress?.({
       stage: 'reading',
-      message: 'Reading image file...',
-      progress: 10
+      message: 'Reading image file...'
     });
 
     // Convert file to base64
@@ -71,8 +77,7 @@ export async function compressImage(
 
     onProgress?.({
       stage: 'uploading',
-      message: 'Uploading to compression service...',
-      progress: 30
+      message: 'Uploading to compression service...'
     });
 
     // Send to Netlify function for compression
@@ -83,29 +88,41 @@ export async function compressImage(
       },
       body: JSON.stringify({
         imageData: base64Data,
-        filename: file.name
+        filename: file.name,
+        mimeType: file.type
       })
     });
 
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+
     onProgress?.({
       stage: 'compressing',
-      message: 'Compressing image...',
-      progress: 70
+      message: 'Compressing image...'
     });
 
     const result = await response.json();
 
-    if (!response.ok) {
+    if (!result.success) {
       throw new Error(result.error || 'Compression failed');
     }
 
     onProgress?.({
       stage: 'complete',
-      message: 'Compression complete!',
-      progress: 100
+      message: `Compression complete! Saved ${result.compressionRatio}%`
     });
 
-    return result;
+    return {
+      success: true,
+      compressedImage: result.compressedImage,
+      originalSize: result.originalSize,
+      compressedSize: result.compressedSize,
+      compressionRatio: result.compressionRatio,
+      filename: result.filename,
+      mimeType: result.mimeType
+    };
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -125,17 +142,16 @@ export async function compressImage(
 /**
  * Creates a compressed File object from compression result
  */
-export function createCompressedFile(result: CompressionResult, originalFile: File): File | null {
-  if (!result.success || !result.compressedImage) {
+export function createCompressedFile(result: CompressionResult): File | null {
+  if (!result.success || !result.compressedImage || !result.filename || !result.mimeType) {
     return null;
   }
 
-  const filename = result.filename || originalFile.name.replace(/\.[^/.]+$/, '_compressed.jpg');
-  return base64ToFile(result.compressedImage, filename);
+  return base64ToFile(result.compressedImage, result.filename, result.mimeType);
 }
 
 /**
- * Formats file size for display
+ * Formats file size in human readable format
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
@@ -145,11 +161,4 @@ export function formatFileSize(bytes: number): string {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-/**
- * Validates if compression should be applied based on file size
- */
-export function shouldCompress(file: File, maxSizeKB: number = 1024): boolean {
-  return file.size > (maxSizeKB * 1024);
 } 

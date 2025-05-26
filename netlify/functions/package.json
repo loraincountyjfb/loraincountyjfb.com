@@ -1,8 +1,15 @@
 {
   "name": "netlify-functions",
   "version": "1.0.0",
-  "description": "Netlify functions for image compression",
+  "description": "Netlify functions for photo compression and form handling",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "tinify": "^1.8.0"
-  }
+  },
+  "keywords": ["netlify", "functions", "tinypng", "compression"],
+  "author": "",
+  "license": "ISC"
 } 
