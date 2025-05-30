@@ -307,6 +307,8 @@ export interface FormContent {
   textPosition?: 'left' | 'right';
   id?: string;
   formType: FormType;
+  link?: string;
+  linkText?: string;
 }
 
 export interface VideosContent {

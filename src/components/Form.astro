@@ -1,9 +1,6 @@
 ---
 import type { FormContent } from '../lib/types';
-import CowFormFields from './CowFormFields.astro';
-import PigFormFields from './PigFormFields.astro';
-import ChickenFormFields from './ChickenFormFields.astro';
-import SheepFormFields from './SheepFormFields.astro';
+import Form from './AnimalForm.astro';
 
 interface Props {
   content: FormContent;
@@ -13,23 +10,16 @@ const { content } = Astro.props;
 const defaultBackgroundImage = "https://cdn.builder.io/api/v1/image/assets/TEMP/c7094393f85dcf0144910aad23a11c09cdf88d27";
 const textPosition = content.textPosition || 'left';
 
-// Helper function to get the appropriate form fields component
-const FormFields = {
-  cow: CowFormFields,
-  pig: PigFormFields,
-  chicken: ChickenFormFields,
-  sheep: SheepFormFields,
-  general: null
-}[content.formType];
+console.log(content.backgroundImage);
 ---
 
 <div class="container mx-auto px-10">
     <div 
       id={content.id} 
-      class={`flex flex-row gap-16 justify-between p-10 w-full bg-stone-50 min-h-[auto] max-md:flex-col max-md:p-5 ${textPosition === 'right' ? 'flex-row-reverse' : ''}`} 
+      class={`flex flex-row gap-16 justify-between p-10 w-full min-h-[auto] max-md:flex-col max-md:p-5 ${textPosition === 'right' ? 'flex-row-reverse' : ''}`} 
       transition:animate="fade"
       style="scroll-margin-top: 2rem;"
-    >
+  >
         <!-- Text Section -->
         <div class="flex-1 my-auto w-6/12 max-md:mx-auto max-md:w-[90%]">
             <h1 class="mb-12 text-7xl font-bold tracking-tighter text-black leading-[87.2px] max-md:text-6xl max-md:text-center max-sm:text-4xl animate-on-scroll slide-up">
@@ -38,89 +28,31 @@ const FormFields = {
             <p class="mb-16 text-xl tracking-tight leading-8 text-black max-w-[676px] max-sm:text-base animate-on-scroll slide-up delay-100">
               {content.description}
             </p>
-            <div class="flex gap-8 items-center animate-on-scroll slide-up delay-200">
-              <h2 class="text-2xl font-semibold tracking-tighter leading-9 uppercase text-neutral-900">
-                  Fill out here
-              </h2>
+            {content.link && (
+              <div class="flex gap-8 items-center animate-on-scroll slide-up delay-200">
+                <a href={content.link} class="text-2xl font-semibold tracking-tighter leading-9 uppercase text-neutral-900">
+                    {content.linkText}
+              </a>
               <svg width="141" height="24" viewBox="0 0 141 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="arrow" style="width: 139px; height: 22px">
                   <path d="M139.6 12L1 12" stroke="#121212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                   <path d="M139.777 12L130.977 23" stroke="#121212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                   <path d="M139.777 12L130.977 1" stroke="#121212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </div>
+            )}
         </div>
 
         <!-- Form Section -->
-        <div class="relative w-6/12 max-md:w-full animate-on-scroll slide-up delay-300">
-            <img 
-              src={content.backgroundImage?.url || defaultBackgroundImage} 
-              alt={content.backgroundImage?.alt || "Background image for form"} 
-              class="object-cover w-full h-[826px] rounded-[50px]"
-            />
-            <div class="flex absolute top-0 left-0 flex-col gap-8 p-10 size-full max-md:p-5">
-              <h2 class="mb-5 text-4xl font-bold text-white max-sm:text-center">
+        <div class="relative w-6/12 max-md:w-full animate-on-scroll slide-up delay-300 rounded-lg" style={`background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url(${content.backgroundImage?.url || defaultBackgroundImage});  background-size: cover; background-position: center;`}>
+            <div class="flex flex-col p-10  size-full max-md:p-5">
+              <h2 class="text-4xl font-bold text-white max-sm:text-center">
                   {content.title}
               </h2>
 
-              <form class="flex flex-col gap-8">
-                  <div class="flex gap-5 max-sm:flex-col">
-                    <div class="flex-1">
-                        <label for="firstName" class="sr-only">First Name</label>
-                        <input type="text" id="firstName" placeholder="First Name" class="px-10 py-4 w-full text-lg bg-white rounded-3xl border-[none] text-zinc-500" required />
-                    </div>
-                    <div class="flex-1">
-                        <label for="lastName" class="sr-only">Last Name</label>
-                        <input type="text" id="lastName" placeholder="Last Name" class="px-10 py-4 w-full text-lg bg-white rounded-3xl border-[none] text-zinc-500" required />
-                    </div>
-                  </div>
-
-                  <div class="flex gap-5 max-sm:flex-col">
-                    <div class="flex-1">
-                        <label for="email" class="sr-only">Email</label>
-                        <input type="email" id="email" placeholder="Email" class="px-10 py-4 w-full text-lg bg-white rounded-3xl border-[none] text-zinc-500" required />
-                    </div>
-                    <div class="flex-1">
-                        <label for="phone" class="sr-only">Phone number</label>
-                        <input type="tel" id="phone" placeholder="Phone number" class="px-10 py-4 w-full text-lg bg-white rounded-3xl border-[none] text-zinc-500" required />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label for="address" class="sr-only">Address</label>
-                    <input type="text" id="address" placeholder="Address" class="px-10 py-4 w-full text-lg bg-white rounded-3xl border-[none] text-zinc-500" required />
-                  </div>
-
-                  <!-- Animal-specific fields -->
-                  {content.formType !== 'general' && FormFields && <FormFields />}
-
-                  <div>
-                    <label for="notes" class="sr-only">Notes</label>
-                    <textarea id="notes" placeholder="Notes" class="px-10 py-4 w-full text-lg bg-white rounded-3xl resize-none border-[none] h-[142px] text-zinc-500" />
-                  </div>
-
-                  <button type="submit" class="flex gap-5 justify-center items-center px-7 py-2.5 mt-auto text-xl font-bold text-white border-2 border-white border-solid cursor-pointer rounded-[50px] w-[322px] max-sm:w-full hover:bg-white hover:bg-opacity-20 transition-colors">
-                    <span>{content.submitButtonText || "Register"}</span>
-                    <svg width="23" height="23" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg" class="calendar-icon" style="width: 22px; height: 22px">
-                        <g clip-path="url(#clip0_20_5569)">
-                        <path d="M20.298 2.71472H17.3184V1.33972C17.3184 0.959534 17.011 0.652222 16.6309 0.652222C16.2507 0.652222 15.9434 0.959534 15.9434 1.33972V2.71472H11.8184V1.33972C11.8184 0.959534 11.5104 0.652222 11.1309 0.652222C10.7514 0.652222 10.4434 0.959534 10.4434 1.33972V2.71472H6.31836V1.33972C6.31836 0.959534 6.01036 0.652222 5.63086 0.652222C5.25136 0.652222 4.94336 0.959534 4.94336 1.33972V2.71472H1.96442C0.951734 2.71472 0.130859 3.53491 0.130859 4.5476V20.8187C0.130859 21.8313 0.951734 22.6522 1.96442 22.6522H20.298C21.3107 22.6522 22.1309 21.8313 22.1309 20.8187V4.5476C22.1309 3.53491 21.3107 2.71472 20.298 2.71472ZM20.7559 20.8187C20.7559 21.0717 20.5503 21.2772 20.298 21.2772H1.96442C1.71142 21.2772 1.50586 21.0717 1.50586 20.8187V4.5476C1.50586 4.29528 1.71142 4.08972 1.96442 4.08972H4.94336V5.46472C4.94336 5.84491 5.25136 6.15222 5.63086 6.15222C6.01036 6.15222 6.31836 5.84491 6.31836 5.46472V4.08972H10.4434V5.46472C10.4434 5.84491 10.7514 6.15222 11.1309 6.15222C11.5104 6.15222 11.8184 5.84491 11.8184 5.46472V4.08972H15.9434V5.46472C15.9434 5.84491 16.2507 6.15222 16.6309 6.15222C17.011 6.15222 17.3184 5.84491 17.3184 5.46472V4.08972H20.298C20.5503 4.08972 20.7559 4.29528 20.7559 4.5476V20.8187Z" fill="white" />
-                        <path d="M7.69336 8.90222H4.94336V10.9647H7.69336V8.90222Z" fill="white" />
-                        <path d="M7.69336 12.3397H4.94336V14.4022H7.69336V12.3397Z" fill="white" />
-                        <path d="M7.69336 15.7772H4.94336V17.8397H7.69336V15.7772Z" fill="white" />
-                        <path d="M12.5059 15.7772H9.75586V17.8397H12.5059V15.7772Z" fill="white" />
-                        <path d="M12.5059 12.3397H9.75586V14.4022H12.5059V12.3397Z" fill="white" />
-                        <path d="M12.5059 8.90222H9.75586V10.9647H12.5059V8.90222Z" fill="white" />
-                        <path d="M17.3184 15.7772H14.5684V17.8397H17.3184V15.7772Z" fill="white" />
-                        <path d="M17.3184 12.3397H14.5684V14.4022H17.3184V12.3397Z" fill="white" />
-                        <path d="M17.3184 8.90222H14.5684V10.9647H17.3184V8.90222Z" fill="white" />
-                        </g>
-                        <defs>
-                        <clipPath id="clip0_20_5569">
-                            <rect width="22" height="22" fill="white" transform="translate(0.130859 0.652222)" />
-                        </clipPath>
-                        </defs>
-                    </svg>
-                  </button>
-              </form>
+              <Form
+                formName={content.formType}
+                formAction={`/thank-you-${content.formType}-form`}
+              />
             </div>
         </div>
     </div>

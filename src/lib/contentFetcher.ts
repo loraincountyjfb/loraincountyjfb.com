@@ -174,7 +174,9 @@ export const PAGE_CONTENT_QUERY = `
       }
     }
   },
-  aboveTitleText
+  aboveTitleText,
+  id,
+  "backgroundImage": backgroundImage{ "url": asset->url }
 }`;
 
 
