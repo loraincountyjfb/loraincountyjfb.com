@@ -11,12 +11,12 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
 
 <!--Dynamic Slider Section-->
 <section
-  class="box-border flex relative flex-col shrink-0 px-5 py-20 w-screen bg-stone-50 min-h-[100px] ml-[calc(50%_-_50vw)]"
+  class="box-border flex relative flex-col shrink-0 px-5 lg:py-20 w-screen bg-stone-50 min-h-[100px] ml-[calc(50%_-_50vw)]"
 >
   <div
-    class="box-border relative grow shrink-0 self-stretch px-5 py-20 mx-auto w-full bg-stone-50 max-w-[1300px] min-h-[100px]"
+    class="box-border relative grow shrink-0 self-stretch px-5 lg:py-20 py-10 mx-auto w-full bg-stone-50 max-w-[1300px] min-h-[100px]"
   >
-    <div class="px-5 py-10 min-h-[auto]">
+    <div class="px-5 lg:py-10 min-h-[auto]">
       <header class="p-5 mx-auto my-0 text-center max-w-[1200px]">
         <h1
           class="mb-9 text-6xl font-bold tracking-tighter text-black leading-[65.4px] max-md:text-4xl max-sm:mb-5 max-sm:text-4xl"
@@ -34,7 +34,7 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
 
       {slides.length > 0 && (
         <div
-          class="flex relative justify-center items-center mx-auto my-16 max-w-[1400px] max-sm:mx-auto max-sm:my-8"
+          class="flex relative justify-center items-center mx-auto lg:my-16 max-w-[1400px] max-sm:mx-auto max-sm:my-8"
           role="region"
           aria-label="Image carousel"
         >
@@ -129,6 +129,7 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
       perspective: 1000px;
       position: relative;
       overflow: visible;
+      touch-action: pan-y pinch-zoom;
     }
     
     .carousel-slide {
@@ -138,6 +139,39 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
     
     .slide-content {
       transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    /* Add white space around center image */
+    .slide-content.center-slide {
+      background: white;
+      border-radius: 40px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .slide-content.center-slide img {
+      border-radius: 20px;
+    }
+    
+    /* Mobile responsive white space */
+    @media (max-width: 768px) {
+      .slide-content.center-slide {
+        border-radius: 30px;
+      }
+      
+      .slide-content.center-slide img {
+        border-radius: 15px;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .slide-content.center-slide {
+        border-radius: 25px;
+      }
+      
+      .slide-content.center-slide img {
+        border-radius: 12px;
+      }
     }
     
     .image-caption {
@@ -174,6 +208,17 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
     .carousel-button:hover {
       transform: translateY(-2px);
     }
+    
+    /* Mobile touch improvements */
+    @media (max-width: 768px) {
+      .carousel-circle {
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .carousel-slide {
+        -webkit-tap-highlight-color: transparent;
+      }
+    }
   </style>
 
   <script define:vars={{ autoplay, interval, slides }}>
@@ -188,7 +233,6 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
       const totalSlides = slides.length;
       let autoplayInterval;
       let isTransitioning = false;
-      let rotation = 0; // Current rotation of the circle in degrees
 
       // Exit early if no slides
       if (totalSlides === 0) return;
@@ -196,25 +240,25 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
       // Circle configuration for exactly 3 visible slides
       const angleStep = 360 / totalSlides; // Degrees between each slide
       
-      // Fixed positions for the 3 visible slides
+      // Fixed positions for the 3 visible slides (adjusted for white space)
       const positions = {
-        left: { x: -400, size: 300, opacity: 0.7, zIndex: 5 },
-        center: { x: 0, size: 500, opacity: 1, zIndex: 10 },
-        right: { x: 400, size: 300, opacity: 0.7, zIndex: 5 }
+        left: { x: -420, size: 300, opacity: 0.7, zIndex: 5 },
+        center: { x: 0, size: 460, opacity: 1, zIndex: 10 }, // Reduced size to account for padding
+        right: { x: 420, size: 300, opacity: 0.7, zIndex: 5 }
       };
       
       // Responsive positions
       function getPositions() {
         if (window.innerWidth <= 640) {
           return {
-            left: { x: -200, size: 120, opacity: 0.7, zIndex: 5 },
-            center: { x: 0, size: 250, opacity: 1, zIndex: 10 },
-            right: { x: 200, size: 120, opacity: 0.7, zIndex: 5 }
+            left: { x: -180, size: 120, opacity: 0.7, zIndex: 5 },
+            center: { x: 0, size: 230, opacity: 1, zIndex: 10 }, // Reduced for mobile padding
+            right: { x: 180, size: 120, opacity: 0.7, zIndex: 5 }
           };
         } else if (window.innerWidth <= 768) {
           return {
             left: { x: -300, size: 200, opacity: 0.7, zIndex: 5 },
-            center: { x: 0, size: 350, opacity: 1, zIndex: 10 },
+            center: { x: 0, size: 320, opacity: 1, zIndex: 10 }, // Reduced for tablet padding
             right: { x: 300, size: 200, opacity: 0.7, zIndex: 5 }
           };
         }
@@ -255,9 +299,9 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
             
             // Add appropriate cursor style
             if (relativePosition === 0) {
-              slide.style.cursor = 'default';
+              slide.style.cursor = 'pointer'; // Center slide is clickable for lightbox
             } else {
-              slide.style.cursor = 'pointer';
+              slide.style.cursor = 'pointer'; // Side slides are clickable for rotation
             }
             
             // Size the slide content
@@ -265,6 +309,13 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
             if (content) {
               content.style.width = `${position.size}px`;
               content.style.height = `${position.size * 0.8}px`;
+              
+              // Add/remove center slide styling
+              if (relativePosition === 0) {
+                content.classList.add('center-slide');
+              } else {
+                content.classList.remove('center-slide');
+              }
             }
             
             // Show/hide caption only for center slide
@@ -277,6 +328,12 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
             slide.style.visibility = 'hidden';
             slide.style.opacity = '0';
             slide.style.cursor = 'default';
+            
+            // Remove center slide styling from hidden slides
+            const content = slide.querySelector('.slide-content');
+            if (content) {
+              content.classList.remove('center-slide');
+            }
           }
         });
         
@@ -335,6 +392,153 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
         }
       }
 
+      // Simple modal lightbox function
+      function openImageModal(imageSrc, imageAlt, caption) {
+        // Create modal overlay
+        const modal = document.createElement('div');
+        modal.className = 'image-modal';
+        modal.innerHTML = `
+          <div class="modal-backdrop">
+            <div class="modal-content">
+              <button class="modal-close">&times;</button>
+              <img src="${imageSrc}" alt="${imageAlt}" class="modal-image">
+              ${caption ? `<div class="modal-caption">${caption}</div>` : ''}
+            </div>
+          </div>
+        `;
+        
+        // Add styles
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.9);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        `;
+        
+        const backdrop = modal.querySelector('.modal-backdrop');
+        backdrop.style.cssText = `
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        `;
+        
+        const content = modal.querySelector('.modal-content');
+        content.style.cssText = `
+          position: relative;
+          max-width: 90vw;
+          max-height: 90vh;
+          background: white;
+          border-radius: 15px;
+          overflow: hidden;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        `;
+        
+        const closeBtn = modal.querySelector('.modal-close');
+        closeBtn.style.cssText = `
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          width: 35px;
+          height: 35px;
+          background: rgba(255, 255, 255, 0.9);
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+          font-weight: bold;
+          color: #333;
+          z-index: 10001;
+          transition: all 0.3s ease;
+        `;
+        
+        const image = modal.querySelector('.modal-image');
+        image.style.cssText = `
+          width: 100%;
+          height: 100%;
+          max-width: 90vw;
+          max-height: 90vh;
+          object-fit: contain;
+          display: block;
+        `;
+        
+        const captionEl = modal.querySelector('.modal-caption');
+        if (captionEl) {
+          captionEl.style.cssText = `
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 30px 20px 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+          `;
+        }
+        
+        // Close functions
+        function closeModal() {
+          modal.style.opacity = '0';
+          document.body.style.overflow = '';
+          setTimeout(() => {
+            document.body.removeChild(modal);
+          }, 300);
+          startAutoplay(); // Restart autoplay
+        }
+        
+        // Add event listeners
+        closeBtn.addEventListener('click', closeModal);
+        backdrop.addEventListener('click', (e) => {
+          if (e.target === backdrop) {
+            closeModal();
+          }
+        });
+        
+        // ESC key listener
+        function handleEsc(e) {
+          if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', handleEsc);
+          }
+        }
+        document.addEventListener('keydown', handleEsc);
+        
+        // Hover effect for close button
+        closeBtn.addEventListener('mouseenter', () => {
+          closeBtn.style.background = 'white';
+          closeBtn.style.transform = 'scale(1.1)';
+        });
+        closeBtn.addEventListener('mouseleave', () => {
+          closeBtn.style.background = 'rgba(255, 255, 255, 0.9)';
+          closeBtn.style.transform = 'scale(1)';
+        });
+        
+        // Show modal
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+        stopAutoplay(); // Stop autoplay
+        
+        // Fade in
+        setTimeout(() => {
+          modal.style.opacity = '1';
+        }, 10);
+      }
+
       // Add click listeners to slides
       carouselSlides.forEach((slide, index) => {
         slide.addEventListener('click', () => {
@@ -344,8 +548,16 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
           // Calculate which position this slide is currently in
           let relativePosition = (index - currentIndex + totalSlides) % totalSlides;
           
-          // Only respond to clicks on visible non-center slides
-          if (relativePosition === 1 || (relativePosition === totalSlides - 1 && totalSlides === 2)) {
+          if (relativePosition === 0) {
+            // This is the center slide - open lightbox
+            const img = slide.querySelector('img');
+            const captionEl = slide.querySelector('.image-caption p');
+            
+            if (img && img.src) {
+              const caption = captionEl?.textContent || slides[index]?.caption || '';
+              openImageModal(img.src, img.alt || '', caption);
+            }
+          } else if (relativePosition === 1 || (relativePosition === totalSlides - 1 && totalSlides === 2)) {
             // This is the right slide, rotate to next
             stopAutoplay();
             rotateToNext();
@@ -356,11 +568,10 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
             rotateToPrev();
             startAutoplay();
           }
-          // If it's the center slide (relativePosition === 0), do nothing
         });
       });
 
-      // Event Listeners
+      // Event Listeners (all preserved functionality)
       if (nextButton && totalSlides > 1) {
         nextButton.addEventListener("click", () => {
           stopAutoplay();
@@ -401,31 +612,60 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
         }
       });
 
-      // Touch/swipe support
+      // Enhanced touch/swipe support for mobile
       let touchStartX = 0;
       let touchEndX = 0;
+      let touchStartY = 0;
+      let touchEndY = 0;
+      let isDragging = false;
 
       carouselCircle.addEventListener("touchstart", (e) => {
         touchStartX = e.changedTouches[0].screenX;
-      });
+        touchStartY = e.changedTouches[0].screenY;
+        isDragging = true;
+      }, { passive: true });
+
+      carouselCircle.addEventListener("touchmove", (e) => {
+        if (!isDragging) return;
+        
+        // Prevent default only for horizontal swipes
+        const currentX = e.changedTouches[0].screenX;
+        const currentY = e.changedTouches[0].screenY;
+        const diffX = Math.abs(currentX - touchStartX);
+        const diffY = Math.abs(currentY - touchStartY);
+        
+        // If horizontal swipe is more significant than vertical, prevent default
+        if (diffX > diffY && diffX > 10) {
+          e.preventDefault();
+        }
+      }, { passive: false });
 
       carouselCircle.addEventListener("touchend", (e) => {
-        if (totalSlides <= 1) return;
+        if (!isDragging || totalSlides <= 1) {
+          isDragging = false;
+          return;
+        }
         
         touchEndX = e.changedTouches[0].screenX;
-        const swipeThreshold = 50;
-        const diff = touchStartX - touchEndX;
+        touchEndY = e.changedTouches[0].screenY;
         
-        if (Math.abs(diff) > swipeThreshold) {
+        const swipeThreshold = 30; // Reduced threshold for easier swiping
+        const diffX = touchStartX - touchEndX;
+        const diffY = Math.abs(touchStartY - touchEndY);
+        
+        // Only trigger if horizontal swipe is more significant than vertical
+        if (Math.abs(diffX) > swipeThreshold && Math.abs(diffX) > diffY) {
           stopAutoplay();
-          if (diff > 0) {
+          if (diffX > 0) {
             rotateToNext();
           } else {
             rotateToPrev();
           }
           startAutoplay();
         }
-      });
+        
+        isDragging = false;
+      }, { passive: true });
 
       // Pause autoplay on hover
       if (carouselCircle) {

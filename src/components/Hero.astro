@@ -113,7 +113,7 @@ const socialIconMap = {
           {content.mainImage?.url && (
             <img src={content.mainImage.url} alt={content.title} class="w-full h-full object-cover rounded-xl" />
           )}
-               <div class="mt-10 flex gap-6">
+               <div class="mt-10 flex gap-6 flex-wrap lg:flex-nowrap">
           {content.featureBlocks && content.featureBlocks.length > 0 && (
             <>
               {content.featureBlocks[0] && (
@@ -197,7 +197,7 @@ const socialIconMap = {
           )}
         </div>
         {/* Middle: Feature Blocks */}
-        <div class="team-format-features flex flex-col gap-6 ">
+        <div class="team-format-features flex flex-col gap-6 flex-wrap lg:flex-nowrap">
           {content.featureBlocks && content.featureBlocks.length > 0 && (
             <>
               {content.featureBlocks[0] && (

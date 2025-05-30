@@ -1,0 +1,216 @@
+---
+interface GalleryImage {
+  asset: {
+    url?: string;
+    alt?: string;
+  };
+}
+
+interface Props {
+  content: {
+    _type: 'gallery';
+    title: string;
+    description?: string;
+    images: GalleryImage[];
+  };
+}
+
+const { content } = Astro.props;
+const { title, description, images = [] } = content;
+---
+
+<section class="py-12 px-4" transition:animate="fade">
+  <div class="container mx-auto">
+    {title && (
+      <h2 class="font-source-serif-4 font-bold text-4xl md:text-5xl text-center mb-4 animate-on-scroll slide-up">
+        {title}
+      </h2>
+    )}
+    
+    {description && (
+      <p class="text-lg text-center mb-12 animate-on-scroll slide-up delay-100 max-w-3xl mx-auto">
+        {description}
+      </p>
+    )}
+    
+    {images.length > 0 && (
+      <div class="gallery-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {images.map((image, index) => (
+          <div 
+            class={`gallery-item animate-on-scroll fade-in delay-${index * 50} cursor-pointer group`}
+            data-index={index}
+          >
+            <div class="relative overflow-hidden rounded-lg shadow-md transition-all duration-300 group-hover:shadow-xl group-hover:scale-105">
+              <img
+                src={image.asset?.url}
+                alt={image.asset?.alt || `Gallery image ${index + 1}`}
+                class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                <svg 
+                  class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+    
+    {images.length === 0 && (
+      <div class="text-center py-12">
+        <p class="text-gray-500">No images to display</p>
+      </div>
+    )}
+  </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div id="lightbox-modal" class="lightbox-modal fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
+  <div class="relative max-w-6xl max-h-full">
+    <button 
+      class="lightbox-close absolute top-4 right-4 text-white text-4xl font-bold z-10 hover:text-gray-300 transition-colors"
+      aria-label="Close lightbox"
+    >
+      &times;
+    </button>
+    
+    <button 
+      class="lightbox-prev absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition-colors"
+      aria-label="Previous image"
+    >
+      &#8249;
+    </button>
+    
+    <button 
+      class="lightbox-next absolute right-4 top-1/2 transform -translate-y-1/2 text-white text-4xl font-bold z-10 hover:text-gray-300 transition-colors"
+      aria-label="Next image"
+    >
+      &#8250;
+    </button>
+    
+    <img 
+      id="lightbox-image" 
+      class="max-w-full max-h-full object-contain"
+      alt=""
+    />
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    const lightboxModal = document.getElementById('lightbox-modal');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxClose = document.querySelector('.lightbox-close');
+    const lightboxPrev = document.querySelector('.lightbox-prev');
+    const lightboxNext = document.querySelector('.lightbox-next');
+    
+    let currentIndex = 0;
+    const images = Array.from(galleryItems).map(item => {
+      const img = item.querySelector('img');
+      return {
+        src: img.src,
+        alt: img.alt
+      };
+    });
+    
+    function openLightbox(index) {
+      currentIndex = index;
+      updateLightboxImage();
+      lightboxModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeLightbox() {
+      lightboxModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    
+    function updateLightboxImage() {
+      const image = images[currentIndex];
+      lightboxImage.src = image.src;
+      lightboxImage.alt = image.alt;
+    }
+    
+    function showPrevImage() {
+      currentIndex = currentIndex > 0 ? currentIndex - 1 : images.length - 1;
+      updateLightboxImage();
+    }
+    
+    function showNextImage() {
+      currentIndex = currentIndex < images.length - 1 ? currentIndex + 1 : 0;
+      updateLightboxImage();
+    }
+    
+    // Event listeners
+    galleryItems.forEach((item, index) => {
+      item.addEventListener('click', () => openLightbox(index));
+    });
+    
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxPrev.addEventListener('click', showPrevImage);
+    lightboxNext.addEventListener('click', showNextImage);
+    
+    // Close on background click
+    lightboxModal.addEventListener('click', (e) => {
+      if (e.target === lightboxModal) {
+        closeLightbox();
+      }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (!lightboxModal.classList.contains('hidden')) {
+        switch (e.key) {
+          case 'Escape':
+            closeLightbox();
+            break;
+          case 'ArrowLeft':
+            showPrevImage();
+            break;
+          case 'ArrowRight':
+            showNextImage();
+            break;
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  .lightbox-modal {
+    backdrop-filter: blur(4px);
+  }
+  
+  .gallery-item img {
+    aspect-ratio: 4/3;
+  }
+  
+  @media (max-width: 768px) {
+    .gallery-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    
+    .gallery-item img {
+      height: 200px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .gallery-item img {
+      height: 250px;
+    }
+  }
+</style> 

@@ -338,6 +338,18 @@ export interface VideosContent {
   textColor?: string;
 }
 
+export interface GalleryContent {
+  _type: 'gallery';
+  title: string;
+  description?: string;
+  images: {
+    asset: {
+      url?: string;
+      alt?: string;
+    };
+  }[];
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -358,7 +370,8 @@ export type PageContent =
   | RequirementsContent
   | AwardTabsContent
   | FormContent
-  | VideosContent;
+  | VideosContent
+  | GalleryContent;
 
 export interface PageData {
   title: string;

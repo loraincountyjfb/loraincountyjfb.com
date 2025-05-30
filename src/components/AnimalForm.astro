@@ -178,8 +178,7 @@ const { formName, formAction } = Astro.props;
     </button>
   </div>
 </form>
-<script>
-  // Image compression utility functions
+<script define:vars={{ formName }}>
   /**
    * @param {File} file
    * @returns {Promise<string>}
@@ -189,9 +188,13 @@ const { formName, formAction } = Astro.props;
       const reader = new FileReader();
       reader.onload = () => {
         const result = reader.result;
-        // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
-        const base64 = result.split(",")[1];
-        resolve(base64);
+        if (typeof result === 'string') {
+          // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+          const base64 = result.split(",")[1];
+          resolve(base64);
+        } else {
+          reject(new Error('Failed to read file as data URL'));
+        }
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
@@ -384,7 +387,7 @@ const { formName, formAction } = Astro.props;
   }
 
   // Add hidden fields for traffic source tracking
-  const form = document.querySelector('form[name="pig-form"]');
+  const form = document.querySelector(`form[name="${formName}"]`);
   if (form) {
     const { source, searchKeywords } = getTrafficSource();
 
@@ -417,7 +420,7 @@ const { formName, formAction } = Astro.props;
 
   // Image compression handling
   let compressedFile = null;
-  const fileInput = document.getElementById("pig_photo");
+  const fileInput = document.getElementById("animal_photo");
   const progressDiv = document.getElementById("compression-progress");
   const progressMessage = document.getElementById("compression-message");
   const progressBar = document.getElementById("compression-bar");
@@ -479,6 +482,7 @@ const { formName, formAction } = Astro.props;
   }
 
   if (fileInput) {
+    console.log('File input found, attaching event listener');
     fileInput.addEventListener("change", async function (e) {
       const target = e.target;
       if (!target || !target.files) return;
@@ -494,12 +498,15 @@ const { formName, formAction } = Astro.props;
         return;
       }
 
+      console.log('File selected:', file.name, 'Size:', file.size);
+
       // File selected, disable submit button until compression is done
       setSubmitButtonState(true, true);
 
       // Validate file size (max 5MB for TinyPNG)
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
+        console.log('File too large:', file.size);
         fileSizeError?.classList.remove("hidden");
         target.value = ""; // Clear the input
         setSubmitButtonState(false, false); // Re-enable submit since no valid file
@@ -510,10 +517,12 @@ const { formName, formAction } = Astro.props;
       progressDiv?.classList.remove("hidden");
 
       try {
+        console.log('Starting compression...');
         // Compress the image
         const result = await compressImage(file, updateProgress);
 
         if (result.success) {
+          console.log('Compression successful:', result);
           // Create compressed file
           compressedFile = createCompressedFile(result);
 
@@ -552,17 +561,21 @@ const { formName, formAction } = Astro.props;
         setSubmitButtonState(false, true);
       }
     });
+  } else {
+    console.error('File input not found! Looking for ID: animal_photo');
   }
 
   // Handle form submission with compressed image
   if (form) {
     form.addEventListener("submit", function (e) {
+      console.log('Form submission - compressed file:', compressedFile);
       // If we have a compressed file, replace the original file input
       if (compressedFile && fileInput) {
         // Create a new FileList with the compressed file
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(compressedFile);
         fileInput.files = dataTransfer.files;
+        console.log('Replaced file input with compressed file');
       }
 
       // Form will submit normally with the compressed file

@@ -176,7 +176,14 @@ export const PAGE_CONTENT_QUERY = `
   },
   aboveTitleText,
   id,
-  "backgroundImage": backgroundImage{ "url": asset->url }
+  "backgroundImage": backgroundImage{ "url": asset->url },
+  // Gallery fields
+  "images": images[]{
+    "asset": {
+      "url": asset->url,
+      "alt": asset->alt
+    }
+  }
 }`;
 
 
