@@ -253,6 +253,13 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
             slide.style.zIndex = position.zIndex;
             slide.style.visibility = 'visible';
             
+            // Add appropriate cursor style
+            if (relativePosition === 0) {
+              slide.style.cursor = 'default';
+            } else {
+              slide.style.cursor = 'pointer';
+            }
+            
             // Size the slide content
             const content = slide.querySelector('.slide-content');
             if (content) {
@@ -269,6 +276,7 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
             // Hide slides that shouldn't be visible
             slide.style.visibility = 'hidden';
             slide.style.opacity = '0';
+            slide.style.cursor = 'default';
           }
         });
         
@@ -326,6 +334,31 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
           autoplayInterval = null;
         }
       }
+
+      // Add click listeners to slides
+      carouselSlides.forEach((slide, index) => {
+        slide.addEventListener('click', () => {
+          // Don't do anything if transitioning
+          if (isTransitioning) return;
+          
+          // Calculate which position this slide is currently in
+          let relativePosition = (index - currentIndex + totalSlides) % totalSlides;
+          
+          // Only respond to clicks on visible non-center slides
+          if (relativePosition === 1 || (relativePosition === totalSlides - 1 && totalSlides === 2)) {
+            // This is the right slide, rotate to next
+            stopAutoplay();
+            rotateToNext();
+            startAutoplay();
+          } else if (relativePosition === totalSlides - 1 || (relativePosition === 1 && totalSlides === 2)) {
+            // This is the left slide, rotate to previous
+            stopAutoplay();
+            rotateToPrev();
+            startAutoplay();
+          }
+          // If it's the center slide (relativePosition === 0), do nothing
+        });
+      });
 
       // Event Listeners
       if (nextButton && totalSlides > 1) {
