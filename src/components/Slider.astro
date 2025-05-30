@@ -9,8 +9,7 @@ const { content } = Astro.props;
 const { title, description, slides = [], autoplay = true, interval = 5000 } = content;
 ---
 
-
-<!--Design Pictures Section-->
+<!--Dynamic Slider Section-->
 <section
   class="box-border flex relative flex-col shrink-0 px-5 py-20 w-screen bg-stone-50 min-h-[100px] ml-[calc(50%_-_50vw)]"
 >
@@ -22,146 +21,416 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
         <h1
           class="mb-9 text-6xl font-bold tracking-tighter text-black leading-[65.4px] max-md:text-4xl max-sm:mb-5 max-sm:text-4xl"
         >
-          Design Pictures
+          {title}
         </h1>
-        <p
-          class="mx-auto my-0 text-xl tracking-tight leading-8 text-black max-w-[782px] max-md:text-lg max-sm:px-2.5 max-sm:py-0 max-sm:text-base"
-        >
-          Check out our winning youth-designed apparel! Creative artwork
-          showcasing fair spirit and agricultural pride. Vote for your favorites
-          and wear our story!
-        </p>
+        {description && (
+          <p
+            class="mx-auto my-0 text-xl tracking-tight leading-8 text-black max-w-[782px] max-md:text-lg max-sm:px-2.5 max-sm:py-0 max-sm:text-base"
+          >
+            {description}
+          </p>
+        )}
       </header>
 
-      <div
-        class="flex relative gap-5 justify-center items-center mx-auto my-16 max-w-[1600px] max-sm:mx-auto max-sm:my-8"
-        role="region"
-        aria-label="Image carousel"
-      >
-        <button class="carousel-button prev" aria-label="Previous slide">
-          <svg
-            width="79"
-            height="79"
-            viewBox="0 0 79 79"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            class="arrow-left cursor-pointer mr-5"
-          >
-            <circle cx="39.5" cy="39.5" r="39.5" fill="#C9BDF9"></circle>
-            <path
-              d="M47.375 26.4949L45.3535 24.5625L28.625 40.5L45.3535 56.4375L47.375 54.515L32.6777 40.5L47.375 26.4949Z"
-              fill="white"
-            ></path>
-          </svg>
-        </button>
-
+      {slides.length > 0 && (
         <div
-          class="flex gap-10 justify-center items-center max-md:flex max-md:flex-row carousel-container"
-          role="list"
+          class="flex relative justify-center items-center mx-auto my-16 max-w-[1400px] max-sm:mx-auto max-sm:my-8"
+          role="region"
+          aria-label="Image carousel"
         >
-          <div
-            class="overflow-hidden rounded-[30px] carousel-item"
-            role="listitem"
-          >
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/2cfd47afaa509fee3ecf9d8a4a6fe3c1487928ac"
-              alt="Youth with fair apparel"
-              class="object-cover max-w-[500px] size-full max-md:max-w-[400px] max-sm:max-w-[300px]"
-            />
-          </div>
-          <div
-            class="overflow-hidden rounded-[30px] carousel-item"
-            role="listitem"
-          >
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/95577d39ac09c51a2b26444aa9e39c9f7895bed8"
-              alt="2024 Fair T-shirt design"
-              class="object-cover max-w-[500px] size-full max-md:max-w-[400px] max-sm:max-w-[300px]"
-            />
-          </div>
-          <div
-            class="overflow-hidden rounded-[30px] carousel-item"
-            role="listitem"
-          >
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/f06ef56e64205714cd636b55770b7cb706c06c47"
-              alt="T-shirt display rack"
-              class="object-cover max-w-[500px] size-full max-md:max-w-[400px] max-sm:max-w-[300px]"
-            />
-          </div>
-        </div>
+          {slides.length > 1 && (
+            <button class="carousel-button prev z-10 absolute left-0" aria-label="Previous slide">
+              <svg
+                width="60"
+                height="60"
+                viewBox="0 0 79 79"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="cursor-pointer transition-all duration-300 hover:scale-110 drop-shadow-lg"
+              >
+                <circle cx="39.5" cy="39.5" r="39.5" fill="#C9BDF9"></circle>
+                <path
+                  d="M47.375 26.4949L45.3535 24.5625L28.625 40.5L45.3535 56.4375L47.375 54.515L32.6777 40.5L47.375 26.4949Z"
+                  fill="white"
+                ></path>
+              </svg>
+            </button>
+          )}
 
-        <button class="carousel-button next" aria-label="Next slide">
-          <svg
-            width="79"
-            height="79"
-            viewBox="0 0 79 79"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            class="arrow-right cursor-pointer ml-5"
-          >
-            <circle
-              cx="39.5"
-              cy="39.5"
-              r="39.5"
-              transform="matrix(-1 0 0 1 79 0)"
-              fill="#C9BDF9"
-            ></circle>
-            <path
-              d="M31.625 26.4949L33.6465 24.5625L50.375 40.5L33.6465 56.4375L31.625 54.515L46.3223 40.5L31.625 26.4949Z"
-              fill="white"
-            ></path>
-          </svg>
-        </button>
-      </div>
+          <div class="flex justify-center items-center gap-8 max-md:gap-4 max-sm:gap-2">
+            <!-- Previous Image -->
+            <div class="slide-container prev-slide" data-position="prev">
+              <div class="slide-content">
+                <img
+                  id="prev-image"
+                  src=""
+                  alt=""
+                  class="object-cover w-full h-full rounded-[20px] shadow-md transition-all duration-500"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+
+            <!-- Current Image (Center) -->
+            <div class="slide-container current-slide" data-position="current">
+              <div class="slide-content">
+                <img
+                  id="current-image"
+                  src=""
+                  alt=""
+                  class="object-cover w-full h-full rounded-[30px] shadow-lg transition-all duration-500"
+                  loading="lazy"
+                />
+                <div id="current-caption" class="image-caption"></div>
+              </div>
+            </div>
+
+            <!-- Next Image -->
+            <div class="slide-container next-slide" data-position="next">
+              <div class="slide-content">
+                <img
+                  id="next-image"
+                  src=""
+                  alt=""
+                  class="object-cover w-full h-full rounded-[20px] shadow-md transition-all duration-500"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          </div>
+
+          {slides.length > 1 && (
+            <button class="carousel-button next z-10 absolute right-0" aria-label="Next slide">
+              <svg
+                width="60"
+                height="60"
+                viewBox="0 0 79 79"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="cursor-pointer transition-all duration-300 hover:scale-110 drop-shadow-lg"
+              >
+                <circle
+                  cx="39.5"
+                  cy="39.5"
+                  r="39.5"
+                  transform="matrix(-1 0 0 1 79 0)"
+                  fill="#C9BDF9"
+                ></circle>
+                <path
+                  d="M31.625 26.4949L33.6465 24.5625L50.375 40.5L33.6465 56.4375L31.625 54.515L46.3223 40.5L31.625 26.4949Z"
+                  fill="white"
+                ></path>
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
+
+      {slides.length > 1 && (
+        <div class="flex justify-center mt-8 gap-2">
+          {slides.map((_, index) => (
+            <button
+              class="carousel-indicator w-3 h-3 rounded-full transition-all duration-300 border-2 border-gray-300"
+              data-slide={index}
+              aria-label={`Go to slide ${index + 1}`}
+            ></button>
+          ))}
+        </div>
+      )}
     </div>
   </div>
 
-  <script>
+  <style>
+    .slide-container {
+      transition: all 0.5s ease-in-out;
+    }
+    
+    .prev-slide .slide-content,
+    .next-slide .slide-content {
+      width: 300px;
+      height: 300px;
+      opacity: 0.7;
+      transform: scale(0.85);
+    }
+    
+    .current-slide .slide-content {
+      width: 500px;
+      height: 400px;
+      opacity: 1;
+      transform: scale(1);
+      position: relative;
+    }
+    
+    /* Responsive sizes */
+    @media (max-width: 768px) {
+      .prev-slide .slide-content,
+      .next-slide .slide-content {
+        width: 200px;
+        height: 200px;
+      }
+      
+      .current-slide .slide-content {
+        width: 350px;
+        height: 280px;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .prev-slide .slide-content,
+      .next-slide .slide-content {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .current-slide .slide-content {
+        width: 250px;
+        height: 200px;
+      }
+    }
+    
+    .image-caption {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      right: 4px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      backdrop-filter: blur(4px);
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+    }
+    
+    .image-caption.show {
+      display: block;
+    }
+    
+    .carousel-indicator {
+      background-color: rgba(201, 189, 249, 0.3);
+      cursor: pointer;
+    }
+    
+    .carousel-indicator.active {
+      background-color: #C9BDF9;
+      transform: scale(1.2);
+    }
+
+    .carousel-button {
+      transition: all 0.3s ease;
+    }
+    
+    .carousel-button:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+
+  <script define:vars={{ autoplay, interval, slides }}>
     document.addEventListener("DOMContentLoaded", function () {
-      const container = document.querySelector(".carousel-container");
-      const items = document.querySelectorAll(".carousel-item");
       const prevButton = document.querySelector(".carousel-button.prev");
       const nextButton = document.querySelector(".carousel-button.next");
+      const indicators = document.querySelectorAll(".carousel-indicator");
+      const prevImage = document.getElementById("prev-image");
+      const currentImage = document.getElementById("current-image");
+      const nextImage = document.getElementById("next-image");
+      const currentCaption = document.getElementById("current-caption");
 
       let currentIndex = 0;
-      const totalItems = items.length;
+      const totalSlides = slides.length;
+      let autoplayInterval;
+      let isTransitioning = false;
 
-      function updateCarousel() {
-        items.forEach((item, index) => {
-          if (index === currentIndex) {
-            item.style.display = "block";
+      // Exit early if no slides
+      if (totalSlides === 0) return;
+
+      function getSlideIndex(offset) {
+        let index = currentIndex + offset;
+        if (index < 0) index = totalSlides - 1;
+        if (index >= totalSlides) index = 0;
+        return index;
+      }
+
+      function updateImages() {
+        if (totalSlides === 1) {
+          // Single image - just show it in center
+          currentImage.src = slides[0].image?.url || '';
+          currentImage.alt = slides[0].alt || slides[0].caption || 'Image';
+          prevImage.style.display = 'none';
+          nextImage.style.display = 'none';
+          
+          if (slides[0].caption) {
+            currentCaption.textContent = slides[0].caption;
+            currentCaption.classList.add('show');
           } else {
-            item.style.display = "none";
+            currentCaption.classList.remove('show');
           }
+          return;
+        }
+
+        // Multiple images - show prev, current, next
+        const prevIndex = getSlideIndex(-1);
+        const nextIndex = getSlideIndex(1);
+
+        // Update previous image
+        if (slides[prevIndex]?.image?.url) {
+          prevImage.src = slides[prevIndex].image.url;
+          prevImage.alt = slides[prevIndex].alt || slides[prevIndex].caption || `Slide ${prevIndex + 1}`;
+        }
+
+        // Update current image
+        if (slides[currentIndex]?.image?.url) {
+          currentImage.src = slides[currentIndex].image.url;
+          currentImage.alt = slides[currentIndex].alt || slides[currentIndex].caption || `Slide ${currentIndex + 1}`;
+        }
+
+        // Update next image
+        if (slides[nextIndex]?.image?.url) {
+          nextImage.src = slides[nextIndex].image.url;
+          nextImage.alt = slides[nextIndex].alt || slides[nextIndex].caption || `Slide ${nextIndex + 1}`;
+        }
+
+        // Update caption
+        if (slides[currentIndex]?.caption) {
+          currentCaption.textContent = slides[currentIndex].caption;
+          currentCaption.classList.add('show');
+        } else {
+          currentCaption.classList.remove('show');
+        }
+
+        // Update indicators
+        indicators.forEach((indicator, index) => {
+          indicator.classList.toggle('active', index === currentIndex);
         });
       }
 
       function goToNext() {
-        currentIndex = (currentIndex + 1) % totalItems;
-        updateCarousel();
+        if (isTransitioning) return;
+        isTransitioning = true;
+        
+        currentIndex = getSlideIndex(1);
+        updateImages();
+        
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 300);
       }
 
       function goToPrev() {
-        currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-        updateCarousel();
+        if (isTransitioning) return;
+        isTransitioning = true;
+        
+        currentIndex = getSlideIndex(-1);
+        updateImages();
+        
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 300);
+      }
+
+      function goToSlide(index) {
+        if (isTransitioning || index === currentIndex) return;
+        isTransitioning = true;
+        
+        currentIndex = index;
+        updateImages();
+        
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 300);
+      }
+
+      function startAutoplay() {
+        if (autoplay && totalSlides > 1) {
+          autoplayInterval = setInterval(goToNext, interval);
+        }
+      }
+
+      function stopAutoplay() {
+        if (autoplayInterval) {
+          clearInterval(autoplayInterval);
+          autoplayInterval = null;
+        }
       }
 
       // Event Listeners
-      nextButton.addEventListener("click", goToNext);
-      prevButton.addEventListener("click", goToPrev);
+      if (nextButton && totalSlides > 1) {
+        nextButton.addEventListener("click", () => {
+          stopAutoplay();
+          goToNext();
+          startAutoplay();
+        });
+      }
+
+      if (prevButton && totalSlides > 1) {
+        prevButton.addEventListener("click", () => {
+          stopAutoplay();
+          goToPrev();
+          startAutoplay();
+        });
+      }
+
+      // Indicator clicks
+      indicators.forEach((indicator, index) => {
+        indicator.addEventListener("click", () => {
+          stopAutoplay();
+          goToSlide(index);
+          startAutoplay();
+        });
+      });
 
       // Keyboard navigation
       document.addEventListener("keydown", (e) => {
+        if (totalSlides <= 1) return;
+        
         if (e.key === "ArrowLeft") {
+          stopAutoplay();
           goToPrev();
+          startAutoplay();
         } else if (e.key === "ArrowRight") {
+          stopAutoplay();
           goToNext();
+          startAutoplay();
         }
       });
 
-      // Initialize carousel
-      updateCarousel();
+      // Touch/swipe support
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      document.addEventListener("touchstart", (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+
+      document.addEventListener("touchend", (e) => {
+        if (totalSlides <= 1) return;
+        
+        touchEndX = e.changedTouches[0].screenX;
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+          stopAutoplay();
+          if (diff > 0) {
+            goToNext();
+          } else {
+            goToPrev();
+          }
+          startAutoplay();
+        }
+      });
+
+      // Pause autoplay on hover
+      const sliderContainer = document.querySelector('[role="region"]');
+      if (sliderContainer) {
+        sliderContainer.addEventListener("mouseenter", stopAutoplay);
+        sliderContainer.addEventListener("mouseleave", startAutoplay);
+      }
+
+      // Initialize
+      updateImages();
+      startAutoplay();
     });
   </script>
 </section>
