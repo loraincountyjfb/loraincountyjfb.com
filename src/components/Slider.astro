@@ -39,7 +39,7 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
           aria-label="Image carousel"
         >
           {slides.length > 1 && (
-            <button class="carousel-button prev z-10 absolute left-0" aria-label="Previous slide">
+            <button class="carousel-button prev z-20 absolute left-0" aria-label="Previous slide">
               <svg
                 width="60"
                 height="60"
@@ -57,50 +57,34 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
             </button>
           )}
 
-          <div class="flex justify-center items-center gap-8 max-md:gap-4 max-sm:gap-2">
-            <!-- Previous Image -->
-            <div class="slide-container prev-slide" data-position="prev">
-              <div class="slide-content">
-                <img
-                  id="prev-image"
-                  src=""
-                  alt=""
-                  class="object-cover w-full h-full rounded-[20px] shadow-md transition-all duration-500"
-                  loading="lazy"
-                />
+          <div class="carousel-circle relative w-full max-w-[1200px] h-[450px] max-md:h-[350px] max-sm:h-[280px]">
+            {slides.map((slide, index) => (
+              <div 
+                class="carousel-slide absolute transition-all duration-700 ease-in-out"
+                data-index={index}
+                style="left: 50%; top: 50%; transform: translate(-50%, -50%);"
+              >
+                <div class="slide-content relative">
+                  {slide.image?.url && (
+                    <img
+                      src={slide.image.url}
+                      alt={slide.alt || slide.caption || `Slide ${index + 1}`}
+                      class="object-cover w-full h-full rounded-[30px] shadow-lg transition-all duration-300"
+                      loading="lazy"
+                    />
+                  )}
+                  {slide.caption && (
+                    <div class="image-caption">
+                      <p class="text-sm font-medium">{slide.caption}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-
-            <!-- Current Image (Center) -->
-            <div class="slide-container current-slide" data-position="current">
-              <div class="slide-content">
-                <img
-                  id="current-image"
-                  src=""
-                  alt=""
-                  class="object-cover w-full h-full rounded-[30px] shadow-lg transition-all duration-500"
-                  loading="lazy"
-                />
-                <div id="current-caption" class="image-caption"></div>
-              </div>
-            </div>
-
-            <!-- Next Image -->
-            <div class="slide-container next-slide" data-position="next">
-              <div class="slide-content">
-                <img
-                  id="next-image"
-                  src=""
-                  alt=""
-                  class="object-cover w-full h-full rounded-[20px] shadow-md transition-all duration-500"
-                  loading="lazy"
-                />
-              </div>
-            </div>
+            ))}
           </div>
 
           {slides.length > 1 && (
-            <button class="carousel-button next z-10 absolute right-0" aria-label="Next slide">
+            <button class="carousel-button next z-20 absolute right-0" aria-label="Next slide">
               <svg
                 width="60"
                 height="60"
@@ -141,51 +125,19 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
   </div>
 
   <style>
-    .slide-container {
-      transition: all 0.5s ease-in-out;
-    }
-    
-    .prev-slide .slide-content,
-    .next-slide .slide-content {
-      width: 300px;
-      height: 300px;
-      opacity: 0.7;
-      transform: scale(0.85);
-    }
-    
-    .current-slide .slide-content {
-      width: 500px;
-      height: 400px;
-      opacity: 1;
-      transform: scale(1);
+    .carousel-circle {
+      perspective: 1000px;
       position: relative;
+      overflow: visible;
     }
     
-    /* Responsive sizes */
-    @media (max-width: 768px) {
-      .prev-slide .slide-content,
-      .next-slide .slide-content {
-        width: 200px;
-        height: 200px;
-      }
-      
-      .current-slide .slide-content {
-        width: 350px;
-        height: 280px;
-      }
+    .carousel-slide {
+      will-change: transform;
+      backface-visibility: hidden;
     }
     
-    @media (max-width: 640px) {
-      .prev-slide .slide-content,
-      .next-slide .slide-content {
-        width: 120px;
-        height: 120px;
-      }
-      
-      .current-slide .slide-content {
-        width: 250px;
-        height: 200px;
-      }
+    .slide-content {
+      transition: all 0.3s ease;
     }
     
     .image-caption {
@@ -201,11 +153,8 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
       backdrop-filter: blur(4px);
       font-size: 14px;
       font-weight: 500;
-      display: none;
-    }
-    
-    .image-caption.show {
-      display: block;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
     
     .carousel-indicator {
@@ -232,118 +181,142 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
       const prevButton = document.querySelector(".carousel-button.prev");
       const nextButton = document.querySelector(".carousel-button.next");
       const indicators = document.querySelectorAll(".carousel-indicator");
-      const prevImage = document.getElementById("prev-image");
-      const currentImage = document.getElementById("current-image");
-      const nextImage = document.getElementById("next-image");
-      const currentCaption = document.getElementById("current-caption");
+      const carouselSlides = document.querySelectorAll(".carousel-slide");
+      const carouselCircle = document.querySelector(".carousel-circle");
 
       let currentIndex = 0;
       const totalSlides = slides.length;
       let autoplayInterval;
       let isTransitioning = false;
+      let rotation = 0; // Current rotation of the circle in degrees
 
       // Exit early if no slides
       if (totalSlides === 0) return;
 
-      function getSlideIndex(offset) {
-        let index = currentIndex + offset;
-        if (index < 0) index = totalSlides - 1;
-        if (index >= totalSlides) index = 0;
-        return index;
+      // Circle configuration for exactly 3 visible slides
+      const angleStep = 360 / totalSlides; // Degrees between each slide
+      
+      // Fixed positions for the 3 visible slides
+      const positions = {
+        left: { x: -400, size: 300, opacity: 0.7, zIndex: 5 },
+        center: { x: 0, size: 500, opacity: 1, zIndex: 10 },
+        right: { x: 400, size: 300, opacity: 0.7, zIndex: 5 }
+      };
+      
+      // Responsive positions
+      function getPositions() {
+        if (window.innerWidth <= 640) {
+          return {
+            left: { x: -200, size: 120, opacity: 0.7, zIndex: 5 },
+            center: { x: 0, size: 250, opacity: 1, zIndex: 10 },
+            right: { x: 200, size: 120, opacity: 0.7, zIndex: 5 }
+          };
+        } else if (window.innerWidth <= 768) {
+          return {
+            left: { x: -300, size: 200, opacity: 0.7, zIndex: 5 },
+            center: { x: 0, size: 350, opacity: 1, zIndex: 10 },
+            right: { x: 300, size: 200, opacity: 0.7, zIndex: 5 }
+          };
+        }
+        return positions;
       }
 
-      function updateImages() {
-        if (totalSlides === 1) {
-          // Single image - just show it in center
-          currentImage.src = slides[0].image?.url || '';
-          currentImage.alt = slides[0].alt || slides[0].caption || 'Image';
-          prevImage.style.display = 'none';
-          nextImage.style.display = 'none';
+      function updateSlidePositions() {
+        const currentPositions = getPositions();
+        
+        carouselSlides.forEach((slide, index) => {
+          // Calculate which position this slide should be in
+          let relativePosition = (index - currentIndex + totalSlides) % totalSlides;
           
-          if (slides[0].caption) {
-            currentCaption.textContent = slides[0].caption;
-            currentCaption.classList.add('show');
-          } else {
-            currentCaption.classList.remove('show');
+          // Determine if this slide should be visible and where
+          let position = null;
+          let isVisible = false;
+          
+          if (relativePosition === 0) {
+            // This is the current slide (center)
+            position = currentPositions.center;
+            isVisible = true;
+          } else if (relativePosition === 1 || (relativePosition === totalSlides - 1 && totalSlides === 2)) {
+            // This is the next slide (right)
+            position = currentPositions.right;
+            isVisible = totalSlides > 1;
+          } else if (relativePosition === totalSlides - 1 || (relativePosition === 1 && totalSlides === 2)) {
+            // This is the previous slide (left) 
+            position = currentPositions.left;
+            isVisible = totalSlides > 2; // Only show left slide if we have more than 2 slides
           }
-          return;
-        }
-
-        // Multiple images - show prev, current, next
-        const prevIndex = getSlideIndex(-1);
-        const nextIndex = getSlideIndex(1);
-
-        // Update previous image
-        if (slides[prevIndex]?.image?.url) {
-          prevImage.src = slides[prevIndex].image.url;
-          prevImage.alt = slides[prevIndex].alt || slides[prevIndex].caption || `Slide ${prevIndex + 1}`;
-        }
-
-        // Update current image
-        if (slides[currentIndex]?.image?.url) {
-          currentImage.src = slides[currentIndex].image.url;
-          currentImage.alt = slides[currentIndex].alt || slides[currentIndex].caption || `Slide ${currentIndex + 1}`;
-        }
-
-        // Update next image
-        if (slides[nextIndex]?.image?.url) {
-          nextImage.src = slides[nextIndex].image.url;
-          nextImage.alt = slides[nextIndex].alt || slides[nextIndex].caption || `Slide ${nextIndex + 1}`;
-        }
-
-        // Update caption
-        if (slides[currentIndex]?.caption) {
-          currentCaption.textContent = slides[currentIndex].caption;
-          currentCaption.classList.add('show');
-        } else {
-          currentCaption.classList.remove('show');
-        }
-
+          
+          if (isVisible && position) {
+            // Position and style the visible slide
+            slide.style.transform = `translate(-50%, -50%) translate(${position.x}px, 0px)`;
+            slide.style.opacity = position.opacity;
+            slide.style.zIndex = position.zIndex;
+            slide.style.visibility = 'visible';
+            
+            // Size the slide content
+            const content = slide.querySelector('.slide-content');
+            if (content) {
+              content.style.width = `${position.size}px`;
+              content.style.height = `${position.size * 0.8}px`;
+            }
+            
+            // Show/hide caption only for center slide
+            const caption = slide.querySelector('.image-caption');
+            if (caption) {
+              caption.style.opacity = relativePosition === 0 ? '1' : '0';
+            }
+          } else {
+            // Hide slides that shouldn't be visible
+            slide.style.visibility = 'hidden';
+            slide.style.opacity = '0';
+          }
+        });
+        
         // Update indicators
         indicators.forEach((indicator, index) => {
           indicator.classList.toggle('active', index === currentIndex);
         });
       }
 
-      function goToNext() {
+      function rotateToNext() {
         if (isTransitioning) return;
         isTransitioning = true;
         
-        currentIndex = getSlideIndex(1);
-        updateImages();
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateSlidePositions();
         
         setTimeout(() => {
           isTransitioning = false;
-        }, 300);
+        }, 700);
       }
 
-      function goToPrev() {
+      function rotateToPrev() {
         if (isTransitioning) return;
         isTransitioning = true;
         
-        currentIndex = getSlideIndex(-1);
-        updateImages();
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        updateSlidePositions();
         
         setTimeout(() => {
           isTransitioning = false;
-        }, 300);
+        }, 700);
       }
 
-      function goToSlide(index) {
-        if (isTransitioning || index === currentIndex) return;
+      function rotateToSlide(targetIndex) {
+        if (isTransitioning || targetIndex === currentIndex) return;
         isTransitioning = true;
         
-        currentIndex = index;
-        updateImages();
+        currentIndex = targetIndex;
+        updateSlidePositions();
         
         setTimeout(() => {
           isTransitioning = false;
-        }, 300);
+        }, 700);
       }
 
       function startAutoplay() {
         if (autoplay && totalSlides > 1) {
-          autoplayInterval = setInterval(goToNext, interval);
+          autoplayInterval = setInterval(rotateToNext, interval);
         }
       }
 
@@ -358,7 +331,7 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
       if (nextButton && totalSlides > 1) {
         nextButton.addEventListener("click", () => {
           stopAutoplay();
-          goToNext();
+          rotateToNext();
           startAutoplay();
         });
       }
@@ -366,7 +339,7 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
       if (prevButton && totalSlides > 1) {
         prevButton.addEventListener("click", () => {
           stopAutoplay();
-          goToPrev();
+          rotateToPrev();
           startAutoplay();
         });
       }
@@ -375,7 +348,7 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
       indicators.forEach((indicator, index) => {
         indicator.addEventListener("click", () => {
           stopAutoplay();
-          goToSlide(index);
+          rotateToSlide(index);
           startAutoplay();
         });
       });
@@ -386,11 +359,11 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
         
         if (e.key === "ArrowLeft") {
           stopAutoplay();
-          goToPrev();
+          rotateToPrev();
           startAutoplay();
         } else if (e.key === "ArrowRight") {
           stopAutoplay();
-          goToNext();
+          rotateToNext();
           startAutoplay();
         }
       });
@@ -399,11 +372,11 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
       let touchStartX = 0;
       let touchEndX = 0;
 
-      document.addEventListener("touchstart", (e) => {
+      carouselCircle.addEventListener("touchstart", (e) => {
         touchStartX = e.changedTouches[0].screenX;
       });
 
-      document.addEventListener("touchend", (e) => {
+      carouselCircle.addEventListener("touchend", (e) => {
         if (totalSlides <= 1) return;
         
         touchEndX = e.changedTouches[0].screenX;
@@ -413,23 +386,27 @@ const { title, description, slides = [], autoplay = true, interval = 5000 } = co
         if (Math.abs(diff) > swipeThreshold) {
           stopAutoplay();
           if (diff > 0) {
-            goToNext();
+            rotateToNext();
           } else {
-            goToPrev();
+            rotateToPrev();
           }
           startAutoplay();
         }
       });
 
       // Pause autoplay on hover
-      const sliderContainer = document.querySelector('[role="region"]');
-      if (sliderContainer) {
-        sliderContainer.addEventListener("mouseenter", stopAutoplay);
-        sliderContainer.addEventListener("mouseleave", startAutoplay);
+      if (carouselCircle) {
+        carouselCircle.addEventListener("mouseenter", stopAutoplay);
+        carouselCircle.addEventListener("mouseleave", startAutoplay);
       }
 
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        updateSlidePositions();
+      });
+
       // Initialize
-      updateImages();
+      updateSlidePositions();
       startAutoplay();
     });
   </script>
