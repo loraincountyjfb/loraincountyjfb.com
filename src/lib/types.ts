@@ -212,6 +212,8 @@ export interface WinnersContent {
     image?: {
       url?: string;
     };
+    link?: string;
+    linkText?: string;
   }[];
 }
 

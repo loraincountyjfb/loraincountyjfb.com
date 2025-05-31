@@ -31,6 +31,7 @@ const bgColors = [
         <div class="text-[18px] leading-[24px] tracking-[0%] font-source-sans-pro font-light animate-on-scroll slide-up mt-2 text-[#e2684a]">{winner.year}</div>
         <div class="text-[22px] leading-[24px] tracking-[0%] font-source-serif-4 font-bold animate-on-scroll slide-up mt-2">{winner.title}</div>
         <div class="text-[20px] leading-[24px] tracking-[0%] font-source-serif-4 animate-on-scroll slide-up mt-2"><PortableText value={winner.description} /></div>
+        <a href={winner.link} target="_blank" class="text-[18px] leading-[24px] tracking-[0%] font-source-sans-pro font-light animate-on-scroll slide-up mt-2 text-[#e2684a]">{winner.linkText}</a>
       </div>
     ))}
   </div>

@@ -145,7 +145,9 @@ export const PAGE_CONTENT_QUERY = `
     title,
     year,
     description,
-    "image": image{ "url": asset->url }
+    "image": image{ "url": asset->url },
+    link,
+    linkText
   },
   // Schedule fields
   "scheduleItems": scheduleItems[]{
