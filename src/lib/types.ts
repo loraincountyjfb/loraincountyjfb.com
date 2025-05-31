@@ -257,8 +257,6 @@ export interface AwardTabsContent {
   }[];
 }
 
-// Form type definitions
-export type FormType = 'cow' | 'pig' | 'chicken' | 'sheep' | 'general';
 
 // Field definitions for each form type
 export interface FormFields {
@@ -308,7 +306,7 @@ export interface FormContent {
   submitButtonText?: string;
   textPosition?: 'left' | 'right';
   id?: string;
-  formType: FormType;
+  formType: string;
   link?: string;
   linkText?: string;
 }

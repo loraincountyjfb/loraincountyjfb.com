@@ -8,6 +8,7 @@ export const PAGE_CONTENT_QUERY = `
   title,
   content[]{
   _type,
+  type,
   // HERO FIELDS
   heroLayout,
   title,

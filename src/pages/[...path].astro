@@ -5,10 +5,10 @@ import { fetchPageBySlug, isPreviewMode } from '../lib/contentFetcher';
 import { loadQuery } from '../../lib/load-query';
 import type { PageData } from '../lib/types';
 
-// Generate static paths for single-segment routes only
+// Generate static paths for multi-segment routes
 export async function getStaticPaths() {
   const { data: pages } = await loadQuery({
-    query: `*[_type == "page" && defined(slug.current) && !(slug.current match "*/*")]`,
+    query: `*[_type == "page" && defined(slug.current) && slug.current match "*/*"]`,
     params: {},
     enabled: true
   });
@@ -16,20 +16,20 @@ export async function getStaticPaths() {
   return pages.map(({ slug }: { slug: { current: string } }) => {
     return {
       params: {
-        slug: slug.current,
+        path: slug.current,
       },
     };
   });
 }
 
-// Get the slug from params
-const { slug } = Astro.params;
+// Get the path from params - in catch-all routes, this is a string
+const { path } = Astro.params as { path: string };
 
 // Determine if we're in preview mode
 const preview = isPreviewMode(Astro.url.href);
 
-// Fetch the page content
-const page = await fetchPageBySlug(slug as string, preview);
+// Fetch the page content using the path as slug
+const page = await fetchPageBySlug(path, preview);
 
 // Redirect to 404 if page not found
 if (!page || !page.title) {
@@ -39,4 +39,4 @@ if (!page || !page.title) {
 
 <MainLayout content={page}>
   <ContentRenderer content={page.content || []} />
-</MainLayout>
+</MainLayout> 

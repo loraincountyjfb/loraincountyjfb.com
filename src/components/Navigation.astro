@@ -12,6 +12,20 @@ import partnerLogo2 from '../../assets/images/menu/logos/o-neill.png';
 import partnerLogo3 from '../../assets/images/menu/logos/soltera.png';
 import partnerLogo4 from '../../assets/images/menu/logos/apex.png';
 
+// Import SVG icons from mega-menu folder
+import auctionIcon from '../../assets/svgs/mega-menu/auction.svg?raw';
+import pigIcon from '../../assets/svgs/mega-menu/pig.svg?raw';
+import crownIcon from '../../assets/svgs/mega-menu/crown.svg?raw';
+import trailerIcon from '../../assets/svgs/mega-menu/trailer.svg?raw';
+import trophyIcon from '../../assets/svgs/mega-menu/trophy.svg?raw';
+import thankYouIcon from '../../assets/svgs/mega-menu/thank-you.svg?raw';
+import shirtIcon from '../../assets/svgs/mega-menu/shirt.svg?raw';
+import healthIcon from '../../assets/svgs/mega-menu/health.svg?raw';
+import personCheckIcon from '../../assets/svgs/mega-menu/person-check.svg?raw';
+import applicationIcon from '../../assets/svgs/mega-menu/application.svg?raw';
+import formIcon from '../../assets/svgs/mega-menu/form.svg?raw';
+import invoiceIcon from '../../assets/svgs/mega-menu/invoice.svg?raw';
+
 const builder = imageUrlBuilder(sanityClient);
 
 function urlFor(source: any) {
@@ -23,6 +37,27 @@ function urlFor(source: any) {
     }
   }
   return null;
+}
+
+// Icon mapping for Sanity dropdown selection
+const iconMap: Record<string, string> = {
+  'auction': auctionIcon,
+  'pig': pigIcon,
+  'crown': crownIcon,
+  'trailer': trailerIcon,
+  'trophy': trophyIcon,
+  'thank-you': thankYouIcon,
+  'shirt': shirtIcon,
+  'health': healthIcon,
+  'person-check': personCheckIcon,
+  'application': applicationIcon,
+  'form': formIcon,
+  'invoice': invoiceIcon
+};
+
+// Helper function to get SVG icon
+function getIcon(iconKey: string): string {
+  return iconMap[iconKey] || formIcon; // Default to form icon if not found
 }
 
 // Define TypeScript interfaces for the Sanity data structure
@@ -55,6 +90,8 @@ interface TileItem {
   title?: string;
   image?: any;
   link?: string;
+  iconKey?: string; // Changed from icon to iconKey for Sanity dropdown selection
+  active?: boolean; // Add active field to control if form is available this year
 }
 
 interface MenuItem {
@@ -94,7 +131,9 @@ const HEADER_MENU_QUERY = `*[_type == "headerMenu" && defined(slug.current)][0]{
         subTitle,
         title,
         image,
-        link
+        link,
+        iconKey,
+        active
       },
       columns[] {
         dropdownMenu[] {
@@ -121,6 +160,100 @@ const { data } = await loadQuery({
 // Use type assertion to inform TypeScript about the structure
 // This ensures type safety when accessing nested properties
 const headerMenu = data as HeaderMenuType;
+
+// Example data structure for FORMS dropdown - you can replace this with actual Sanity data
+// Note: iconKey should match the keys in iconMap above
+const exampleFormsData: TileItem[] = [
+  {
+    title: "Junior Fair BBR (Born, Bred, and Raised) Form",
+    subTitle: "Documentation for animals born and raised in Lorain County. Beef, Goat, and Sheep forms are here.",
+    iconKey: "invoice",
+    link: "/forms/bbr-forms",
+    active: true
+  },
+  {
+    title: "Swine Tag Registration Form",
+    subTitle: "Required tag registration and identification for all swine entries",
+    iconKey: "pig",
+    link: "/forms/swine-tag",
+    active: true
+  },
+  {
+    title: "Auction Photos Submission Form",
+    subTitle: "Submit official photos for livestock auction documentation and records",
+    iconKey: "auction",
+    link: "/forms/auction-photos",
+    active: true
+  },
+  {
+    title: "Junior Fair Thank you Card Design Form", 
+    subTitle: "Competition to design cards recognizing Fair supporters",
+    iconKey: "thank-you",
+    link: "/forms/thank-you-card",
+    active: true
+  },
+  {
+    title: "Junior Fair Board Adult Consultant Form", 
+    subTitle: "Adult volunteer application to mentor Junior Fair Board members",
+    iconKey: "person-check",
+    link: "/forms/adult-consultant",
+    active: false
+  },
+  {
+    title: "Lorain County Junior Fair Scholarship Application",
+    subTitle: "Financial aid application for higher education pursuit", 
+    iconKey: "application",
+    link: "/forms/scholarship",
+    active: false
+  },
+  {
+    title: "Junior Fair T-shirt Design Form",
+    subTitle: "Annual contest to create official Junior Fair apparel artwork",
+    iconKey: "shirt", 
+    link: "/forms/tshirt-design",
+    active: false
+  },
+  {
+    title: "Junior Fair King & Queen Application",
+    subTitle: "Contest entry for Junior Fair youth leadership positions",
+    iconKey: "crown",
+    link: "/forms/king-queen",
+    active: false
+  },
+
+  {
+    title: "Stock the Trailer 4-H/FFA Contest Form",
+    subTitle: "Donation collection contest between 4-H clubs and FFA chapters", 
+    iconKey: "trailer",
+    link: "/forms/stock-trailer",
+    active: false
+  },
+  {
+    title: "Junior Fair Board Member & Assistant Application",
+    subTitle: "Leadership role opportunity for Junior Fair youth ages 13-18",
+    iconKey: "trophy",
+    link: "/forms/board-member",
+    active: false
+  },
+  {
+    title: "Junior Fair Health Form",
+    subTitle: "Required medical information and emergency contacts for Fair participants",
+    iconKey: "health",
+    link: "/forms/health-form",
+    active: false
+  },
+  {
+    title: "Junior Fair Activity Form", 
+    subTitle: "Register for Junior Fair events, contests and competitions",
+    iconKey: "form",
+    link: "/forms/activity-form",
+    active: false
+  },
+
+];
+
+// Get the forms data from Sanity if available, otherwise use example data
+const formsData = headerMenu?.menuItems?.[0]?.menu?.find(item => item.label === 'Forms')?.tiles || exampleFormsData;
 ---
 
 <nav
@@ -145,18 +278,17 @@ const headerMenu = data as HeaderMenuType;
 
       <!-- Navigation Links -->
       <div
-        class="flex overflow-hidden flex-wrap flex-auto gap-5 justify-center items-center max-md:hidden max-sm:hidden"
+        class="flex flex-wrap flex-auto gap-5 justify-center items-center max-md:hidden max-sm:hidden"
         role="menubar"
       >
-      <a
-      href="/"
-      class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-      role="menuitem"
-    >
-      Home
-    </a>
+        <a
+          href="/"
+          class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          role="menuitem"
+        >
+          Home
+        </a>
 
-     
         <a
           href="/fair-entry"
           class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -164,6 +296,76 @@ const headerMenu = data as HeaderMenuType;
         >
           Fair Entry
         </a>
+
+        <!-- FORMS Dropdown -->
+        <div class="relative group" role="menuitem">
+          <button
+            class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 flex items-center gap-1"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Forms
+            <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <!-- Dropdown Menu -->
+          <div class="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out z-50">
+            <div class="bg-white rounded-lg shadow-2xl border border-gray-200 p-8 w-[1000px] max-w-screen-lg">
+              <div class="mb-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">All Forms</h3>
+                <p class="text-gray-600">Complete and submit forms for Junior Fair participation</p>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-6">
+                {formsData.map((form) => {
+                  const isActive = form.active !== false; // Default to true if not specified
+                  const FormElement = isActive ? 'a' : 'div';
+                  
+                  return (
+                    <FormElement 
+                      {...(isActive ? { href: form.link } : {})}
+                      class={`flex items-start gap-4 p-4 rounded-lg transition-colors duration-200 group/item ${
+                        isActive 
+                          ? 'hover:bg-gray-50 cursor-pointer' 
+                          : 'opacity-60 cursor-not-allowed bg-gray-25'
+                      }`}
+                    >
+                      <div class={`flex-shrink-0 w-12 h-12 shadow-md rounded-lg flex items-center justify-center ${
+                        isActive ? '' : 'bg-gray-100'
+                      }`}>
+                        <div class={`w-6 h-6 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} set:html={getIcon(form.iconKey || 'form')} />
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                          <h4 class={`text-sm font-semibold mb-1 transition-colors ${
+                            isActive 
+                              ? 'text-gray-900 group-hover/item:text-blue-600' 
+                              : 'text-gray-500'
+                          }`}>
+                            {form.title}
+                          </h4>
+                          {!isActive && (
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                              Inactive
+                            </span>
+                          )}
+                        </div>
+                        <p class={`text-xs leading-relaxed ${
+                          isActive ? 'text-gray-600' : 'text-gray-400'
+                        }`}>
+                          {form.subTitle}
+                        </p>
+                      </div>
+                    </FormElement>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <a
           href="/sponsorships"
           class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -172,52 +374,13 @@ const headerMenu = data as HeaderMenuType;
           Sponsorships
         </a>
         <a
-        href="/history"
-        class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-        role="menuitem"
-      >
-        History
-      </a>
-        <!-- <a
-          href="/stock-the-trailer"
+          href="/history"
           class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           role="menuitem"
         >
-          Stock the Trailer
+          History
         </a>
-        <a
-          href="/livestock-auction"
-          class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          role="menuitem"
-        >
-          Livestock Auction
-        </a>
-        <a
-          href="/junior-fair-apparel"
-          class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          role="menuitem"
-        >
-          Junior Fair Apparel
-        </a>
-        <a
-          href="#departments"
-          class="self-stretch my-auto text-base font-medium uppercase hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          role="menuitem"
-        >
-          Departments
-        </a> -->
       </div>
-
-      <!-- Cart Button -->
-      <!-- <button
-        class="flex gap-5 justify-center px-4 py-1.5 ml-auto text-2xl tracking-tighter text-white rounded-2xl bg-neutral-800 hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500 transition-colors max-md:justify-end max-md:items-center max-md:ml-auto max-md:text-center"
-        aria-label="Shopping cart"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-        </svg>
-        <span class="self-stretch my-auto text-base">CART</span>
-      </button> -->
 
       <!-- Mobile Menu Toggle (visible on mobile devices) -->
       <button 
@@ -242,9 +405,85 @@ const headerMenu = data as HeaderMenuType;
       </svg>
     </button>
   </div>
-  <div class="px-4 py-2 space-y-4">
+  <div class="px-4 py-2 space-y-4 overflow-y-auto max-h-[calc(100vh-80px)]">
     <a href="/" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Home</a>
     <a href="/fair-entry" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Fair Entry</a>
+    
+    <!-- Mobile Forms Dropdown -->
+    <div class="border-b border-gray-200">
+      <button 
+        id="mobile-forms-toggle"
+        class="flex items-center justify-between w-full py-2 text-lg font-medium text-gray-800 focus:outline-none"
+        aria-expanded="false"
+      >
+        <span>Forms</span>
+        <svg 
+          id="mobile-forms-arrow" 
+          class="w-5 h-5 transition-transform duration-200" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      
+      <div id="mobile-forms-dropdown" class="hidden pb-2 space-y-3">
+        <div class="ml-4 space-y-3">
+          {formsData.map((form) => {
+            const isActive = form.active !== false;
+            const FormElement = isActive ? 'a' : 'div';
+            
+            return (
+              <FormElement 
+                {...(isActive ? { href: form.link } : {})}
+                class={`flex items-start gap-3 p-3 rounded-lg transition-colors duration-200 ${
+                  isActive 
+                    ? 'hover:bg-gray-50 active:bg-gray-100' 
+                    : 'opacity-60 cursor-not-allowed bg-gray-25'
+                }`}
+              >
+                <div class={`flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center ${
+                  isActive ? 'bg-blue-50' : 'bg-gray-100'
+                }`}>
+                  <div class={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} set:html={getIcon(form.iconKey || 'form')} />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between">
+                    <h4 class={`text-sm font-medium leading-tight ${
+                      isActive ? 'text-gray-900' : 'text-gray-500'
+                    }`}>
+                      {form.title}
+                    </h4>
+                    {!isActive && (
+                      <span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 flex-shrink-0">
+                        Inactive
+                      </span>
+                    )}
+                  </div>
+                  <p class={`text-xs mt-1 leading-relaxed ${
+                    isActive ? 'text-gray-600' : 'text-gray-400'
+                  }`}>
+                    {form.subTitle}
+                  </p>
+                </div>
+              </FormElement>
+            );
+          })}
+        </div>
+        
+        <!-- View All Forms Link -->
+        <div class="ml-4 pt-2 border-t border-gray-100">
+          <a href="/forms" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800">
+            View All Forms
+            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    
     <a href="/sponsorships" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">Sponsorships</a>
     <a href="/history" class="block py-2 text-lg font-medium text-gray-800 border-b border-gray-200">History</a>
   </div>
@@ -255,20 +494,71 @@ const headerMenu = data as HeaderMenuType;
     const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
     const closeMobileMenu = document.getElementById('close-mobile-menu');
+    const mobileFormsToggle = document.getElementById('mobile-forms-toggle');
+    const mobileFormsDropdown = document.getElementById('mobile-forms-dropdown');
+    const mobileFormsArrow = document.getElementById('mobile-forms-arrow');
     
+    // Mobile menu toggle functionality
     if (mobileMenuToggle && mobileMenu && closeMobileMenu) {
-      mobileMenuToggle.addEventListener('click', () => {
+      // Remove any existing event listeners to prevent duplicates
+      const newMobileMenuToggle = mobileMenuToggle.cloneNode(true) as HTMLElement;
+      mobileMenuToggle.parentNode?.replaceChild(newMobileMenuToggle, mobileMenuToggle);
+      
+      const newCloseMobileMenu = closeMobileMenu.cloneNode(true) as HTMLElement;
+      closeMobileMenu.parentNode?.replaceChild(newCloseMobileMenu, closeMobileMenu);
+      
+      newMobileMenuToggle.addEventListener('click', () => {
         mobileMenu.classList.remove('translate-x-full');
       });
       
-      closeMobileMenu.addEventListener('click', () => {
+      newCloseMobileMenu.addEventListener('click', () => {
         mobileMenu.classList.add('translate-x-full');
+        // Reset forms dropdown when closing mobile menu
+        if (mobileFormsDropdown && mobileFormsArrow && mobileFormsToggle) {
+          mobileFormsDropdown.classList.add('hidden');
+          mobileFormsArrow.classList.remove('rotate-180');
+          mobileFormsToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+    
+    // Mobile forms dropdown toggle functionality
+    if (mobileFormsToggle && mobileFormsDropdown && mobileFormsArrow) {
+      // Remove any existing event listeners to prevent duplicates
+      const newMobileFormsToggle = mobileFormsToggle.cloneNode(true) as HTMLElement;
+      mobileFormsToggle.parentNode?.replaceChild(newMobileFormsToggle, mobileFormsToggle);
+      
+      newMobileFormsToggle.addEventListener('click', () => {
+        const isExpanded = newMobileFormsToggle.getAttribute('aria-expanded') === 'true';
+        
+        if (isExpanded) {
+          // Close dropdown
+          mobileFormsDropdown.classList.add('hidden');
+          mobileFormsArrow.classList.remove('rotate-180');
+          newMobileFormsToggle.setAttribute('aria-expanded', 'false');
+        } else {
+          // Open dropdown
+          mobileFormsDropdown.classList.remove('hidden');
+          mobileFormsArrow.classList.add('rotate-180');
+          newMobileFormsToggle.setAttribute('aria-expanded', 'true');
+        }
       });
     }
   }
 
-  // Initialize on page load
-  document.addEventListener('DOMContentLoaded', initializeMenu);
+  // Function to check if DOM is ready and initialize
+  function initWhenReady() {
+    if (document.readyState === 'loading') {
+      // DOM is still loading, wait for it
+      document.addEventListener('DOMContentLoaded', initializeMenu);
+    } else {
+      // DOM is already loaded, initialize immediately
+      initializeMenu();
+    }
+  }
+
+  // Initialize on initial load
+  initWhenReady();
   
   // Re-initialize after view transitions
   document.addEventListener('astro:page-load', initializeMenu);
