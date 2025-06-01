@@ -6,8 +6,13 @@ interface Props {
 
 const { formName, formAction } = Astro.props;
 
-// Determine if this is a BBR form and what type
+// Determine form type and configuration
 const isBBRForm = formName.startsWith('bbr-');
+const isAuctionPhotosForm = formName === 'auction-photos';
+const isThankYouCardsForm = formName === 'thank-you-cards';
+const isRegularAnimalForm = !isBBRForm && !isAuctionPhotosForm && !isThankYouCardsForm;
+
+// BBR-specific logic
 const bbrType = isBBRForm ? formName.replace('bbr-', '') : '';
 const isGoatOrSheep = bbrType === 'goat' || bbrType === 'sheep';
 // Map BBR types to animal types (handle legacy 'beef' -> 'cow' mapping)
@@ -33,6 +38,7 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </label>
   </p>
 
+  {/* Exhibitor Name - Required for all forms */}
   <div class="animate-on-scroll slide-up delay-100">
     <label for="exhibitor_name" class="text-white mb-2 block h-0 overflow-hidden">Exhibitor name:</label>
     <div>
@@ -47,6 +53,7 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </div>
   </div>
 
+  {/* Exhibitor Email - BBR forms only */}
   {isBBRForm && (
     <div class="animate-on-scroll slide-up delay-150">
       <label for="exhibitor_email" class="text-white mb-2 block h-0 overflow-hidden">Exhibitor's Email:</label>
@@ -63,6 +70,7 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </div>
   )}
 
+  {/* Club Name - Required for all forms */}
   <div class="animate-on-scroll slide-up delay-200">
     <label for="club_name" class="text-white mb-2 block h-0 overflow-hidden">Club name:</label>
     <div>
@@ -77,32 +85,71 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </div>
   </div>
 
-  <div class="animate-on-scroll slide-up delay-300">
-    <label for="contact_number" class="text-white mb-2 block h-0 overflow-hidden">Contact number:</label>
-    <div>
+  {/* Contact Number - BBR forms and Thank You Cards */}
+  {(isBBRForm || isThankYouCardsForm) && (
+    <div class="animate-on-scroll slide-up delay-300">
+      <label for="contact_number" class="text-white mb-2 block h-0 overflow-hidden">Contact number:</label>
+      <div>
+        <input
+          type="tel"
+          name="contact_number"
+          id="contact_number"
+          placeholder={isBBRForm ? "Exhibitor's (or Parent's) Phone Number" : "Contact number"}
+          required
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+        />
+      </div>
+    </div>
+  )}
+
+  {/* Fair Tag Number - Regular animal forms and BBR forms */}
+  {(isRegularAnimalForm || isBBRForm) && (
+    <div class="animate-on-scroll slide-up delay-400">
+      <label for="fair_tag_number" class="text-white mb-2 block h-0 overflow-hidden">Fair Tag Number:</label>
       <input
-        type="tel"
-        name="contact_number"
-        id="contact_number"
-        placeholder={isBBRForm ? "Exhibitor's (or Parent's) Phone Number" : "Contact number"}
+        type="text"
+        name="fair_tag_number"
+        id="fair_tag_number"
         required
+        placeholder="Fair Tag #"
         class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
       />
     </div>
-  </div>
+  )}
 
-  <div class="animate-on-scroll slide-up delay-400">
-    <label for="fair_tag_number" class="text-white mb-2 block h-0 overflow-hidden">Fair Tag Number:</label>
-    <input
-      type="text"
-      name="fair_tag_number"
-      id="fair_tag_number"
-      required
-      placeholder="Fair Tag #"
-      class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
-    />
-  </div>
+  {/* EID Tag Number - Auction Photos forms */}
+  {isAuctionPhotosForm && (
+    <div class="animate-on-scroll slide-up delay-400">
+      <label for="eid_tag_number" class="text-white mb-2 block h-0 overflow-hidden">EID Tag Number:</label>
+      <input
+        type="text"
+        name="eid_tag_number"
+        id="eid_tag_number"
+        required
+        placeholder="EID Tag Number"
+        class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+      />
+    </div>
+  )}
 
+  {/* Project Type - Auction Photos forms */}
+  {isAuctionPhotosForm && (
+    <div class="animate-on-scroll slide-up delay-450">
+      <label for="project_type" class="text-white mb-2 block font-bold text-lg">Project Type:</label>
+      <select
+        name="project_type"
+        id="project_type"
+        required
+        class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+      >
+        <option value="">Select Project Type</option>
+        <option value="Beef">Beef</option>
+        <option value="Fowl">Fowl</option>
+      </select>
+    </div>
+  )}
+
+  {/* Scrapie Tag - BBR forms for goats & sheep */}
   {isBBRForm && isGoatOrSheep && (
     <div class="animate-on-scroll slide-up delay-450">
       <label for="scrapie_tag" class="text-white mb-2 block h-0 overflow-hidden">Scrapie Tag/Tattoo #:</label>
@@ -117,6 +164,7 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </div>
   )}
 
+  {/* Hidden Animal Type - BBR forms only */}
   {isBBRForm && (
     <input
       type="hidden"
@@ -126,7 +174,8 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     />
   )}
 
-  {!isBBRForm && (
+  {/* EID Tag Number - Regular animal forms only */}
+  {isRegularAnimalForm && (
     <div class="animate-on-scroll slide-up delay-500">
       <label for="eid_tag_number" class="text-white mb-2 block h-0 overflow-hidden">EID tag number:</label>
       <input
@@ -140,7 +189,8 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </div>
   )}
 
-  {!isBBRForm && (
+  {/* JFB or Farm EID Tag - Regular animal forms only */}
+  {isRegularAnimalForm && (
     <div class="animate-on-scroll slide-up delay-500">
       <label for="jfb_or_farm_eid_tag_used" class="text-white mb-2 block h-0 overflow-hidden">JFB or Farm EID tag used:</label>
       <input
@@ -154,33 +204,40 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </div>
   )}
 
-  <div class="animate-on-scroll slide-up delay-500">
-    <label for="breed" class="text-white mb-2 block h-0 overflow-hidden">Breed:</label>
-    <input
-      type="text"
-      name="breed"
-      id="breed"
-      required
-      placeholder="Breed"
-      class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
-    />
-  </div>
+  {/* Breed - Regular animal forms and BBR forms */}
+  {(isRegularAnimalForm || isBBRForm) && (
+    <div class="animate-on-scroll slide-up delay-500">
+      <label for="breed" class="text-white mb-2 block h-0 overflow-hidden">Breed:</label>
+      <input
+        type="text"
+        name="breed"
+        id="breed"
+        required
+        placeholder="Breed"
+        class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+      />
+    </div>
+  )}
 
-  <div class="animate-on-scroll slide-up delay-500">
-    <label for="sex" class="text-white mb-2 block h-0 overflow-hidden">Sex:</label>
-    <select
-      name="sex"
-      id="sex"
-      required
-      class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
-    >
-      <option value="">Select sex</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-      <option value="Other">Other</option>
-    </select>
-  </div>
+  {/* Sex - Regular animal forms and BBR forms */}
+  {(isRegularAnimalForm || isBBRForm) && (
+    <div class="animate-on-scroll slide-up delay-500">
+      <label for="sex" class="text-white mb-2 block h-0 overflow-hidden">Sex:</label>
+      <select
+        name="sex"
+        id="sex"
+        required
+        class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+      >
+        <option value="">Select sex</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+  )}
 
+  {/* Breeder Information - BBR forms only */}
   {isBBRForm && (
     <>
       <div class="animate-on-scroll slide-up delay-550">
@@ -221,14 +278,17 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </>
   )}
 
+  {/* Main Photo Upload - All forms */}
   <div class="animate-on-scroll slide-up delay-500">
-    <label for="animal_photo" class="text-white mb-2 block font-bold text-lg"
-      >Upload photo of animal{isBBRForm ? ' with tag' : ''}:</label
-    >
+    <label for="main_photo" class="text-white mb-2 block font-bold text-lg">
+      {isAuctionPhotosForm && "Upload Auction Photo:"}
+      {isThankYouCardsForm && "Upload Thank You Card Image:"}
+      {(isRegularAnimalForm || isBBRForm) && `Upload photo of animal${isBBRForm ? ' with tag' : ''}:`}
+    </label>
     <input
       type="file"
-      name="animal_photo"
-      id="animal_photo"
+      name="main_photo"
+      id="main_photo"
       accept="image/*"
       class="w-full text-white"
       data-max-size="5"
@@ -266,6 +326,7 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     <p id="compression-error" class="text-red-500 mt-2 hidden"></p>
   </div>
 
+  {/* Bill of Sale Upload - BBR forms only */}
   {isBBRForm && (
     <div class="animate-on-scroll slide-up delay-525">
       <label for="bill_of_sale_photo" class="text-white mb-2 block font-bold text-lg"
@@ -313,6 +374,7 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </div>
   )}
 
+  {/* Important Notes - BBR forms only */}
   {isBBRForm && (
     <div class="animate-on-scroll slide-up delay-625">
       <div class="bg-white/10 border border-white/30 rounded-md p-4">
@@ -590,8 +652,8 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     let compressedFile = null;
     let compressedBillFile = null;
     
-    // Get all elements with detailed debugging
-    const fileInput = document.getElementById("animal_photo");
+    // Get all elements with detailed debugging - updated for new field names
+    const fileInput = document.getElementById("main_photo");
     const progressDiv = document.getElementById("compression-progress");
     const progressMessage = document.getElementById("compression-message");
     const progressBar = document.getElementById("compression-bar");
@@ -651,7 +713,7 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
       const currentProgressBar = isBillOfSale ? billProgressBar : progressBar;
       
       if (!currentProgressMessage || !currentProgressBar) {
-        console.warn(`Progress elements not found for ${isBillOfSale ? 'bill' : 'animal'}`);
+        console.warn(`Progress elements not found for ${isBillOfSale ? 'bill' : 'main'}`);
         return;
       }
 
@@ -709,7 +771,7 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
         return;
       }
 
-      console.log(`${isBillOfSale ? 'Bill of Sale' : 'Animal'} file selected:`, file.name, 'Size:', file.size);
+      console.log(`${isBillOfSale ? 'Bill of Sale' : 'Main'} file selected:`, file.name, 'Size:', file.size);
 
       // File selected, disable submit button until compression is done
       setSubmitButtonState(true, true);
@@ -728,12 +790,12 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
       currentProgressDiv?.classList.remove("hidden");
 
       try {
-        console.log(`Starting ${isBillOfSale ? 'bill of sale' : 'animal'} compression...`);
+        console.log(`Starting ${isBillOfSale ? 'bill of sale' : 'main'} compression...`);
         // Compress the image
         const result = await compressImage(file, (progress) => updateProgress(progress, isBillOfSale));
 
         if (result.success) {
-          console.log(`${isBillOfSale ? 'Bill of Sale' : 'Animal'} compression successful:`, result);
+          console.log(`${isBillOfSale ? 'Bill of Sale' : 'Main'} compression successful:`, result);
           // Create compressed file
           const compressed = createCompressedFile(result);
           
@@ -761,7 +823,7 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
           throw new Error(result.error || "Compression failed");
         }
       } catch (error) {
-        console.error(`${isBillOfSale ? 'Bill of Sale' : 'Animal'} compression error:`, error);
+        console.error(`${isBillOfSale ? 'Bill of Sale' : 'Main'} compression error:`, error);
 
         if (currentCompressionError) {
           currentCompressionError.textContent =
@@ -783,16 +845,16 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
       }
     }
 
-    // Animal photo compression
+    // Main photo compression
     if (fileInput) {
-      console.log('Animal photo input found, attaching event listener');
+      console.log('Main photo input found, attaching event listener');
       fileInput.addEventListener("change", async function (e) {
         const target = e.target;
         if (!target) return;
         await handleFileCompression(target, false);
       });
     } else {
-      console.error('Animal photo input not found! Looking for ID: animal_photo');
+      console.error('Main photo input not found! Looking for ID: main_photo');
     }
 
     // Bill of Sale photo compression
@@ -810,14 +872,14 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     // Handle form submission with compressed images
     if (form) {
       form.addEventListener("submit", function (e) {
-        console.log('Form submission - compressed files:', { animal: compressedFile, bill: compressedBillFile });
+        console.log('Form submission - compressed files:', { main: compressedFile, bill: compressedBillFile });
         
-        // If we have a compressed animal file, replace the original file input
+        // If we have a compressed main file, replace the original file input
         if (compressedFile && fileInput) {
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(compressedFile);
           fileInput.files = dataTransfer.files;
-          console.log('Replaced animal file input with compressed file');
+          console.log('Replaced main file input with compressed file');
         }
 
         // If we have a compressed bill file, replace the original file input
@@ -843,5 +905,4 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     // DOM is already ready
     initializeCompression();
   }
-</script>
-
+</script> 
