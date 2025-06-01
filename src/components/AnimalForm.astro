@@ -5,6 +5,13 @@ interface Props {
 }
 
 const { formName, formAction } = Astro.props;
+
+// Determine if this is a BBR form and what type
+const isBBRForm = formName.startsWith('bbr-');
+const bbrType = isBBRForm ? formName.replace('bbr-', '') : '';
+const isGoatOrSheep = bbrType === 'goat' || bbrType === 'sheep';
+// Map BBR types to animal types (handle legacy 'beef' -> 'cow' mapping)
+const animalType = bbrType === 'beef' ? 'cow' : bbrType;
 ---
 <form
   name={formName}
@@ -33,12 +40,28 @@ const { formName, formAction } = Astro.props;
         type="text"
         name="exhibitor_name"
         id="exhibitor_name"
-        placeholder="Exhibitor name"
+        placeholder="Exhibitor's Name (Please Print)"
         required
         class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
       />
     </div>
   </div>
+
+  {isBBRForm && (
+    <div class="animate-on-scroll slide-up delay-150">
+      <label for="exhibitor_email" class="text-white mb-2 block h-0 overflow-hidden">Exhibitor's Email:</label>
+      <div>
+        <input
+          type="email"
+          name="exhibitor_email"
+          id="exhibitor_email"
+          placeholder="Exhibitor's (or Parent's) E-mail"
+          required
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+        />
+      </div>
+    </div>
+  )}
 
   <div class="animate-on-scroll slide-up delay-200">
     <label for="club_name" class="text-white mb-2 block h-0 overflow-hidden">Club name:</label>
@@ -47,7 +70,7 @@ const { formName, formAction } = Astro.props;
         type="text"
         name="club_name"
         id="club_name"
-        placeholder="Club name"
+        placeholder={isBBRForm ? "Club/Chapter" : "Club name"}
         required
         class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
       />
@@ -61,7 +84,7 @@ const { formName, formAction } = Astro.props;
         type="tel"
         name="contact_number"
         id="contact_number"
-        placeholder="Contact number"
+        placeholder={isBBRForm ? "Exhibitor's (or Parent's) Phone Number" : "Contact number"}
         required
         class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
       />
@@ -69,28 +92,67 @@ const { formName, formAction } = Astro.props;
   </div>
 
   <div class="animate-on-scroll slide-up delay-400">
-    <label for="eid_tag_number" class="text-white mb-2 block h-0 overflow-hidden">EID tag number:</label>
+    <label for="fair_tag_number" class="text-white mb-2 block h-0 overflow-hidden">Fair Tag Number:</label>
     <input
       type="text"
-      name="eid_tag_number"
-      id="eid_tag_number"
+      name="fair_tag_number"
+      id="fair_tag_number"
       required
-      placeholder="EID tag number"
+      placeholder="Fair Tag #"
       class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
     />
   </div>
 
-  <div class="animate-on-scroll slide-up delay-500">
-    <label for="jfb_or_farm_eid_tag_used" class="text-white mb-2 block h-0 overflow-hidden">JFB or Farm EID tag used:</label>
+  {isBBRForm && isGoatOrSheep && (
+    <div class="animate-on-scroll slide-up delay-450">
+      <label for="scrapie_tag" class="text-white mb-2 block h-0 overflow-hidden">Scrapie Tag/Tattoo #:</label>
+      <input
+        type="text"
+        name="scrapie_tag"
+        id="scrapie_tag"
+        required
+        placeholder="Scrapie Tag/Tattoo # (goats & lambs only)"
+        class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+      />
+    </div>
+  )}
+
+  {isBBRForm && (
     <input
-      type="text"
-      name="jfb_or_farm_eid_tag_used"
-      id="jfb_or_farm_eid_tag_used"
-      required
-      placeholder="JFB or Farm EID tag used"
-      class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+      type="hidden"
+      name="animal_type"
+      id="animal_type"
+      value={animalType}
     />
-  </div>
+  )}
+
+  {!isBBRForm && (
+    <div class="animate-on-scroll slide-up delay-500">
+      <label for="eid_tag_number" class="text-white mb-2 block h-0 overflow-hidden">EID tag number:</label>
+      <input
+        type="text"
+        name="eid_tag_number"
+        id="eid_tag_number"
+        required
+        placeholder="EID tag number"
+        class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+      />
+    </div>
+  )}
+
+  {!isBBRForm && (
+    <div class="animate-on-scroll slide-up delay-500">
+      <label for="jfb_or_farm_eid_tag_used" class="text-white mb-2 block h-0 overflow-hidden">JFB or Farm EID tag used:</label>
+      <input
+        type="text"
+        name="jfb_or_farm_eid_tag_used"
+        id="jfb_or_farm_eid_tag_used"
+        required
+        placeholder="JFB or Farm EID tag used"
+        class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+      />
+    </div>
+  )}
 
   <div class="animate-on-scroll slide-up delay-500">
     <label for="breed" class="text-white mb-2 block h-0 overflow-hidden">Breed:</label>
@@ -119,9 +181,49 @@ const { formName, formAction } = Astro.props;
     </select>
   </div>
 
+  {isBBRForm && (
+    <>
+      <div class="animate-on-scroll slide-up delay-550">
+        <label for="breeder_name" class="text-white mb-2 block h-0 overflow-hidden">Breeder's Name:</label>
+        <input
+          type="text"
+          name="breeder_name"
+          id="breeder_name"
+          required
+          placeholder="Breeder's Name (Please Print)"
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+        />
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-575">
+        <label for="breeder_address" class="text-white mb-2 block h-0 overflow-hidden">Breeder's Address:</label>
+        <textarea
+          name="breeder_address"
+          id="breeder_address"
+          required
+          placeholder="Breeder's Address"
+          rows="3"
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+        ></textarea>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-600">
+        <label for="breeder_phone" class="text-white mb-2 block h-0 overflow-hidden">Breeder's Phone:</label>
+        <input
+          type="tel"
+          name="breeder_phone"
+          id="breeder_phone"
+          required
+          placeholder="Breeder's Phone Number"
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+        />
+      </div>
+    </>
+  )}
+
   <div class="animate-on-scroll slide-up delay-500">
     <label for="animal_photo" class="text-white mb-2 block font-bold text-lg"
-      >Upload photo of animal with tag:</label
+      >Upload photo of animal{isBBRForm ? ' with tag' : ''}:</label
     >
     <input
       type="file"
@@ -163,6 +265,68 @@ const { formName, formAction } = Astro.props;
     </p>
     <p id="compression-error" class="text-red-500 mt-2 hidden"></p>
   </div>
+
+  {isBBRForm && (
+    <div class="animate-on-scroll slide-up delay-525">
+      <label for="bill_of_sale_photo" class="text-white mb-2 block font-bold text-lg"
+        >Upload Bill of Sale (price not needed):</label
+      >
+      <input
+        type="file"
+        name="bill_of_sale_photo"
+        id="bill_of_sale_photo"
+        accept="image/*"
+        class="w-full text-white"
+        data-max-size="5"
+      />
+
+      <!-- Bill of Sale Compression progress indicator -->
+      <div id="bill-compression-progress" class="mt-2 hidden">
+        <div class="flex items-center space-x-2">
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white">
+          </div>
+          <span id="bill-compression-message" class="text-white text-sm"></span>
+        </div>
+        <div class="w-full bg-white/20 rounded-full h-2 mt-2">
+          <div
+            id="bill-compression-bar"
+            class="bg-white h-2 rounded-full transition-all duration-300"
+            style="width: 0%"
+          >
+          </div>
+        </div>
+      </div>
+
+      <!-- Bill of Sale Compression result -->
+      <div id="bill-compression-result" class="mt-2 hidden">
+        <p class="text-green-400 text-sm">
+          ✓ Bill of Sale compressed successfully!
+          <span id="bill-compression-stats"></span>
+        </p>
+      </div>
+
+      <!-- Bill of Sale Error messages -->
+      <p id="bill-file-size-error" class="text-red-500 mt-2 hidden">
+        File is too large (max 5MB). Please choose a smaller image.
+      </p>
+      <p id="bill-compression-error" class="text-red-500 mt-2 hidden"></p>
+    </div>
+  )}
+
+  {isBBRForm && (
+    <div class="animate-on-scroll slide-up delay-625">
+      <div class="bg-white/10 border border-white/30 rounded-md p-4">
+        <h3 class="text-white font-bold text-lg mb-4">Important Notes:</h3>
+        <ul class="text-white/90 text-sm space-y-2 list-disc list-inside">
+          <li>For use with Market Beef, Market Lambs, Market Boer and Dairy Market Goats to be exhibited in the Born, Bred, and Raised type class.</li>
+          <li>You must ALSO enter your species' BBR class on your Junior Fair Entry Form.</li>
+          <li>Please see Junior Fair book for your species' specific class rules and class number.</li>
+          <li>Please fill out one form per animal and attach your bill of sale (price not needed).</li>
+          <li><strong>Forms must be submitted by Junior Fair Entry Form deadline.</strong></li>
+        </ul>
+      </div>
+    </div>
+  )}
 
   <div class="animate-on-scroll fade-in delay-500">
     <button
@@ -386,111 +550,158 @@ const { formName, formAction } = Astro.props;
     return { source, searchKeywords };
   }
 
-  // Add hidden fields for traffic source tracking
-  const form = document.querySelector(`form[name="${formName}"]`);
-  if (form) {
-    const { source, searchKeywords } = getTrafficSource();
+  // Initialize compression when DOM is ready
+  function initializeCompression() {
+    console.log('Initializing image compression...');
+    
+    // Add hidden fields for traffic source tracking
+    const form = document.querySelector(`form[name="${formName}"]`);
+    if (form) {
+      const { source, searchKeywords } = getTrafficSource();
 
-    // Create and append traffic source field
-    const sourceInput = document.createElement("input");
-    sourceInput.type = "hidden";
-    sourceInput.name = "traffic_source";
-    sourceInput.value = source;
-    form.appendChild(sourceInput);
+      // Create and append traffic source field
+      const sourceInput = document.createElement("input");
+      sourceInput.type = "hidden";
+      sourceInput.name = "traffic_source";
+      sourceInput.value = source;
+      form.appendChild(sourceInput);
 
-    // Create and append search keywords field
-    const keywordsInput = document.createElement("input");
-    keywordsInput.type = "hidden";
-    keywordsInput.name = "search_keywords";
-    keywordsInput.value = searchKeywords;
-    form.appendChild(keywordsInput);
+      // Create and append search keywords field
+      const keywordsInput = document.createElement("input");
+      keywordsInput.type = "hidden";
+      keywordsInput.name = "search_keywords";
+      keywordsInput.value = searchKeywords;
+      form.appendChild(keywordsInput);
 
-    // Set the page URL
-    const pageUrlInput = document.getElementById("page-url");
-    if (pageUrlInput) {
-      pageUrlInput.value = window.location.href;
+      // Set the page URL
+      const pageUrlInput = document.getElementById("page-url");
+      if (pageUrlInput) {
+        pageUrlInput.value = window.location.href;
+      }
+
+      // Set the full referrer
+      const referrerInput = document.getElementById("referrer");
+      if (referrerInput) {
+        referrerInput.value = document.referrer || "Direct";
+      }
     }
 
-    // Set the full referrer
-    const referrerInput = document.getElementById("referrer");
-    if (referrerInput) {
-      referrerInput.value = document.referrer || "Direct";
+    // Image compression handling
+    let compressedFile = null;
+    let compressedBillFile = null;
+    
+    // Get all elements with detailed debugging
+    const fileInput = document.getElementById("animal_photo");
+    const progressDiv = document.getElementById("compression-progress");
+    const progressMessage = document.getElementById("compression-message");
+    const progressBar = document.getElementById("compression-bar");
+    const resultDiv = document.getElementById("compression-result");
+    const statsSpan = document.getElementById("compression-stats");
+    const fileSizeError = document.getElementById("file-size-error");
+    const compressionError = document.getElementById("compression-error");
+    
+    // Bill of Sale elements
+    const billFileInput = document.getElementById("bill_of_sale_photo");
+    const billProgressDiv = document.getElementById("bill-compression-progress");
+    const billProgressMessage = document.getElementById("bill-compression-message");
+    const billProgressBar = document.getElementById("bill-compression-bar");
+    const billResultDiv = document.getElementById("bill-compression-result");
+    const billStatsSpan = document.getElementById("bill-compression-stats");
+    const billFileSizeError = document.getElementById("bill-file-size-error");
+    const billCompressionError = document.getElementById("bill-compression-error");
+    
+    const submitButton = document.getElementById("submit-button");
+    const submitText = document.getElementById("submit-text");
+    const submitSpinner = document.getElementById("submit-spinner");
+
+    // Debug element detection
+    console.log('Element detection:', {
+      fileInput: !!fileInput,
+      billFileInput: !!billFileInput,
+      progressDiv: !!progressDiv,
+      billProgressDiv: !!billProgressDiv,
+      submitButton: !!submitButton
+    });
+
+    function setSubmitButtonState(isCompressing, hasImage = false) {
+      if (!submitButton || !submitText || !submitSpinner) {
+        console.warn('Submit button elements not found');
+        return;
+      }
+
+      if (isCompressing) {
+        // Disable button during compression
+        submitButton.disabled = true;
+        submitText.textContent = "COMPRESSING IMAGE...";
+        submitSpinner.classList.remove("hidden");
+      } else {
+        // Enable button when compression is done or no image
+        submitButton.disabled = false;
+        submitText.textContent = "SUBMIT";
+        submitSpinner.classList.add("hidden");
+      }
     }
-  }
 
-  // Image compression handling
-  let compressedFile = null;
-  const fileInput = document.getElementById("animal_photo");
-  const progressDiv = document.getElementById("compression-progress");
-  const progressMessage = document.getElementById("compression-message");
-  const progressBar = document.getElementById("compression-bar");
-  const resultDiv = document.getElementById("compression-result");
-  const statsSpan = document.getElementById("compression-stats");
-  const fileSizeError = document.getElementById("file-size-error");
-  const compressionError = document.getElementById("compression-error");
-  const submitButton = document.getElementById("submit-button");
-  const submitText = document.getElementById("submit-text");
-  const submitSpinner = document.getElementById("submit-spinner");
+    /**
+     * @param {Object} progress
+     * @param {boolean} isBillOfSale
+     */
+    function updateProgress(progress, isBillOfSale = false) {
+      const currentProgressMessage = isBillOfSale ? billProgressMessage : progressMessage;
+      const currentProgressBar = isBillOfSale ? billProgressBar : progressBar;
+      
+      if (!currentProgressMessage || !currentProgressBar) {
+        console.warn(`Progress elements not found for ${isBillOfSale ? 'bill' : 'animal'}`);
+        return;
+      }
 
-  function hideAllMessages() {
-    progressDiv?.classList.add("hidden");
-    resultDiv?.classList.add("hidden");
-    fileSizeError?.classList.add("hidden");
-    compressionError?.classList.add("hidden");
-  }
+      currentProgressMessage.textContent = progress.message;
 
-  function setSubmitButtonState(isCompressing, hasImage = false) {
-    if (!submitButton || !submitText || !submitSpinner) return;
+      // Update progress bar based on stage
+      const progressPercentages = {
+        reading: 25,
+        uploading: 50,
+        compressing: 75,
+        complete: 100,
+        error: 0,
+      };
 
-    if (isCompressing) {
-      // Disable button during compression
-      submitButton.disabled = true;
-      submitText.textContent = "COMPRESSING IMAGE...";
-      submitSpinner.classList.remove("hidden");
-    } else {
-      // Enable button when compression is done or no image
-      submitButton.disabled = false;
-      submitText.textContent = "SUBMIT";
-      submitSpinner.classList.add("hidden");
+      const percentage = progressPercentages[progress.stage] || 0;
+      currentProgressBar.style.width = `${percentage}%`;
+
+      // Update submit button state based on compression stage
+      const isCompressing =
+        progress.stage !== "complete" && progress.stage !== "error";
+      setSubmitButtonState(isCompressing, true);
     }
-  }
 
-  /**
-   * @param {Object} progress
-   */
-  function updateProgress(progress) {
-    if (!progressMessage || !progressBar) return;
+    /**
+     * Handle file input compression
+     * @param {HTMLInputElement} input
+     * @param {boolean} isBillOfSale
+     */
+    async function handleFileCompression(input, isBillOfSale = false) {
+      const file = input.files?.[0];
+      
+      // Get the appropriate UI elements
+      const currentProgressDiv = isBillOfSale ? billProgressDiv : progressDiv;
+      const currentResultDiv = isBillOfSale ? billResultDiv : resultDiv;
+      const currentStatsSpan = isBillOfSale ? billStatsSpan : statsSpan;
+      const currentFileSizeError = isBillOfSale ? billFileSizeError : fileSizeError;
+      const currentCompressionError = isBillOfSale ? billCompressionError : compressionError;
 
-    progressMessage.textContent = progress.message;
+      // Hide messages for this specific input
+      currentProgressDiv?.classList.add("hidden");
+      currentResultDiv?.classList.add("hidden");
+      currentFileSizeError?.classList.add("hidden");
+      currentCompressionError?.classList.add("hidden");
 
-    // Update progress bar based on stage
-    const progressPercentages = {
-      reading: 25,
-      uploading: 50,
-      compressing: 75,
-      complete: 100,
-      error: 0,
-    };
-
-    const percentage = progressPercentages[progress.stage] || 0;
-    progressBar.style.width = `${percentage}%`;
-
-    // Update submit button state based on compression stage
-    const isCompressing =
-      progress.stage !== "complete" && progress.stage !== "error";
-    setSubmitButtonState(isCompressing, true);
-  }
-
-  if (fileInput) {
-    console.log('File input found, attaching event listener');
-    fileInput.addEventListener("change", async function (e) {
-      const target = e.target;
-      if (!target || !target.files) return;
-
-      const file = target.files[0];
-
-      hideAllMessages();
-      compressedFile = null;
+      // Clear the compressed file
+      if (isBillOfSale) {
+        compressedBillFile = null;
+      } else {
+        compressedFile = null;
+      }
 
       if (!file) {
         // No file selected, enable submit button
@@ -498,7 +709,7 @@ const { formName, formAction } = Astro.props;
         return;
       }
 
-      console.log('File selected:', file.name, 'Size:', file.size);
+      console.log(`${isBillOfSale ? 'Bill of Sale' : 'Animal'} file selected:`, file.name, 'Size:', file.size);
 
       // File selected, disable submit button until compression is done
       setSubmitButtonState(true, true);
@@ -507,35 +718,41 @@ const { formName, formAction } = Astro.props;
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
         console.log('File too large:', file.size);
-        fileSizeError?.classList.remove("hidden");
-        target.value = ""; // Clear the input
+        currentFileSizeError?.classList.remove("hidden");
+        input.value = ""; // Clear the input
         setSubmitButtonState(false, false); // Re-enable submit since no valid file
         return;
       }
 
       // Show progress indicator
-      progressDiv?.classList.remove("hidden");
+      currentProgressDiv?.classList.remove("hidden");
 
       try {
-        console.log('Starting compression...');
+        console.log(`Starting ${isBillOfSale ? 'bill of sale' : 'animal'} compression...`);
         // Compress the image
-        const result = await compressImage(file, updateProgress);
+        const result = await compressImage(file, (progress) => updateProgress(progress, isBillOfSale));
 
         if (result.success) {
-          console.log('Compression successful:', result);
+          console.log(`${isBillOfSale ? 'Bill of Sale' : 'Animal'} compression successful:`, result);
           // Create compressed file
-          compressedFile = createCompressedFile(result);
+          const compressed = createCompressedFile(result);
+          
+          if (isBillOfSale) {
+            compressedBillFile = compressed;
+          } else {
+            compressedFile = compressed;
+          }
 
-          if (compressedFile && statsSpan) {
+          if (compressed && currentStatsSpan) {
             const originalSize = formatFileSize(result.originalSize || 0);
             const compressedSize = formatFileSize(result.compressedSize || 0);
             const ratio = result.compressionRatio || 0;
 
-            statsSpan.textContent = `Reduced from ${originalSize} to ${compressedSize} (${ratio}% savings)`;
+            currentStatsSpan.textContent = `Reduced from ${originalSize} to ${compressedSize} (${ratio}% savings)`;
 
             // Hide progress and show result
-            progressDiv?.classList.add("hidden");
-            resultDiv?.classList.remove("hidden");
+            currentProgressDiv?.classList.add("hidden");
+            currentResultDiv?.classList.remove("hidden");
 
             // Enable submit button - compression complete
             setSubmitButtonState(false, true);
@@ -544,45 +761,87 @@ const { formName, formAction } = Astro.props;
           throw new Error(result.error || "Compression failed");
         }
       } catch (error) {
-        console.error("Compression error:", error);
+        console.error(`${isBillOfSale ? 'Bill of Sale' : 'Animal'} compression error:`, error);
 
-        if (compressionError) {
-          compressionError.textContent =
+        if (currentCompressionError) {
+          currentCompressionError.textContent =
             error instanceof Error ? error.message : "Failed to compress image";
-          compressionError.classList.remove("hidden");
+          currentCompressionError.classList.remove("hidden");
         }
 
-        progressDiv?.classList.add("hidden");
+        currentProgressDiv?.classList.add("hidden");
 
         // Keep the original file if compression fails
-        compressedFile = file;
+        if (isBillOfSale) {
+          compressedBillFile = file;
+        } else {
+          compressedFile = file;
+        }
 
         // Enable submit button - compression failed but we have original file
         setSubmitButtonState(false, true);
       }
-    });
+    }
+
+    // Animal photo compression
+    if (fileInput) {
+      console.log('Animal photo input found, attaching event listener');
+      fileInput.addEventListener("change", async function (e) {
+        const target = e.target;
+        if (!target) return;
+        await handleFileCompression(target, false);
+      });
+    } else {
+      console.error('Animal photo input not found! Looking for ID: animal_photo');
+    }
+
+    // Bill of Sale photo compression
+    if (billFileInput) {
+      console.log('Bill of Sale photo input found, attaching event listener');
+      billFileInput.addEventListener("change", async function (e) {
+        const target = e.target;
+        if (!target) return;
+        await handleFileCompression(target, true);
+      });
+    } else {
+      console.log('Bill of Sale photo input not found (this is normal for non-BBR forms)');
+    }
+
+    // Handle form submission with compressed images
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        console.log('Form submission - compressed files:', { animal: compressedFile, bill: compressedBillFile });
+        
+        // If we have a compressed animal file, replace the original file input
+        if (compressedFile && fileInput) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(compressedFile);
+          fileInput.files = dataTransfer.files;
+          console.log('Replaced animal file input with compressed file');
+        }
+
+        // If we have a compressed bill file, replace the original file input
+        if (compressedBillFile && billFileInput) {
+          const billDataTransfer = new DataTransfer();
+          billDataTransfer.items.add(compressedBillFile);
+          billFileInput.files = billDataTransfer.files;
+          console.log('Replaced bill file input with compressed file');
+        }
+
+        // Form will submit normally with the compressed files
+      });
+    }
+
+    // Initialize submit button state
+    setSubmitButtonState(false, false);
+  }
+
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCompression);
   } else {
-    console.error('File input not found! Looking for ID: animal_photo');
+    // DOM is already ready
+    initializeCompression();
   }
-
-  // Handle form submission with compressed image
-  if (form) {
-    form.addEventListener("submit", function (e) {
-      console.log('Form submission - compressed file:', compressedFile);
-      // If we have a compressed file, replace the original file input
-      if (compressedFile && fileInput) {
-        // Create a new FileList with the compressed file
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(compressedFile);
-        fileInput.files = dataTransfer.files;
-        console.log('Replaced file input with compressed file');
-      }
-
-      // Form will submit normally with the compressed file
-    });
-  }
-
-  // Initialize submit button state
-  setSubmitButtonState(false, false);
 </script>
 
