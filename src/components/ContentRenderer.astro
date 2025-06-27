@@ -23,6 +23,7 @@ import AwardTabs from './AwardTabs.astro';
 import Form from './Form.astro';
 import Videos from './Videos.astro';
 import Gallery from './Gallery.astro';
+import FairWeeksSchedule from './FairWeeksSchedule.astro';
 
 interface Props {
   content: PageContent[];
@@ -84,6 +85,8 @@ const {
         return <Videos content={block} />;
       case 'gallery':
         return <Gallery content={block} />;
+      case 'fairWeeksSchedule':
+        return <FairWeeksSchedule content={block} />;
       default:
         return null;
     }

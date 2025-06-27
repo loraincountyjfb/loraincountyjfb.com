@@ -188,6 +188,7 @@ export const PAGE_CONTENT_QUERY = `
       "alt": asset->alt
     }
   }
+  // Fair Weeks Schedule fields are already covered by description, link, linkText fields
 }`;
 
 

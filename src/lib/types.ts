@@ -136,6 +136,14 @@ export interface FacebookCalloutContent {
   };
 }
 
+export interface CalloutContent {
+  _type: 'callout';
+  title: string;
+  description?: any[];
+  link?: string;
+  linkText?: string;
+}
+
 export interface RelatedVideosContent {
   _type: 'relatedVideos';
   title: string;
@@ -351,6 +359,14 @@ export interface GalleryContent {
   }[];
 }
 
+export interface FairWeeksScheduleContent {
+  _type: 'fairWeeksSchedule';
+  title: string;
+  description: any[];
+  link?: string;
+  linkText?: string;
+}
+
 export type PageContent = 
   | HeroContent 
   | ContentBlock 
@@ -361,6 +377,7 @@ export type PageContent =
   | SliderContent
   | CalendarContent
   | FacebookCalloutContent
+  | CalloutContent
   | RelatedVideosContent
   | Sponsors
   | TimelineContent
@@ -372,7 +389,8 @@ export type PageContent =
   | AwardTabsContent
   | FormContent
   | VideosContent
-  | GalleryContent;
+  | GalleryContent
+  | FairWeeksScheduleContent;
 
 export interface PageData {
   title: string;
