@@ -41,6 +41,7 @@ export interface ContentBlock {
   spacing?: 'none' | 'small' | 'medium' | 'large';
   background?: 'white' | 'primary-light' | 'light-gray';
   verticalAlignment?: 'top' | 'center' | 'bottom';
+  hasDropShadow?: boolean;
 }
 
 export interface ThreeColumnContent {

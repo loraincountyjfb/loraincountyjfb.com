@@ -50,6 +50,8 @@ const getWidthClasses = (mediaWidth: number) => {
 const hasMedia = (content.media?.image !== null && content.media?.image !== undefined) || (content.media?.video !== null && content.media?.video !== undefined);
 const widthClasses = hasMedia ? getWidthClasses(content.media?.width || 50) : { media: '', content: 'lg:w-1/2 mx-auto' };
 
+const hasDropShadow = content.hasDropShadow || false;
+
 const backgroundClasses = {
   'white': 'bg-white',
   'primary-light': 'bg-primary-light',
@@ -60,6 +62,8 @@ const backgroundClasses = {
 const mediaOrder = content.media?.position === 'left' ? 'order-1 lg:order-1' : 'order-1 lg:order-2';
 const contentOrder = content.media?.position === 'left' ? 'order-1 lg:order-2' : 'order-1 lg:order-1';
 const backgroundClass = backgroundClasses[content.background || 'white'] || backgroundClasses.white;
+
+console.log(hasDropShadow);
 
 ---
 
@@ -82,7 +86,7 @@ const backgroundClass = backgroundClasses[content.background || 'white'] || back
                   <img 
                     src={feature.icon?.url} 
                     alt="" 
-                    class="object-contain"
+                    class={`object-contain`}
                   />
                   <div class="font-source-sans-pro text-lg leading-[39px] tracking-[0%]">
                     <div class="font-source-serif-4 text-[30px] leading-[39px] tracking-[0%] font-bold">{feature.title}</div>
@@ -113,7 +117,7 @@ const backgroundClass = backgroundClasses[content.background || 'white'] || back
             <img 
               src={content.media.image?.url} 
               alt={content.media.image?.alt || ''} 
-              class="object-cover rounded-lg"
+              class={`object-cover rounded-lg ${hasDropShadow ? 'filter [filter:drop-shadow(-17px_16px_50px_rgba(0,0,0,0.10))_drop-shadow(-66px_62px_91px_rgba(0,0,0,0.09))_drop-shadow(-149px_140px_123px_rgba(0,0,0,0.05))_drop-shadow(-265px_249px_145px_rgba(0,0,0,0.01))_drop-shadow(-414px_390px_159px_rgba(0,0,0,0.00))]' : ''}`}
             />
           )}
           {content.media.type === 'video' && content.media.video && (

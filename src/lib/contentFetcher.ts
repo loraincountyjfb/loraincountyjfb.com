@@ -12,6 +12,7 @@ export const PAGE_CONTENT_QUERY = `
   // HERO FIELDS
   heroLayout,
   title,
+  hasDropShadow,
   headingLevel,
   subtitle,
   "mainImage": mainImage{ "url": asset->url },
