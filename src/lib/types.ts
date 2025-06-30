@@ -306,7 +306,7 @@ export interface FormContent {
   submitButtonText?: string;
   textPosition?: 'left' | 'right';
   id?: string;
-  formType: string;
+  type: string;
   link?: string;
   linkText?: string;
 }

@@ -57,7 +57,7 @@ console.log(content.type);
 
               <Form
                 formName={content.type}
-                formAction={`/thank-you-${content.formType}-form`}
+                formAction={`/thank-you-${content.type || 'form'}`}
               />
             </div>
         </div>

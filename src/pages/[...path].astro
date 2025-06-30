@@ -39,4 +39,17 @@ if (!page || !page.title) {
 
 <MainLayout content={page}>
   <ContentRenderer content={page.content || []} />
-</MainLayout> 
+</MainLayout>
+
+<script>
+  // Fix form action URLs that have "undefined" in them
+  document.addEventListener('DOMContentLoaded', () => {
+    const forms = document.querySelectorAll('form[action*="undefined"]');
+    forms.forEach(form => {
+      const formName = form.getAttribute('name');
+      if (formName) {
+        form.setAttribute('action', `/thank-you-${formName}`);
+      }
+    });
+  });
+</script> 
