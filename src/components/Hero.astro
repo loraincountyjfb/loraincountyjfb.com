@@ -25,6 +25,7 @@ interface SocialLinkType {
 
 interface Props {
   content: {
+    id?: string;
     heroLayout: 'simpleButtons' | 'imageWithText' | 'featureBlocks' | 'teamFormat';
     title: string;
     headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
@@ -42,6 +43,9 @@ interface Props {
 const { content } = Astro.props;
 const headingClass = "font-source-serif-4 font-bold text-[60px] leading-[60px] tracking-[-0.03em] animate-on-scroll slide-up";
 const HeadingTag = content.headingLevel || 'h1';
+
+// Get the anchor ID 
+const anchorId = content.id || undefined;
 
 function getStyle(bg?: string, color?: string) {
   return {
@@ -61,7 +65,12 @@ const socialIconMap = {
 };
 ---
 
-<section class="hero-component" style={getStyle(content.backgroundColor, content.textColor)} transition:animate="fade">
+<section 
+  class="hero-component" 
+  style={getStyle(content.backgroundColor, content.textColor)} 
+  transition:animate="fade"
+  id={anchorId}
+>
   <div class="container mx-auto py-8">
     {content.heroLayout === 'simpleButtons' && (
       <div class="grid items-center justify-center">

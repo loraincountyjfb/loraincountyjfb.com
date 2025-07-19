@@ -5,19 +5,23 @@ import CalendarIcon from "../assets/svgs/grid.svg";
 
 interface Props {
   content: {
+    id?: string;
     title: string;
     description: any[];
     link?: string;
-  linkText?: string;
+    linkText?: string;
   };
 }
 
 const { content } = Astro.props;
 
 const { title, description, link, linkText } = content;
+
+// Get the anchor ID 
+const anchorId = content.id || undefined;
 ---
 
-<section class="bg-white py-16 calendar-section">
+<section class="bg-white py-16 calendar-section" id={anchorId}>
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
       <div class="col-span-1">

@@ -8,6 +8,7 @@ interface GalleryImage {
 
 interface Props {
   content: {
+    id?: string;
     _type: 'gallery';
     title: string;
     description?: string;
@@ -17,9 +18,12 @@ interface Props {
 
 const { content } = Astro.props;
 const { title, description, images = [] } = content;
+
+// Get the anchor ID 
+const anchorId = content.id || undefined;
 ---
 
-<section class="py-12 px-4" transition:animate="fade">
+<section class="py-12 px-4" transition:animate="fade" id={anchorId}>
   <div class="container mx-auto">
     {title && (
       <h2 class="font-source-serif-4 font-bold text-4xl md:text-5xl text-center mb-4 animate-on-scroll slide-up">
@@ -121,16 +125,22 @@ const { title, description, images = [] } = content;
       };
     });
     
-    function openLightbox(index) {
+    function openLightbox(index: number) {
       currentIndex = index;
-      updateLightboxImage();
-      lightboxModal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
+      const lightboxModal = document.getElementById('lightbox-modal');
+      const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement;
+      if (lightboxModal && lightboxImage) {
+        lightboxImage.src = images[index].src;
+        lightboxImage.alt = images[index].alt;
+        lightboxModal.style.display = 'block';
+      }
     }
     
     function closeLightbox() {
-      lightboxModal.classList.add('hidden');
-      document.body.style.overflow = '';
+      const lightboxModal = document.getElementById('lightbox-modal');
+      if (lightboxModal) {
+        lightboxModal.style.display = 'none';
+      }
     }
     
     function updateLightboxImage() {

@@ -4,6 +4,7 @@ import Button from "./Button.astro";
 
 interface Props {
   content: {
+    id?: string;
     title: string;
     description: any[];
     link?: string;
@@ -14,9 +15,12 @@ interface Props {
 const { content } = Astro.props;
 
 const { title, description, link, linkText } = content;
+
+// Get the anchor ID 
+const anchorId = content.id || undefined;
 ---
 
-<section class="relative bg-[#F8F5F5] py-[115px] overflow-hidden">
+<section class="relative bg-[#F8F5F5] py-[115px] overflow-hidden" id={anchorId}>
   <!-- Grid background -->
   <div class="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-10" style="background-image: url('/images/grid.svg');"></div>
   

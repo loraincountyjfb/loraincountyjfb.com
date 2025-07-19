@@ -14,6 +14,7 @@ interface Column {
 
 interface Props {
   content: {
+    id?: string;
     sectionTitle: string;
     sectionDescription: any[];
     columns: Column[];
@@ -23,9 +24,12 @@ interface Props {
 }
 
 const { content } = Astro.props;
+
+// Get the anchor ID 
+const anchorId = content.id || undefined;
 ---
 
-<section class="py-20" transition:animate="fade">
+<section class="py-20" transition:animate="fade" id={anchorId}>
   <div class="container mx-auto px-4">
     <div class="max-w-3xl mx-auto text-center mb-16 animate-on-scroll fade-in">
       <h2 class="text-[50px] font-bold font-source-serif-4 tracking-[-0.03em] text-[#18181B] mb-6" set:html={content.sectionTitle}></h2>

@@ -11,9 +11,12 @@ import joinUsBg from '../../assets/images/join-us/background.png';
 
 interface Props {
   content: {
+    id?: string;
     title: string;
     aboveTitleText: string;
     headingLevel: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+    link: string;
+    linkText: string;
     description: any[];
     features?: {
       text: string;
@@ -40,10 +43,17 @@ interface Props {
     spacing?: 'none' | 'small' | 'medium' | 'large';
     background?: 'white' | 'primary-light' | 'light-gray';
     verticalAlignment?: 'top' | 'center' | 'bottom';
+    textAlignment?: 'left' | 'center' | 'right';
+    backgroundColor?: string;
+    textColor?: string;
   };
 }
 
 const { content } = Astro.props;
+const { title, aboveTitleText, headingLevel, link, linkText, description, features = [], actions = [], media, spacing = 'medium', background = 'white', verticalAlignment = 'center', textAlignment = 'left', backgroundColor, textColor } = content;
+
+// Get the anchor ID 
+const anchorId = content.id || undefined;
 
 const spacingClasses = {
   none: 'py-0',
@@ -85,7 +95,7 @@ const getWidthClasses = (mediaWidth: number) => {
 
 const widthClasses = getWidthClasses(content.media?.width || 50);
 
-const HeadingTag = content.headingLevel || 'h1';
+const HeadingTag = headingLevel || 'h2';
 
 console.log(content);
 
@@ -104,6 +114,7 @@ const backgroundClass = backgroundClasses[content.background || 'white'] || back
 <section
 class="bg-gray4 relative h-[650px] flex items-center justify-center bg-cover bg-center"
 style=`background-image: url(${joinUsBg.src})`
+id={anchorId}
 >
 <img src={blurLeft.src} class="w-[300px] absolute left-0 bottom-0 hidden lg:block" />
 <img src={blurRight.src} class="w-[300px] absolute right-0 bottom-0 hidden lg:block" />

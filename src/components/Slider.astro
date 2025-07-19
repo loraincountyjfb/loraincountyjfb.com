@@ -2,16 +2,22 @@
 import type { SliderContent } from '../lib/types';
 
 interface Props {
-  content: SliderContent;
+  content: SliderContent & {
+    id?: string;
+  };
 }
 
 const { content } = Astro.props;
 const { title, description, slides = [], autoplay = true, interval = 5000 } = content;
+
+// Get the anchor ID 
+const anchorId = content.id || undefined;
 ---
 
 <!--Dynamic Slider Section-->
 <section
   class="box-border flex relative flex-col shrink-0 px-5 lg:py-20 w-screen bg-stone-50 min-h-[100px] ml-[calc(50%_-_50vw)]"
+  id={anchorId}
 >
   <div
     class="box-border relative grow shrink-0 self-stretch px-5 lg:py-20 py-10 mx-auto w-full bg-stone-50 max-w-[1300px] min-h-[100px]"
