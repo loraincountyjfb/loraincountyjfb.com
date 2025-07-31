@@ -17,10 +17,10 @@ const { content } = Astro.props;
         <h2 class="font-source-serif-4 text-[40px] leading-[50px] font-bold mb-10 flex items-center gap-2 text-center mx-auto justify-center">Previous Year Placements</h2>
   
     <!-- Vertical Timeline Line -->
-    <div class="absolute w-1 bg-[#654BCD] left-1/2 transform -translate-x-1/2 hidden lg:block animate-on-scroll slide-up" style={`height: calc(100% - ${content.timelineEvents.length > 1 ? '480px' : '0px'})`}></div>
+    <div class="absolute w-1 bg-[#654BCD] left-1/2 transform -translate-x-1/2 hidden lg:block animate-on-scroll slide-up" style={`height: calc(100% - ${(content.timelineEvents || []).length > 1 ? '480px' : '0px'})`}></div>
   
     <!-- Timeline Entries -->
-    {content.timelineEvents.map((entry, index) => (
+    {(content.timelineEvents || []).map((entry, index) => (
       <div class={`flex w-full ${index % 2 === 0 ? 'justify-start' : 'justify-end'} mb-10 relative`}>
         <div class={`w-full lg:w-5/12 p-6 bg-white rounded-lg shadow-lg animate-on-scroll slide-up ${index % 2 === 0 ? 'lg:mr-10 ml-0' : 'lg:ml-10 mr-0'}`}>
           <img src={entry.image.url} alt={`Timeline image for ${entry.year}`} class="w-full h-40 object-cover rounded-lg mb-4" />

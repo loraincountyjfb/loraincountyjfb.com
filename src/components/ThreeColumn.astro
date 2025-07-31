@@ -41,7 +41,7 @@ const anchorId = content.id || undefined;
     </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 max-w-7xl mx-auto animate-on-scroll fade-in slide-up column-container">
-      {content.columns.map((column, index) => (
+      {(content.columns || []).map((column, index) => (
         <div class={`flex flex-col items-center text-center animate-on-scroll scale-in delay-${index * 100}`}>
           {column.image?.url && (
               <img 

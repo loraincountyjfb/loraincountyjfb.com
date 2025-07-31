@@ -30,7 +30,7 @@ const { title, requirementsTitle, requirementsLocation, requirementItems = [] } 
         <div class="p-6">
             <p class="text-md mt-1 font-source-serif-4 font-bold mb-4 animate-on-scroll slide-up delay-200">{requirementsLocation}</p>
           <ul class="space-y-4">
-            {requirementItems.map((item, index) => (
+            {(requirementItems || []).map((item, index) => (
               <li class={`flex items-start animate-on-scroll slide-up delay-${index * 100}`}>
                 <div class="text-green-600 mr-3 mt-1">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

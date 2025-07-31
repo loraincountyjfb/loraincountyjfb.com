@@ -21,7 +21,7 @@ const bgColors = [
         <PortableText value={content.description} />
       </div>
   <div class="flex flex-wrap justify-center gap-6 max-w-[1450px] mx-auto">
-    {content.winners.map((winner, idx) => (
+    {(content.winners || []).map((winner, idx) => (
       <div class="news-item flex flex-col flex-start items-start bg-[#FFFFFF] [box-shadow:-72px_124px_40px_0px_rgba(0,0,0,0),-46px_79px_37px_0px_rgba(0,0,0,0.01),-26px_44px_31px_0px_rgba(0,0,0,0.05),-12px_20px_23px_0px_rgba(0,0,0,0.09),-3px_5px_13px_0px_rgba(0,0,0,0.10)] rounded-xl p-8 animate-on-scroll slide-up w-[436px] flex-shrink-0">
         {winner.image?.url && (
           <div class={`rounded-full border-[20px] flex items-center justify-center mb-4 ${bgColors[idx] || bgColors[0]}`}>

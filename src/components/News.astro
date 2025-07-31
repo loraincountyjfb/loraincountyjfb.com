@@ -16,7 +16,7 @@ const { content } = Astro.props;
         <PortableText value={content.description} />
       </div>
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    {content.news.map((item, idx) => (
+    {(content.news || []).map((item, idx) => (
       <div class="news-item flex flex-col justify-center items-center">
         {item.image?.url && <a href={item.link}><img src={item.image.url} alt={item.title} /></a>}
         <h3 class="text-[30px] leading-[24px] tracking-[0%] font-source-serif-4 font-bold mb-6 animate-on-scroll slide-up text-center mt-6">{item.title}</h3>

@@ -23,7 +23,7 @@ const { content } = Astro.props;
     </div>
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-[1000px] mx-auto my-12">
-            {content.donorImages.map((item, idx) => (
+            {(content.donorImages || []).map((item, idx) => (
                 <div class="flex flex-col items-center justify-center animate-on-scroll slide-up" style={`transition-delay: ${idx * 100}ms`}>
                 <div class={`rounded-full border-[20px] flex items-center justify-center mb-4 border-[rgba(221,241,76,0.32)]`}>
                     {item.image?.url && <img src={item.image.url} alt={item.title} />}

@@ -10,7 +10,9 @@ const { formName, formAction } = Astro.props;
 const isBBRForm = formName.startsWith('bbr-');
 const isAuctionPhotosForm = formName === 'auction-photos';
 const isThankYouCardsForm = formName === 'thank-you-cards';
-const isRegularAnimalForm = !isBBRForm && !isAuctionPhotosForm && !isThankYouCardsForm;
+const isFoodBankContactForm = formName === 'food-bank-contact';
+const isClubRegistrationForm = formName === 'club-registration';
+const isRegularAnimalForm = !isBBRForm && !isAuctionPhotosForm && !isThankYouCardsForm && !isFoodBankContactForm && !isClubRegistrationForm;
 
 // BBR-specific logic
 const bbrType = isBBRForm ? formName.replace('bbr-', '') : '';
@@ -38,20 +40,158 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </label>
   </p>
 
-  {/* Exhibitor Name - Required for all forms */}
-  <div class="animate-on-scroll slide-up delay-100">
-    <label for="exhibitor_name" class="text-white mb-2 block h-0 overflow-hidden">Exhibitor name:</label>
-    <div>
-      <input
-        type="text"
-        name="exhibitor_name"
-        id="exhibitor_name"
-        placeholder="Exhibitor's Name (Please Print)"
-        required
-        class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
-      />
+  {/* Food Bank Contact Form Fields */}
+  {isFoodBankContactForm && (
+    <>
+      <div class="animate-on-scroll slide-up delay-100">
+        <label for="contact_name" class="text-white mb-2 block h-0 overflow-hidden">Contact Name:</label>
+        <div>
+          <input
+            type="text"
+            name="contact_name"
+            id="contact_name"
+            placeholder="Contact Name"
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+          />
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-150">
+        <label for="contact_number" class="text-white mb-2 block h-0 overflow-hidden">Contact Number:</label>
+        <div>
+          <input
+            type="tel"
+            name="contact_number"
+            id="contact_number"
+            placeholder="Contact Number"
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+          />
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-200">
+        <label for="pantry_church_name" class="text-white mb-2 block h-0 overflow-hidden">Name of Pantry or Church:</label>
+        <div>
+          <input
+            type="text"
+            name="pantry_church_name"
+            id="pantry_church_name"
+            placeholder="Name of Pantry or Church"
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+          />
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-250">
+        <label for="address" class="text-white mb-2 block h-0 overflow-hidden">Address:</label>
+        <div>
+          <textarea
+            name="address"
+            id="address"
+            placeholder="Address"
+            required
+            rows="3"
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-300">
+        <label for="items_needed" class="text-white mb-2 block h-0 overflow-hidden">List of items most in need at your location:</label>
+        <div>
+          <textarea
+            name="items_needed"
+            id="items_needed"
+            placeholder="List of items most in need at your location"
+            required
+            rows="4"
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+          ></textarea>
+        </div>
+      </div>
+    </>
+  )}
+
+  {/* Club Registration Form Fields */}
+  {isClubRegistrationForm && (
+    <>
+      <div class="animate-on-scroll slide-up delay-100">
+        <label for="club_chapter_name" class="text-white mb-2 block h-0 overflow-hidden">Club/Chapter Name:</label>
+        <div>
+          <input
+            type="text"
+            name="club_chapter_name"
+            id="club_chapter_name"
+            placeholder="Club/Chapter Name"
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+          />
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-150">
+        <label for="representative_name" class="text-white mb-2 block h-0 overflow-hidden">Representative for Club/Chapter Name:</label>
+        <div>
+          <input
+            type="text"
+            name="representative_name"
+            id="representative_name"
+            placeholder="Representative for Club/Chapter Name"
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+          />
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-200">
+        <label for="contact_number" class="text-white mb-2 block h-0 overflow-hidden">Contact Number:</label>
+        <div>
+          <input
+            type="tel"
+            name="contact_number"
+            id="contact_number"
+            placeholder="Contact Number"
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+          />
+        </div>
+      </div>
+
+      <div class="animate-on-scroll slide-up delay-250">
+        <label for="email_address" class="text-white mb-2 block h-0 overflow-hidden">Email Address:</label>
+        <div>
+          <input
+            type="email"
+            name="email_address"
+            id="email_address"
+            placeholder="Email Address"
+            required
+            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+          />
+        </div>
+      </div>
+    </>
+  )}
+
+  {/* Exhibitor Name - Required for all forms except new forms */}
+  {!isFoodBankContactForm && !isClubRegistrationForm && (
+    <div class="animate-on-scroll slide-up delay-100">
+      <label for="exhibitor_name" class="text-white mb-2 block h-0 overflow-hidden">Exhibitor name:</label>
+      <div>
+        <input
+          type="text"
+          name="exhibitor_name"
+          id="exhibitor_name"
+          placeholder="Exhibitor's Name (Please Print)"
+          required
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+        />
+      </div>
     </div>
-  </div>
+  )}
 
   {/* Exhibitor Email - BBR forms only */}
   {isBBRForm && (
@@ -70,20 +210,22 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </div>
   )}
 
-  {/* Club Name - Required for all forms */}
-  <div class="animate-on-scroll slide-up delay-200">
-    <label for="club_name" class="text-white mb-2 block h-0 overflow-hidden">Club name:</label>
-    <div>
-      <input
-        type="text"
-        name="club_name"
-        id="club_name"
-        placeholder={isBBRForm ? "Club/Chapter" : "Club name"}
-        required
-        class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
-      />
+  {/* Club Name - Required for all forms except new forms */}
+  {!isFoodBankContactForm && !isClubRegistrationForm && (
+    <div class="animate-on-scroll slide-up delay-200">
+      <label for="club_name" class="text-white mb-2 block h-0 overflow-hidden">Club name:</label>
+      <div>
+        <input
+          type="text"
+          name="club_name"
+          id="club_name"
+          placeholder={isBBRForm ? "Club/Chapter" : "Club name"}
+          required
+          class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-md placeholder-white/80 text-white focus:outline-none focus:ring-2 focus:ring-white/50 font-bold text-lg"
+        />
+      </div>
     </div>
-  </div>
+  )}
 
   {/* Contact Number - BBR forms and Thank You Cards */}
   {(isBBRForm || isThankYouCardsForm) && (
@@ -278,21 +420,22 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
     </>
   )}
 
-  {/* Main Photo Upload - All forms */}
-  <div class="animate-on-scroll slide-up delay-500">
-    <label for="main_photo" class="text-white mb-2 block font-bold text-lg">
-      {isAuctionPhotosForm && "Upload Auction Photo:"}
-      {isThankYouCardsForm && "Upload Thank You Card Image:"}
-      {(isRegularAnimalForm || isBBRForm) && `Upload photo of animal${isBBRForm ? ' with tag' : ''}:`}
-    </label>
-    <input
-      type="file"
-      name="main_photo"
-      id="main_photo"
-      accept="image/*"
-      class="w-full text-white"
-      data-max-size="5"
-    />
+  {/* Main Photo Upload - All forms except new contact forms */}
+  {!isFoodBankContactForm && !isClubRegistrationForm && (
+    <div class="animate-on-scroll slide-up delay-500">
+      <label for="main_photo" class="text-white mb-2 block font-bold text-lg">
+        {isAuctionPhotosForm && "Upload Auction Photo:"}
+        {isThankYouCardsForm && "Upload Thank You Card Image:"}
+        {(isRegularAnimalForm || isBBRForm) && `Upload photo of animal${isBBRForm ? ' with tag' : ''}:`}
+      </label>
+      <input
+        type="file"
+        name="main_photo"
+        id="main_photo"
+        accept="image/*"
+        class="w-full text-white"
+        data-max-size="5"
+      />
 
     <!-- Compression progress indicator -->
     <div id="compression-progress" class="mt-2 hidden">
@@ -324,7 +467,8 @@ const animalType = bbrType === 'beef' ? 'cow' : bbrType;
       File is too large (max 5MB). Please choose a smaller image.
     </p>
     <p id="compression-error" class="text-red-500 mt-2 hidden"></p>
-  </div>
+    </div>
+  )}
 
   {/* Bill of Sale Upload - BBR forms only */}
   {isBBRForm && (
