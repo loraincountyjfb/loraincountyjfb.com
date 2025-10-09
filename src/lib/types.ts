@@ -13,6 +13,7 @@ export interface HeroContent {
 
 export interface ContentBlock {
   _type: 'content';
+  id: string;
   title: string;
   description: any[];
   features?: {
