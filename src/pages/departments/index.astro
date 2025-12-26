@@ -1,0 +1,62 @@
+---
+import MainLayout from '../../layouts/main.astro';
+
+const departments = [
+  { name: 'Ag Products & Home Ec', slug: 'ag-products-home-ec' },
+  { name: 'Beef', slug: 'beef' },
+  { name: 'Dairy', slug: 'dairy' },
+  { name: 'Dog', slug: 'dog' },
+  { name: 'Fowl', slug: 'fowl' },
+  { name: 'Goat', slug: 'goat' },
+  { name: 'Horse', slug: 'horse' },
+  { name: 'Rabbit & Small Animal', slug: 'rabbit-small-animal' },
+  { name: 'Sheep', slug: 'sheep' },
+  { name: 'Special Events', slug: 'special-events' },
+  { name: 'Swine', slug: 'swine' },
+];
+---
+
+<MainLayout content={{ title: 'Departments' }}>
+  <section class="py-16 bg-white min-h-screen">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-5xl font-bold text-center mb-4 font-source-serif-4 animate-on-scroll slide-up">
+          Departments
+        </h1>
+        <p class="text-xl text-center mb-12 text-gray-600 font-source-serif-4 animate-on-scroll slide-up delay-100">
+          Select a department to view requirements, schedules, forms, and resources
+        </p>
+        
+        <div class="bg-white border border-gray-200 rounded-lg p-8 shadow-lg">
+          <label for="department-select" class="block text-lg font-semibold mb-4 font-source-serif-4">
+            Choose a Department:
+          </label>
+          <select 
+            id="department-select" 
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg font-source-serif-4 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent mb-6"
+            onchange="if(this.value) window.location.href = this.value;"
+          >
+            <option value="">-- Select a Department --</option>
+            {departments.map((dept) => (
+              <option value={`/departments/${dept.slug}`}>
+                {dept.name}
+              </option>
+            ))}
+          </select>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+            {departments.map((dept) => (
+              <a 
+                href={`/departments/${dept.slug}`}
+                class="block p-4 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-center font-semibold font-source-serif-4 animate-on-scroll slide-up"
+              >
+                {dept.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
