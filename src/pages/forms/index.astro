@@ -1,108 +1,21 @@
 ---
 import MainLayout from '../../layouts/main.astro';
-import { loadQuery } from '../../../lib/load-query';
+import ContentRenderer from '../../components/ContentRenderer.astro';
+import { fetchPageBySlug, isPreviewMode } from '../../lib/contentFetcher';
 
-// Fetch all forms from Sanity
-const { data: forms } = await loadQuery({
-  query: `*[_type == "form"]{_id, title, description, link, linkText} | order(title asc)`,
-  params: {},
-  enabled: true
-});
+// Determine if we're in preview mode
+const preview = isPreviewMode(Astro.url.href);
 
-// Fetch all form pages from Sanity
-const { data: formPages } = await loadQuery({
-  query: `*[_type == "page" && slug.current match "forms/*"]{_id, title, slug, description} | order(title asc)`,
-  params: {},
-  enabled: true
-});
+// Fetch the forms page content from Sanity
+const page = await fetchPageBySlug('forms', preview);
 
-// Combine forms and form pages, then sort alphabetically
-const allForms = [
-  ...(forms || []).map(form => ({
-    id: form._id,
-    title: form.title,
-    description: form.description || '',
-    link: form.link || '#',
-    linkText: form.linkText || 'View Form'
-  })),
-  ...(formPages || []).map(page => ({
-    id: page._id,
-    title: page.title,
-    description: page.description || '',
-    link: `/${page.slug?.current || ''}`,
-    linkText: 'View Form'
-  }))
-].sort((a, b) => a.title.localeCompare(b.title));
-
-// Split into two columns
-const leftColumn = allForms.filter((_, index) => index % 2 === 0);
-const rightColumn = allForms.filter((_, index) => index % 2 === 1);
+// Redirect to 404 if page not found
+if (!page || !page.title) {
+  return Astro.redirect('/404');
+}
 ---
 
-<MainLayout content={{ title: 'Forms' }}>
-  <section class="py-16 bg-white">
-    <div class="container mx-auto px-4">
-      <div class="max-w-6xl mx-auto">
-        <h1 class="text-5xl font-bold text-center mb-4 font-source-serif-4 animate-on-scroll slide-up">
-          Forms
-        </h1>
-        <p class="text-xl text-center mb-12 text-gray-600 font-source-serif-4 animate-on-scroll slide-up delay-100">
-          Find and access all the forms you need for the Lorain County Junior Fair
-        </p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <!-- Left Column -->
-          <div class="space-y-6">
-            {leftColumn.map((form) => (
-              <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow animate-on-scroll slide-up">
-                <h3 class="text-2xl font-bold mb-2 font-source-serif-4 text-black">
-                  {form.title}
-                </h3>
-                {form.description && (
-                  <p class="text-gray-600 mb-4 font-source-serif-4">
-                    {form.description}
-                  </p>
-                )}
-                <a 
-                  href={form.link} 
-                  class="inline-block px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors font-source-code-pro uppercase tracking-wide"
-                >
-                  {form.linkText}
-                </a>
-              </div>
-            ))}
-          </div>
-          
-          <!-- Right Column -->
-          <div class="space-y-6">
-            {rightColumn.map((form) => (
-              <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow animate-on-scroll slide-up">
-                <h3 class="text-2xl font-bold mb-2 font-source-serif-4 text-black">
-                  {form.title}
-                </h3>
-                {form.description && (
-                  <p class="text-gray-600 mb-4 font-source-serif-4">
-                    {form.description}
-                  </p>
-                )}
-                <a 
-                  href={form.link} 
-                  class="inline-block px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary-dark transition-colors font-source-code-pro uppercase tracking-wide"
-                >
-                  {form.linkText}
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {allForms.length === 0 && (
-          <div class="text-center py-12">
-            <p class="text-gray-500 text-lg">No forms available at this time.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  </section>
+<MainLayout content={page}>
+  <ContentRenderer content={page.content || []} />
 </MainLayout>
 

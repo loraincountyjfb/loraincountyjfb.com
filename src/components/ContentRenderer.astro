@@ -24,6 +24,7 @@ import Form from './Form.astro';
 import Videos from './Videos.astro';
 import Gallery from './Gallery.astro';
 import FairWeeksSchedule from './FairWeeksSchedule.astro';
+import FormsList from './FormsList.astro';
 
 interface Props {
   content: PageContent[];
@@ -87,6 +88,8 @@ const {
         return <Gallery content={block} />;
       case 'fairWeeksSchedule':
         return <FairWeeksSchedule content={block} />;
+      case 'formsList':
+        return <FormsList content={block} />;
       default:
         return null;
     }

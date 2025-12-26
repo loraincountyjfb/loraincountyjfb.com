@@ -187,7 +187,28 @@ export const PAGE_CONTENT_QUERY = `
       "url": asset->url,
       "alt": asset->alt
     }
-  }
+  },
+  // Forms List fields
+  "forms": forms[]{
+    title,
+    description,
+    link,
+    linkText,
+    "formReference": formReference->{
+      _id,
+      title,
+      description,
+      link,
+      linkText
+    },
+    "pageReference": pageReference->{
+      _id,
+      title,
+      slug,
+      description
+    }
+  },
+  autoIncludeForms
   // Fair Weeks Schedule fields are already covered by description, link, linkText fields
 }`;
 
