@@ -45,37 +45,43 @@ let allForms: Array<{
 }> = [];
 
 if (content.autoIncludeForms !== false) {
-  // Fetch all forms from Sanity
-  const { data: forms } = await loadQuery({
-    query: `*[_type == "form"]{_id, title, description, link, linkText} | order(title asc)`,
-    params: {},
-    enabled: true
-  });
+  try {
+    // Fetch all forms from Sanity
+    const formsResult = await loadQuery({
+      query: `*[_type == "form"]{_id, title, description, link, linkText} | order(title asc)`,
+      params: {},
+      enabled: true
+    });
+    const forms = formsResult?.data || [];
 
-  // Fetch all form pages from Sanity
-  const { data: formPages } = await loadQuery({
-    query: `*[_type == "page" && slug.current match "forms/*"]{_id, title, slug, description} | order(title asc)`,
-    params: {},
-    enabled: true
-  });
+    // Fetch all form pages from Sanity
+    const formPagesResult = await loadQuery({
+      query: `*[_type == "page" && slug.current match "forms/*"]{_id, title, slug, description} | order(title asc)`,
+      params: {},
+      enabled: true
+    });
+    const formPages = formPagesResult?.data || [];
 
-  // Combine forms and form pages
-  allForms = [
-    ...(forms || []).map((form: any) => ({
-      id: form._id,
-      title: form.title,
-      description: form.description || '',
-      link: form.link || '#',
-      linkText: form.linkText || 'View Form'
-    })),
-    ...(formPages || []).map((page: any) => ({
-      id: page._id,
-      title: page.title,
-      description: page.description || '',
-      link: `/${page.slug?.current || ''}`,
-      linkText: 'View Form'
-    }))
-  ];
+    // Combine forms and form pages
+    allForms = [
+      ...forms.map((form: any) => ({
+        id: form._id,
+        title: form.title || 'Untitled Form',
+        description: form.description || '',
+        link: form.link || '#',
+        linkText: form.linkText || 'View Form'
+      })),
+      ...formPages.map((page: any) => ({
+        id: page._id,
+        title: page.title || 'Untitled Page',
+        description: page.description || '',
+        link: `/${page.slug?.current || ''}`,
+        linkText: 'View Form'
+      }))
+    ];
+  } catch (error) {
+    console.error('Error fetching forms:', error);
+  }
 }
 
 // Add manually added forms from content
@@ -86,18 +92,20 @@ if (content.forms && Array.isArray(content.forms)) {
       const formRef = formItem.formReference;
       allForms.push({
         id: formRef._id,
-        title: formRef.title || formItem.title,
-        description: formRef.description || formItem.description || '',
-        link: formRef.link || formItem.link || '#',
-        linkText: formRef.linkText || formItem.linkText || 'View Form'
+        // Prioritize manual title/description/link over referenced form data
+        title: formItem.title || formRef.title || 'Untitled Form',
+        description: formItem.description || formRef.description || '',
+        link: formItem.link || formRef.link || '#',
+        linkText: formItem.linkText || formRef.linkText || 'View Form'
       });
     } else if (formItem.pageReference?._id) {
       const pageRef = formItem.pageReference;
       allForms.push({
         id: pageRef._id,
-        title: pageRef.title || formItem.title,
-        description: pageRef.description || formItem.description || '',
-        link: `/${pageRef.slug?.current || ''}`,
+        // Prioritize manual title/description over referenced page data
+        title: formItem.title || pageRef.title || 'Untitled Page',
+        description: formItem.description || pageRef.description || '',
+        link: formItem.link || `/${pageRef.slug?.current || ''}`,
         linkText: formItem.linkText || 'View Form'
       });
     } else {
