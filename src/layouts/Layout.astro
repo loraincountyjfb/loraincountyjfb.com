@@ -35,5 +35,17 @@ const { title } = Astro.props;
     <slot />
     <Footer />
     <ScrollAnimations />
+    <script is:inline>
+      (function () {
+        var decode = function (el) {
+          var e = el.getAttribute('data-cfemail'); if (!e) return;
+          var s = '', k = parseInt(e.substr(0, 2), 16);
+          for (var i = 2; i < e.length; i += 2) s += String.fromCharCode(parseInt(e.substr(i, 2), 16) ^ k);
+          el.textContent = s;
+          if (el.tagName === 'A') el.setAttribute('href', 'mailto:' + s);
+        };
+        document.querySelectorAll('a.__cf_email__, span.__cf_email__').forEach(decode);
+      })();
+    </script>
   </body>
 </html> 

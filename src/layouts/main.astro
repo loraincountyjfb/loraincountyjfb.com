@@ -45,6 +45,21 @@ const visualEditingEnabled =  import.meta.env.PUBLIC_SANITY_VISUAL_EDITOR_ENABLE
 		<VisualEditing enabled={visualEditingEnabled} zIndex={1000} />
 		
 		<script is:inline>
+			// Decode Cloudflare-obfuscated emails inline so display never depends on /cdn-cgi/ script loading
+			(function () {
+				var decode = function (el) {
+					var e = el.getAttribute('data-cfemail'); if (!e) return;
+					var s = '', k = parseInt(e.substr(0, 2), 16);
+					for (var i = 2; i < e.length; i += 2) s += String.fromCharCode(parseInt(e.substr(i, 2), 16) ^ k);
+					el.textContent = s;
+					if (el.tagName === 'A') el.setAttribute('href', 'mailto:' + s);
+				};
+				var run = function () { document.querySelectorAll('a.__cf_email__, span.__cf_email__').forEach(decode); };
+				run();
+				document.addEventListener('astro:page-load', run);
+			})();
+		</script>
+		<script is:inline>
 			// Initialize intersection observer for animations
 			function setupObserver() {
 				// Select all elements to animate
